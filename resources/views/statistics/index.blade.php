@@ -89,6 +89,8 @@
                             <tbody>
                                 @foreach ($statistics as $indexKey => $report)
                                 <tr>
+                                <!-- possible bug $report->relatedToHelpLine->log, when you delete report the view breaks-->
+                                <!-- Error: Trying to get property 'log' of non-object -->
                                     <td><span class="top" title="{{$report->relatedToHelpLine->log}}"> {{ $report->tracking_id }}</span></td>
                                     <td>
                                         @if(isset($report->firstResponderStats)) 
