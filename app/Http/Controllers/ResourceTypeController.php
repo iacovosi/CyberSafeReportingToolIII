@@ -81,7 +81,7 @@ class ResourceTypeController extends Controller
     public function update(Request $request, ResourceType $resourceType)
     {
         $this->validate(request(), [
-            'name' => 'required|unique:resource_types,name',
+            'name' => 'required|unique:resource_types,name,'.$resourceType->id, // fix you should not check by yourself
             'display_name_en' => 'required',
             'display_name_gr' => 'required',
         ]);
