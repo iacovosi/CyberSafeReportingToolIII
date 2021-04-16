@@ -88,10 +88,16 @@
                             </thead>
                             <tbody>
                                 @foreach ($statistics as $indexKey => $report)
+                                 @if(isset($report) && !empty($report))
                                 <tr>
                                 <!-- possible bug $report->relatedToHelpLine->log, when you delete report the view breaks-->
+                                <!-- it is the relatedToHelpLine value -->
                                 <!-- Error: Trying to get property 'log' of non-object -->
+                                     @if(isset($report->relatedToHelpLine) && !empty($report->relatedToHelpLine))
                                     <td><span class="top" title="{{$report->relatedToHelpLine->log}}"> {{ $report->tracking_id }}</span></td>
+                                    @else
+                                     <td><span class="top" title=""> {{ $report->tracking_id }}</span></td>
+                                     @endif 
                                     <td>
                                         @if(isset($report->firstResponderStats)) 
                                             <?php  
@@ -150,6 +156,7 @@
                                     {{--  <td>{{ $report->updated_at }}</td>  --}}
                                     {{--  <td>{{\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $report->updated_at)->diffForHumans() }}</td>                                      --}}
                                 </tr>
+                                @endif
                                 @endforeach
                             </tbody>
                         </table>
