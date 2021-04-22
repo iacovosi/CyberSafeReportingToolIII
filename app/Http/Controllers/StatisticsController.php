@@ -118,24 +118,23 @@ class StatisticsController extends Controller
 
         //check user permissions
         $user = auth()->user();
-        $IsUserOnlyHelpline=$user->checkRole("helpline") ;
+        $IsUserOnlyHelpline=$user->hasRole("Ηelpline") ;
+
+        
         //dd($IsUserOnlyHelpline);
         if (!$IsUserOnlyHelpline) {
             // ...set filters but dont get resuts yet, due to pagination and export conflict
-            $statistics = Statistics::ofStatus($statusSelected)->whereBetween('created_at', [$fromDate, $toDate]);
+            $statistics = Statistics::ofStatus($statusSelected)->get()->whereBetween('created_at', [$fromDate, $toDate]);
         }
         else {
             // ...set filters but dont get resuts yet, due to pagination and export conflict and also check
             //to show the helpline only statistics
-            $statistics = Statistics::ofStatus($statusSelected)->whereBetween('created_at', [$fromDate, $toDate])->where('is_it_hotline','false');
+            $statistics = Statistics::ofStatus($statusSelected)->get()->whereBetween('created_at', [$fromDate, $toDate])->where('is_it_hotline','false');
         }
-
 
         // --------------- //
         // EXPORT RESULTS  //
         if($request->exportThis != null) {
-
-            $statistics = $statistics->get();
 
             $date = new \DateTime();
             $tbody ='';
@@ -216,7 +215,7 @@ class StatisticsController extends Controller
      */
     public function show(Statistics $statistics)
     {
-        //
+        
         $date = new \DateTime();
             $tbody ='';
             
@@ -269,99 +268,5 @@ class StatisticsController extends Controller
             echo $output;
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Statistics  $statistics
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Statistics $statistics)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Statistics  $statistics
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Statistics $statistics)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Statistics  $statistics
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Statistics $statistics)
-    {
-        //
-    }
 }
 
-
-
-
-       // $reference_to = $request->referal; //?????
-        // $reference_to = $request->reference_to; //?????
-        // $actions = $request->actions; //?????
-
-        // if (count($actions) == 0){
-        //    $actions = $actionsTaken;
-        // }
-        // if (count($referalTo) == 0){
-        //     $referalTo= $referals;
-        // }
-
-        // if (count($referenceTo) == 0){
-        //     $referenceTo= $references;
-        // }
-
-
-
-
-// if($findWithStatus != '*'){
-        //     // if(count($request->referal) > 0){
-        //     //     $statistics = Statistics::whereBetween('created_at', [$from, $endat])->where('status','=',$findWithStatus)->whereIn('referal',$referalTo)->get();
-        //     // }
-        //     // else if (count($request->reference) > 0 )
-        //     // {
-        //     //     $statistics = Statistics::whereBetween('created_at', [$from, $endat])->where('status','=',$findWithStatus)->whereIn('reference',$referenceTo)->get();
-        //     // }else if (count($request->actions) > 0){
-        //     //     $statistics = Statistics::whereBetween('created_at', [$from, $endat])->where('status','=',$findWithStatus)->where(function ($query) use($actions) {
-        //     //         for ($i = 0; $i < count($actions); $i++){
-        //     //            $query->orwhere('actions', 'like',  '%' . $actions[$i] .'%');
-        //     //         }})->get();
-        //     // }else{
-        //     //     $statistics = Statistics::whereBetween('created_at', [$from, $endat])->where('status','=',$findWithStatus)->get();
-        //     // }
-            
-
-        //         $statistics = Statistics::ofStatus($findWithStatus)->paginate(10);
-        //         // dd($statistics);
-
-
-        //     } else {
-        //     // if(count($request->referal) > 0){
-        //     //     $statistics = Statistics::whereBetween('created_at', [$from, $endat])->whereIn('referal',$referalTo)->get();
-        //     // }
-        //     // else if (count($request->reference) > 0 )
-        //     // {
-        //     //     $statistics = Statistics::whereBetween('created_at', [$from, $endat])->whereIn('reference' , $referenceTo)->get();
-        //     // }else if (count($request->actions) > 0){
-        //     //     $statistics = Statistics::whereBetween('created_at', [$from, $endat])
-        //     //     ->where(function ($query) use($actions) {
-        //     //         for ($i = 0; $i < count($actions); $i++){
-        //     //            $query->orwhere('actions', 'like',  '%' . $actions[$i] .'%');
-        //     //         }})->get();
-        //     // }else{
-        //     //     $statistics = Statistics::whereBetween('created_at', [$from, $endat])->get();
-        //     // }
-        //     $statistics = Statistics::whereBetween('created_at', [$from, $endat])
-        //         ->paginate(10);
-        // }

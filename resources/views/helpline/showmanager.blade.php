@@ -17,12 +17,12 @@
                                             class="fa fa-paper-plane-o" aria-hidden="true"></i> Forward to HOTLINE</a>
                                 <a href="" class="btn btn-default" data-toggle="modal" data-target="#myModal"><i
                                             class="fa fa-times" aria-hidden="true"></i> Cancel</a>
-                                @if (GroupPermission::usercan('edit','managers'))
+                                @role('Manager')
                                     {{--  <input type="submit" name="submit" value="Save & Exit" form="submit-form" class="btn btn-primary">  --}}
                                     <button type="submit" class="btn btn-primary">
                                         <i class="fa fa-floppy-o" aria-hidden="true"></i> Save & Exit
                                     </button>
-                                @endif
+                                @endrole
                             </div>
                         </div>
 
@@ -39,8 +39,8 @@
                                         <p>Are you sure you want to leave this page? Any changes will be lost.</p>
                                     </div>
                                     <div class="modal-footer">
-                                        <a class="btn btn-primary" href="{{ URL::previous() }}">Yes</a>
                                         <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                                        <a class="btn btn-primary" href="{{ URL::previous() }}">Yes</a>
                                     </div>
                                 </div>
                             </div>
@@ -216,13 +216,12 @@
                                 <fieldset class="form-group">
                                     <label for="comments" class="col-sm-2 control-label">User comments</label>
                                     <div class="col-sm-10">
-                                    <textarea class="form-control" name="comments" rows="3" disabled>
                                         @if($helpline->comments == null)
-                                            Not Provided.
+                                            <?php $comments = "Not provided."; ?>
                                         @else
-                                            <?php $comments = Crypt::decrypt($helpline->comments); ?>{{ $comments  }}
+                                            <?php $comments = Crypt::decrypt($helpline->comments); ?>
                                         @endif
-                                    </textarea>
+                                        <textarea class="form-control" name="comments" rows="3" disabled>{{ $comments  }}</textarea>
                                     </div>
                                 </fieldset>
                             </fieldset>
@@ -236,8 +235,12 @@
                                     <!-- Report Opened by operator -->
                                     <label for="user_opened" class="col-sm-2 control-label">Opened by operator</label>
                                     <div class="col-sm-4">
-                                        <input type="text" class="form-control"
+                                        @if($helpline->firstResponder == null)
+                                                <input type="text" class="form-control" value="No one" readonly></option>
+                                        @else
+                                            <input type="text" class="form-control"
                                                value="{{$helpline->firstResponder->name}}" readonly>
+                                        @endif
                                     </div>
                                     <!-- Report Forward to operator -->
                                     <label for="user_assigned" class="col-sm-2 control-label">Forward to
@@ -248,10 +251,10 @@
                                                 <option value selected>No one</option>
                                             @endif
                                             @foreach($users as $user)
-                                                @if($user->hasRole(['operator']))
+                                                {{-- @if($user->hasRole(['operator']))
                                                     <option value="{{ $user->id }}"
                                                             @if ($helpline->user_assigned == $user->id) selected @endif>{{ $user->name }}</option>
-                                                @endif
+                                                @endif --}}
                                             @endforeach
                                         </select>
                                     </div>
@@ -343,15 +346,11 @@
                                 <legend>Manager comments</legend>
                                 <!-- Report User Comments -->
                                 <fieldset class="form-group">
-                                    <label for="comments" class="col-sm-2 control-label">User comments </label>
+                                    <label for="comments" class="col-sm-2 control-label">comments </label>
                                     <div class="col-sm-10">
-                                    <textarea class="form-control" name="manager_comments" rows="3">
-                                        @if($helpline->manager_comments == null)
-                                            Not Provided.
-                                        @else
-                                           {{ Crypt::decrypt($helpline->manager_comments) }}
-                                        @endif
-                                    </textarea>
+                                    @if($helpline->manager_comments == null) <?php $c= "Not Provided."; ?>
+                                    @else <?php $c=Crypt::decrypt($helpline->manager_comments); ?> @endif
+                                    <textarea class="form-control" name="manager_comments" rows="3">{{$c}}</textarea>
                                     </div>
                                 </fieldset>
                                 <fieldset class="form-group">

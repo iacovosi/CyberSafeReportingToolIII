@@ -11,7 +11,7 @@ class Initialization extends Seeder
      */
     public function run()
     {
-        //
+        
         DB::table('users')->delete();
         $users = array(
             ['id' => 1, 'name' => 'admin', 'email' => 'admin@admin.com', 'password' => bcrypt('admin'), 'created_at' => new DateTime, 'updated_at' => new DateTime],
@@ -26,234 +26,339 @@ class Initialization extends Seeder
 
         DB::table('roles')->delete();
         $roles = array(
-            ['id' => 1, 'name' => 'admin', 'display_name' => 'Administrator', 'description' => 'Administrative privileges', 'created_at' => new DateTime, 'updated_at' => new DateTime],
-            ['id' => 2, 'name' => 'manager', 'display_name' => 'Manager', 'description' => 'Manager privileges', 'created_at' => new DateTime, 'updated_at' => new DateTime],
-            ['id' => 3, 'name' => 'operator', 'display_name' => 'Operator', 'description' => 'Helpline & Hotline privileges', 'created_at' => new DateTime, 'updated_at' => new DateTime],
-            ['id' => 4, 'name' => 'helpline', 'display_name' => 'Helpline', 'description' => 'Helpline privileges', 'created_at' => new DateTime, 'updated_at' => new DateTime],
-            ['id' => 5, 'name' => 'support', 'display_name' => 'Support', 'description' => 'Support privileges', 'created_at' => new DateTime, 'updated_at' => new DateTime],
+            ['id' => 1, 'name' => 'admin', 'guard_name' => 'web', 'created_at' => new DateTime, 'updated_at' => new DateTime],
+            ['id' => 2, 'name' => 'manager', 'guard_name' => 'web', 'created_at' => new DateTime, 'updated_at' => new DateTime],
+            ['id' => 3, 'name' => 'operator', 'guard_name' => 'web', 'created_at' => new DateTime, 'updated_at' => new DateTime],
+            ['id' => 4, 'name' => 'helpline', 'guard_name' => 'web', 'created_at' => new DateTime, 'updated_at' => new DateTime],
+            ['id' => 5, 'name' => 'support', 'guard_name' => 'web', 'created_at' => new DateTime, 'updated_at' => new DateTime],
+            ['id' => 6, 'name' => 'hotline', 'guard_name' => 'web', 'created_at' => new DateTime, 'updated_at' => new DateTime],            
         );
         DB::table('roles')->insert($roles);
 
-        DB::table('role_user')->delete();
+        DB::table('model_has_roles')->delete();
         $role_user = array(
-            ['user_id' => 1, 'role_id' => 1],
-            ['user_id' => 2, 'role_id' => 2],
-            ['user_id' => 3, 'role_id' => 1],
-            ['user_id' => 4, 'role_id' => 2],
-            ['user_id' => 5, 'role_id' => 3],
-            ['user_id' => 6, 'role_id' => 3],
-            ['user_id' => 7, 'role_id' => 3],
+            ['model_id' => 1, 'role_id' => 1, 'model_type' => 'App\User'],
+            ['model_id' => 2, 'role_id' => 2, 'model_type' => 'App\User'],
+            ['model_id' => 3, 'role_id' => 1, 'model_type' => 'App\User'],
+            ['model_id' => 4, 'role_id' => 2, 'model_type' => 'App\User'],
+            ['model_id' => 5, 'role_id' => 3, 'model_type' => 'App\User'],
+            ['model_id' => 6, 'role_id' => 3, 'model_type' => 'App\User'],
+            ['model_id' => 7, 'role_id' => 3, 'model_type' => 'App\User'],
         );
-        DB::table('role_user')->insert($role_user);
+        DB::table('model_has_roles')->insert($role_user);
 
         DB::table('permissions')->delete();
-        $permissions = array(
-            ['id' => 1, 'name' => 'view', 'display_name' => 'View ', 'description' => 'Can View', 'created_at' => new DateTime, 'updated_at' => new DateTime],
-            ['id' => 2, 'name' => 'create', 'display_name' => 'Create ', 'description' => 'Can Create', 'created_at' => new DateTime, 'updated_at' => new DateTime],
-            ['id' => 3, 'name' => 'edit', 'display_name' => 'Edit', 'description' => 'Can Edit', 'created_at' => new DateTime, 'updated_at' => new DateTime],
-            ['id' => 4, 'name' => 'delete', 'display_name' => 'Delete', 'description' => 'Can Delete', 'created_at' => new DateTime, 'updated_at' => new DateTime],
-        );
-        DB::table('permissions')->insert($permissions);
+        
+        DB::table('permissions')->insert(array (
+            0 => 
+            array (
+                'id' => 1,
+                'name' => 'view_settings',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            1 => 
+            array (
+                'id' => 2,
+                'name' => 'edit_settings',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            2 => 
+            array (
+                'id' => 3,
+                'name' => 'create_settings',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            3 => 
+            array (
+                'id' => 4,
+                'name' => 'delete_settings',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            4 => 
+            array (
+                'id' => 5,
+                'name' => 'view_users',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            5 => 
+            array (
+                'id' => 6,
+                'name' => 'edit_users',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            6 => 
+            array (
+                'id' => 7,
+                'name' => 'create_users',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            7 => 
+            array (
+                'id' => 8,
+                'name' => 'delete_users',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            8 => 
+            array (
+                'id' => 9,
+                'name' => 'view_roles',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            9 => 
+            array (
+                'id' => 10,
+                'name' => 'edit_roles',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            10 => 
+            array (
+                'id' => 11,
+                'name' => 'create_roles',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            11 => 
+            array (
+                'id' => 12,
+                'name' => 'delete_roles',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            12 => 
+            array (
+                'id' => 13,
+                'name' => 'view_content',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            13 => 
+            array (
+                'id' => 14,
+                'name' => 'edit_content',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            14 => 
+            array (
+                'id' => 15,
+                'name' => 'create_content',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            15 => 
+            array (
+                'id' => 16,
+                'name' => 'delete_content',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            16 => 
+            array (
+                'id' => 17,
+                'name' => 'view_helpline',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            17 => 
+            array (
+                'id' => 18,
+                'name' => 'edit_helpline',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            18 => 
+            array (
+                'id' => 19,
+                'name' => 'create_helpline',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            19 => 
+            array (
+                'id' => 20,
+                'name' => 'delete_helpline',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            20 => 
+            array (
+                'id' => 21,
+                'name' => 'view_hotline',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            21 => 
+            array (
+                'id' => 22,
+                'name' => 'edit_hotline',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            22 => 
+            array (
+                'id' => 23,
+                'name' => 'create_hotline',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            23 => 
+            array (
+                'id' => 24,
+                'name' => 'delete_hotline',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            24 => 
+            array (
+                'id' => 25,
+                'name' => 'view_statistics',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            25 => 
+            array (
+                'id' => 26,
+                'name' => 'edit_statistics',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            26 => 
+            array (
+                'id' => 27,
+                'name' => 'create_statistics',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            27 => 
+            array (
+                'id' => 28,
+                'name' => 'delete_statistics',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            28 => 
+            array (
+                'id' => 29,
+                'name' => 'view_chat',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            29 => 
+            array (
+                'id' => 30,
+                'name' => 'edit_chat',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            30 => 
+            array (
+                'id' => 31,
+                'name' => 'create_chat',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            31 => 
+            array (
+                'id' => 32,
+                'name' => 'delete_chat',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            )
+        ));
 
-        DB::table('permission_role')->delete();
-        $permissionsrole = array(
-            ['permission_id' => 1, 'role_id' => '1'],
-            ['permission_id' => 2, 'role_id' => '1'],
-            ['permission_id' => 3, 'role_id' => '1'],
+        DB::table('role_has_permissions')->delete();
+        $role_has_permissions = array(
+            ['permission_id' => 1, 'role_id' => 1],
+            ['permission_id' => 2, 'role_id' => 1],
+            ['permission_id' => 3, 'role_id' => 1],
+            ['permission_id' => 4, 'role_id' => 1],
+            ['permission_id' => 5, 'role_id' => 1],
+            ['permission_id' => 6, 'role_id' => 1],
+            ['permission_id' => 7, 'role_id' => 1],
+            ['permission_id' => 8, 'role_id' => 1],
+            ['permission_id' => 9, 'role_id' => 1],
+            ['permission_id' => 10, 'role_id' => 1],
+            ['permission_id' => 11, 'role_id' => 1],
+            ['permission_id' => 12, 'role_id' => 1],
+            ['permission_id' => 13, 'role_id' => 1],
+            ['permission_id' => 14, 'role_id' => 1],
+            ['permission_id' => 15, 'role_id' => 1],
+            ['permission_id' => 16, 'role_id' => 1],
+            ['permission_id' => 17, 'role_id' => 1],
+            ['permission_id' => 18, 'role_id' => 1],
+            ['permission_id' => 19, 'role_id' => 1],
+            ['permission_id' => 20, 'role_id' => 1],
+            ['permission_id' => 21, 'role_id' => 1],
+            ['permission_id' => 22, 'role_id' => 1],
+            ['permission_id' => 23, 'role_id' => 1],
+            ['permission_id' => 24, 'role_id' => 1],
+            ['permission_id' => 25, 'role_id' => 1],
+            ['permission_id' => 26, 'role_id' => 1],
+            ['permission_id' => 27, 'role_id' => 1],
+            ['permission_id' => 28, 'role_id' => 1],
+            ['permission_id' => 29, 'role_id' => 1],
+            ['permission_id' => 30, 'role_id' => 1],
+            ['permission_id' => 31, 'role_id' => 1],
+            ['permission_id' => 32, 'role_id' => 1],
         );
-        DB::table('permission_role')->insert($permissionsrole);
+        DB::table('role_has_permissions')->insert($role_has_permissions);
 
         DB::table('groups')->delete();
         $groups = array(
             ['id' => 1, 'name' => 'settings','created_at'=> new DateTime, 'updated_at' =>new DateTime],
             ['id' => 2, 'name' => 'users','created_at'=> new DateTime, 'updated_at' =>new DateTime],
             ['id' => 3, 'name' => 'roles','created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 4, 'name' => 'permissions','created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 5, 'name' => 'content','created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 6, 'name' => 'helpline','created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 7, 'name' => 'hotline','created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 8, 'name' => 'statistics','created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 9, 'name' => 'chat','created_at'=> new DateTime, 'updated_at' =>new DateTime],
+            ['id' => 4, 'name' => 'content','created_at'=> new DateTime, 'updated_at' =>new DateTime],
+            ['id' => 5, 'name' => 'helpline','created_at'=> new DateTime, 'updated_at' =>new DateTime],
+            ['id' => 6, 'name' => 'hotline','created_at'=> new DateTime, 'updated_at' =>new DateTime],
+            ['id' => 7, 'name' => 'statistics','created_at'=> new DateTime, 'updated_at' =>new DateTime],
+            ['id' => 8, 'name' => 'chat','created_at'=> new DateTime, 'updated_at' =>new DateTime],
         );
         DB::table('groups')->insert($groups);
 
-        DB::table('group_permissions')->delete();
-        $group_permissions = array(
-            // Admin
-            ['id' => 1, 'user_id' => 1,'permission_id'=> 1,'group_id' => 1,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 2, 'user_id' => 1,'permission_id'=> 2,'group_id' => 1,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 3, 'user_id' => 1,'permission_id'=> 3,'group_id' => 1,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 4, 'user_id' => 1,'permission_id'=> 4,'group_id' => 1,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            ['id' => 5, 'user_id' => 1,'permission_id'=> 1,'group_id' => 2,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 6, 'user_id' => 1,'permission_id'=> 2,'group_id' => 2,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 7, 'user_id' => 1,'permission_id'=> 3,'group_id' => 2,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 8, 'user_id' => 1,'permission_id'=> 4,'group_id' => 2,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            ['id' => 9, 'user_id' => 1,'permission_id'=> 1,'group_id' => 3,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 10, 'user_id' => 1,'permission_id'=> 2,'group_id' => 3,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 11, 'user_id' => 1,'permission_id'=> 3,'group_id' => 3,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 12, 'user_id' => 1,'permission_id'=> 4,'group_id' => 3,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            ['id' => 13, 'user_id' => 1,'permission_id'=> 1,'group_id' => 4,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 14, 'user_id' => 1,'permission_id'=> 2,'group_id' => 4,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 15, 'user_id' => 1,'permission_id'=> 3,'group_id' => 4,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 16, 'user_id' => 1,'permission_id'=> 4,'group_id' => 4,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            ['id' => 17, 'user_id' => 1,'permission_id'=> 1,'group_id' => 5,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 18, 'user_id' => 1,'permission_id'=> 2,'group_id' => 5,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 19, 'user_id' => 1,'permission_id'=> 3,'group_id' => 5,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 20, 'user_id' => 1,'permission_id'=> 4,'group_id' => 5,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            ['id' => 21, 'user_id' => 1,'permission_id'=> 1,'group_id' => 6,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 22, 'user_id' => 1,'permission_id'=> 2,'group_id' => 6,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 23, 'user_id' => 1,'permission_id'=> 3,'group_id' => 6,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 24, 'user_id' => 1,'permission_id'=> 4,'group_id' => 6,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            ['id' => 25, 'user_id' => 1,'permission_id'=> 1,'group_id' => 7,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 26, 'user_id' => 1,'permission_id'=> 2,'group_id' => 7,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 27, 'user_id' => 1,'permission_id'=> 3,'group_id' => 7,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 28, 'user_id' => 1,'permission_id'=> 4,'group_id' => 7,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            ['id' => 29, 'user_id' => 1,'permission_id'=> 1,'group_id' => 8,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            // ['id' => 30, 'user_id' => 1,'permission_id'=> 1,'group_id' => 9,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            // Manager
-            ['id' => 50, 'user_id' => 2,'permission_id'=> 1,'group_id' => 1,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 51, 'user_id' => 2,'permission_id'=> 2,'group_id' => 1,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 52, 'user_id' => 2,'permission_id'=> 3,'group_id' => 1,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 53, 'user_id' => 2,'permission_id'=> 4,'group_id' => 1,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            ['id' => 54, 'user_id' => 2,'permission_id'=> 1,'group_id' => 2,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 55, 'user_id' => 2,'permission_id'=> 2,'group_id' => 2,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 56, 'user_id' => 2,'permission_id'=> 3,'group_id' => 2,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 57, 'user_id' => 2,'permission_id'=> 4,'group_id' => 2,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            ['id' => 58, 'user_id' => 2,'permission_id'=> 1,'group_id' => 5,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 59, 'user_id' => 2,'permission_id'=> 2,'group_id' => 5,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 60, 'user_id' => 2,'permission_id'=> 3,'group_id' => 5,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 61, 'user_id' => 2,'permission_id'=> 4,'group_id' => 5,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            // Admin - Kanaris
-            ['id' => 101, 'user_id' => 3,'permission_id'=> 1,'group_id' => 1,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 102, 'user_id' => 3,'permission_id'=> 2,'group_id' => 1,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 103, 'user_id' => 3,'permission_id'=> 3,'group_id' => 1,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 104, 'user_id' => 3,'permission_id'=> 4,'group_id' => 1,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            ['id' => 105, 'user_id' => 3,'permission_id'=> 1,'group_id' => 2,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 106, 'user_id' => 3,'permission_id'=> 2,'group_id' => 2,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 107, 'user_id' => 3,'permission_id'=> 3,'group_id' => 2,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 108, 'user_id' => 3,'permission_id'=> 4,'group_id' => 2,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            ['id' => 109, 'user_id' => 3,'permission_id'=> 1,'group_id' => 3,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 110, 'user_id' => 3,'permission_id'=> 2,'group_id' => 3,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 111, 'user_id' => 3,'permission_id'=> 3,'group_id' => 3,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 112, 'user_id' => 3,'permission_id'=> 4,'group_id' => 3,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            ['id' => 113, 'user_id' => 3,'permission_id'=> 1,'group_id' => 4,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 114, 'user_id' => 3,'permission_id'=> 2,'group_id' => 4,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 115, 'user_id' => 3,'permission_id'=> 3,'group_id' => 4,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 116, 'user_id' => 3,'permission_id'=> 4,'group_id' => 4,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            ['id' => 117, 'user_id' => 3,'permission_id'=> 1,'group_id' => 5,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 118, 'user_id' => 3,'permission_id'=> 2,'group_id' => 5,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 119, 'user_id' => 3,'permission_id'=> 3,'group_id' => 5,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 120, 'user_id' => 3,'permission_id'=> 4,'group_id' => 5,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            ['id' => 121, 'user_id' => 3,'permission_id'=> 1,'group_id' => 6,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 122, 'user_id' => 3,'permission_id'=> 2,'group_id' => 6,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 123, 'user_id' => 3,'permission_id'=> 3,'group_id' => 6,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 124, 'user_id' => 3,'permission_id'=> 4,'group_id' => 6,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            ['id' => 125, 'user_id' => 3,'permission_id'=> 1,'group_id' => 7,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 126, 'user_id' => 3,'permission_id'=> 2,'group_id' => 7,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 127, 'user_id' => 3,'permission_id'=> 3,'group_id' => 7,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 128, 'user_id' => 3,'permission_id'=> 4,'group_id' => 7,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            ['id' => 129, 'user_id' => 3,'permission_id'=> 1,'group_id' => 8,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            // ['id' => 130, 'user_id' => 3,'permission_id'=> 1,'group_id' => 9,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            // Manager - Anasta
-            ['id' => 250, 'user_id' => 4,'permission_id'=> 1,'group_id' => 1,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 251, 'user_id' => 4,'permission_id'=> 2,'group_id' => 1,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 252, 'user_id' => 4,'permission_id'=> 3,'group_id' => 1,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 253, 'user_id' => 4,'permission_id'=> 4,'group_id' => 1,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            ['id' => 254, 'user_id' => 4,'permission_id'=> 1,'group_id' => 2,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 255, 'user_id' => 4,'permission_id'=> 2,'group_id' => 2,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 256, 'user_id' => 4,'permission_id'=> 3,'group_id' => 2,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 257, 'user_id' => 4,'permission_id'=> 4,'group_id' => 2,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            ['id' => 258, 'user_id' => 4,'permission_id'=> 1,'group_id' => 5,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 259, 'user_id' => 4,'permission_id'=> 2,'group_id' => 5,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 260, 'user_id' => 4,'permission_id'=> 3,'group_id' => 5,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 261, 'user_id' => 4,'permission_id'=> 4,'group_id' => 5,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            ['id' => 262, 'user_id' => 4,'permission_id'=> 1,'group_id' => 6,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 263, 'user_id' => 4,'permission_id'=> 4,'group_id' => 6,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            ['id' => 264, 'user_id' => 4,'permission_id'=> 1,'group_id' => 7,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 265, 'user_id' => 4,'permission_id'=> 4,'group_id' => 7,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            ['id' => 266, 'user_id' => 4,'permission_id'=> 1,'group_id' => 8,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            // Operator 1 - Hotline Only
-            ['id' => 551, 'user_id' => 5,'permission_id'=> 1,'group_id' => 5,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 552, 'user_id' => 5,'permission_id'=> 2,'group_id' => 5,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 553, 'user_id' => 5,'permission_id'=> 3,'group_id' => 5,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            ['id' => 561, 'user_id' => 5,'permission_id'=> 1,'group_id' => 6,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 562, 'user_id' => 5,'permission_id'=> 2,'group_id' => 6,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 563, 'user_id' => 5,'permission_id'=> 3,'group_id' => 6,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            ['id' => 571, 'user_id' => 5,'permission_id'=> 1,'group_id' => 7,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 572, 'user_id' => 5,'permission_id'=> 2,'group_id' => 7,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 573, 'user_id' => 5,'permission_id'=> 3,'group_id' => 7,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            ['id' => 581, 'user_id' => 5,'permission_id'=> 1,'group_id' => 8,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            // Operator 2 - Helpline, Hotline, Chat
-            ['id' => 651, 'user_id' => 6,'permission_id'=> 1,'group_id' => 5,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 652, 'user_id' => 6,'permission_id'=> 2,'group_id' => 5,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 653, 'user_id' => 6,'permission_id'=> 3,'group_id' => 5,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            ['id' => 661, 'user_id' => 6,'permission_id'=> 1,'group_id' => 6,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 662, 'user_id' => 6,'permission_id'=> 2,'group_id' => 6,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 663, 'user_id' => 6,'permission_id'=> 3,'group_id' => 6,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            ['id' => 671, 'user_id' => 6,'permission_id'=> 1,'group_id' => 7,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 672, 'user_id' => 6,'permission_id'=> 2,'group_id' => 7,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 673, 'user_id' => 6,'permission_id'=> 3,'group_id' => 7,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            ['id' => 681, 'user_id' => 6,'permission_id'=> 1,'group_id' => 8,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            ['id' => 691, 'user_id' => 6,'permission_id'=> 1,'group_id' => 9,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 692, 'user_id' => 6,'permission_id'=> 2,'group_id' => 9,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 693, 'user_id' => 6,'permission_id'=> 3,'group_id' => 9,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            // Operator 3 - Helpline, Hotline, Chat
-            ['id' => 751, 'user_id' => 7,'permission_id'=> 1,'group_id' => 5,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 752, 'user_id' => 7,'permission_id'=> 2,'group_id' => 5,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 753, 'user_id' => 7,'permission_id'=> 3,'group_id' => 5,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            ['id' => 761, 'user_id' => 7,'permission_id'=> 1,'group_id' => 6,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 762, 'user_id' => 7,'permission_id'=> 2,'group_id' => 6,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 763, 'user_id' => 7,'permission_id'=> 3,'group_id' => 6,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            ['id' => 771, 'user_id' => 7,'permission_id'=> 1,'group_id' => 7,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 772, 'user_id' => 7,'permission_id'=> 2,'group_id' => 7,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 773, 'user_id' => 7,'permission_id'=> 3,'group_id' => 7,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            ['id' => 781, 'user_id' => 7,'permission_id'=> 1,'group_id' => 8,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-            ['id' => 791, 'user_id' => 7,'permission_id'=> 1,'group_id' => 9,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 792, 'user_id' => 7,'permission_id'=> 2,'group_id' => 9,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-            ['id' => 793, 'user_id' => 7,'permission_id'=> 3,'group_id' => 9,'created_at'=> new DateTime, 'updated_at' =>new DateTime],
-
-        );
-        DB::table('group_permissions')->insert($group_permissions);
+        
 
         DB::table('resource_types')->delete();
         $resource_types = array(

@@ -40,8 +40,8 @@
                                         <p>Are you sure you want to leave this page? Any changes will be lost.</p>
                                     </div>
                                     <div class="modal-footer">
-                                        <a class="btn btn-primary" href="{{ URL::previous() }}">Yes</a>
                                         <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                                        <a class="btn btn-primary" href="{{ URL::previous() }}">Yes</a>
                                     </div>
                                 </div>
                             </div>
@@ -218,13 +218,12 @@
                                 <fieldset class="form-group">
                                     <label for="comments" class="col-sm-2 control-label">User comments</label>
                                     <div class="col-sm-10">
-                                    <textarea class="form-control" name="comments" rows="3">
                                         @if($helpline->comments == null)
-                                            Not Provided.
+                                            <?php $comments = "Not provided."; ?>
                                         @else
-                                            <?php $comments = Crypt::decrypt($helpline->comments); ?>{{ $comments  }}
+                                            <?php $comments = Crypt::decrypt($helpline->comments); ?>
                                         @endif
-                                    </textarea>
+                                    <textarea class="form-control" name="comments" rows="3">{{ $comments  }}</textarea>
                                     </div>
                                 </fieldset>
                             </fieldset>
@@ -238,10 +237,15 @@
                                     <!-- Report Opened by operator -->
                                     <label for="user_opened" class="col-sm-2 control-label">Opened by operator</label>
                                     <div class="col-sm-4">
-                                        <input type="text" class="form-control"
-                                               value="{{$helpline->firstResponder->name}}" readonly>
-                                        <input type="hidden" name="user_opened"
-                                               value="{{$helpline->firstResponder->id}}">
+                                        @if($helpline->firstResponder == null)
+                                            <input type="text" class="form-control" value="" placeholder="No one"
+                                                   disabled>
+                                        @else
+                                            <input type="text" class="form-control"
+                                                value="{{$helpline->firstResponder->name}}" disabled>
+                                                <input type="hidden" name="user_opened"
+                                                    value="{{$helpline->firstResponder->id}}">
+                                        @endif
                                     </div>
                                     <!-- Report Forward to operator -->
                                     <label for="user_assigned" class="col-sm-2 control-label">Forward to
@@ -252,7 +256,7 @@
                                                 <option value selected>No one</option>
                                             @endif
                                             @foreach($users as $user)
-                                                @if($user->hasRole(['operator']))
+                                                @if($user->hasRole('Operator'))
                                                     <option value="{{ $user->id }}"
                                                             @if ($helpline->user_assigned == $user->id) selected @endif>{{ $user->name }}</option>
                                                 @endif

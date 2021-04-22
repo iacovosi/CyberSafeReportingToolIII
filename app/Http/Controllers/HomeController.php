@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Helpline;
-use App\Hotline;
 use App\ResourceType;
 use App\ContentType;
 use App\Status;
@@ -49,7 +48,6 @@ class HomeController extends Controller
         // } else {
         //     $act = $actions;
         // }
-
         $request->flash();
 
         // --------------- //
@@ -60,15 +58,13 @@ class HomeController extends Controller
             // ...set filters but dont get resuts yet, due to pagination and export conflict
             //check user permissions
             $user = auth()->user();
-            $IsUserOperator=$user->checkRole("operator") ;
+            $IsUserOperator=$user->hasRole("perator") ;
             // dd($IsUserManager);
             if (!$IsUserOperator) {
-                $hotline = Hotline::all();
                 $helpline = Helpline::ofStatus($statusSelected)->get();
                 // $helpline = Helpline::whereStatus($statusSelected)->get();
             }
             else {
-                $hotline = Hotline::all();
                 if ($statusSelected!="*") {
                     $helpline = Helpline::where('status', '=', $statusSelected)
                         ->where(function ($query) {
@@ -98,15 +94,13 @@ class HomeController extends Controller
         } else {
             //check user permissions
             $user = auth()->user();
-            $IsUserOperator=$user->checkRole("operator") ;
+            $IsUserOperator=$user->hasRole("Operator") ;
             // dd($IsUserManager);
             if (!$IsUserOperator) {
                 // ...set filters but dont get resuts yet, due to pagination and export conflict
-                $hotline = Hotline::all();
                 $helpline = Helpline::ofStatus("*")->get();
             }
             else {
-                $hotline = Hotline::all();
                 $helpline = Helpline::where('status','!=','Closed')
                 ->where(function ($query) {
                     $query->where('user_assigned',Auth::id())
@@ -123,7 +117,7 @@ class HomeController extends Controller
 
         return view('home')->with([
                     'helpline'=> $helpline,
-                    'hotline' => $hotline,
+                    // 'hotline' => $hotline,
                     'resource_types' => $resource_types,
                     'content_types' => $content_types,
                     'references_by' => $references_by,

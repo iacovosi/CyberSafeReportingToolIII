@@ -15,7 +15,6 @@ use Auth;
 use Lang;
 use App\User;
 use App\GroupPermission;
-use App\Hotline;
 use App\Helpline;
 use App\ResourceType;
 use App\ContentType;
@@ -142,7 +141,7 @@ class HotlineController extends Controller
     public function show($id)
     {
         $actions = ActionTaken::all();
-        $helpline = Helpline::find($id);
+        $helpline = Helpline::findOrFail($id);
         //$helpline = Helpline::where('id', '=', $id)->first();
         $age_groups = AgeGroup::all();
         $genders = Gender::all();
@@ -156,7 +155,7 @@ class HotlineController extends Controller
         $users = User::all();
         $status = Status::all();
 
-        if (auth()->user()->checkRole("operator") && (($helpline->status == 'Closed') || !GroupPermission::usercan('view', 'hotline'))) {
+        if (auth()->user()->hasRole('Operator') && (($helpline->status == 'Closed') )) {
             return redirect()->route('home');
         } else {
 
@@ -249,64 +248,60 @@ class HotlineController extends Controller
      */
     public function showManager()
     {
-        if (GroupPermission::usercan('view', 'managers')) {
-            $id = Input::get('id', false);
-            $actions = ActionTaken::all();
-            $helpline = Helpline::find($id);
-            $age_groups = AgeGroup::all();
-            $genders = Gender::all();
-            $resource_types = ResourceType::all();
-            $content_types = ContentType::all();
-            $report_roles = ReportRole::all();
-            $submission_types = SubmissionType::all();
-            $references_by = ReferenceBy::all();
-            $references_to = ReferenceTo::all();
-            $priorities = Priority::all();
-            $users = User::all();
-            $status = Status::all();
+        $id = Input::get('id', false);
+        $actions = ActionTaken::all();
+        $helpline = Helpline::findOrFail($id);
+        $age_groups = AgeGroup::all();
+        $genders = Gender::all();
+        $resource_types = ResourceType::all();
+        $content_types = ContentType::all();
+        $report_roles = ReportRole::all();
+        $submission_types = SubmissionType::all();
+        $references_by = ReferenceBy::all();
+        $references_to = ReferenceTo::all();
+        $priorities = Priority::all();
+        $users = User::all();
+        $status = Status::all();
 
-            // first operator to open the report is stored
-            if ($helpline->user_opened == NULL) $helpline->user_opened = Auth::id();
+        // first operator to open the report is stored
+        if ($helpline->user_opened == NULL) $helpline->user_opened = Auth::id();
 
-            if ($helpline->status != 'Closed') {
-                $helpline->status = "Opened";
-                $statistics = Statistics::where('tracking_id', '=', $helpline->id)->first();
-            }
-
-            $new_date = date('d/m/Y h:i', strtotime($helpline->call_time));
-            $helpline->call_time = $new_date;
-
-            $referenceidInfo = null;
-            if (!empty($helpline->insident_reference_id)) {
-                $referenceidInfo = Array();
-                $refData = Helpline::find($helpline->insident_reference_id);
-                if (isset($refData) && !empty($refData)) {
-                    $referenceidInfo['is_it_hotline'] = $refData->is_it_hotline;
-                } else {
-                    $helpline->insident_reference_id = null;
-                }
-            }
-
-            return view('hotline.showmanager')->with([
-                'helpline' => $helpline,
-                'resource_types' => $resource_types,
-                'content_types' => $content_types,
-                'age_groups' => $age_groups,
-                'genders' => $genders,
-                'report_roles' => $report_roles,
-                'submission_types' => $submission_types,
-                'references_by' => $references_by,
-                'references_to' => $references_to,
-                'priorities' => $priorities,
-                'status' => $status,
-                'users' => $users,
-                'actionstaken' => $actions,
-                'referenceidInfo' => $referenceidInfo
-            ]);
-        } else {
-            // operator don't have view access
-            return redirect()->back();
+        if ($helpline->status != 'Closed') {
+            $helpline->status = "Opened";
+            $statistics = Statistics::where('tracking_id', '=', $helpline->id)->first();
         }
+
+        $new_date = date('d/m/Y h:i', strtotime($helpline->call_time));
+        $helpline->call_time = $new_date;
+
+        $referenceidInfo = null;
+        if (!empty($helpline->insident_reference_id)) {
+            $referenceidInfo = Array();
+            $refData = Helpline::find($helpline->insident_reference_id);
+            if (isset($refData) && !empty($refData)) {
+                $referenceidInfo['is_it_hotline'] = $refData->is_it_hotline;
+            } else {
+                $helpline->insident_reference_id = null;
+            }
+        }
+
+        return view('hotline.showmanager')->with([
+            'helpline' => $helpline,
+            'resource_types' => $resource_types,
+            'content_types' => $content_types,
+            'age_groups' => $age_groups,
+            'genders' => $genders,
+            'report_roles' => $report_roles,
+            'submission_types' => $submission_types,
+            'references_by' => $references_by,
+            'references_to' => $references_to,
+            'priorities' => $priorities,
+            'status' => $status,
+            'users' => $users,
+            'actionstaken' => $actions,
+            'referenceidInfo' => $referenceidInfo
+        ]);
+
     }
 
 
@@ -319,34 +314,29 @@ class HotlineController extends Controller
     public function editManager(Request $request, Helpline $helpline)
     {
 
-        if (GroupPermission::usercan('edit', 'managers')) {
 
-            $data = $request->all();
+        $data = $request->all();
 
-            $data['manager_comments'] = Crypt::encrypt(trim($data['manager_comments']));
+        $data['manager_comments'] = Crypt::encrypt(trim($data['manager_comments']));
 
-            $helpline = Helpline::find($id);
-            $helpline->manager_comments = (isset($data['manager_comments'])) ? $data['manager_comments'] : null;
-            $helpline->insident_reference_id = (isset($data['insident_reference_id'])) ? $data['insident_reference_id'] : null;
-            $helpline->save();
+        $helpline = Helpline::find($id);
+        $helpline->manager_comments = (isset($data['manager_comments'])) ? $data['manager_comments'] : null;
+        $helpline->insident_reference_id = (isset($data['insident_reference_id'])) ? $data['insident_reference_id'] : null;
+        $helpline->save();
 
-            //$data['manager_comments'] = Crypt::encrypt(($data['manager_comments']);
-            //dd($data);
-            //Helpline::find($helpline->id)->update($data);
+        //$data['manager_comments'] = Crypt::encrypt(($data['manager_comments']);
+        //dd($data);
+        //Helpline::find($helpline->id)->update($data);
 
-            $statistics = Statistics::where('tracking_id', '=', $helpline->id)->first();
+        $statistics = Statistics::where('tracking_id', '=', $helpline->id)->first();
 
 
-            $statistics->manager_comments = (isset($data['manager_comments'])) ? $data['manager_comments'] : null;
-            $statistics->insident_reference_id = (isset($data['insident_reference_id'])) ? $data['insident_reference_id'] : null;
-            //
-            $statistics->save();
+        $statistics->manager_comments = (isset($data['manager_comments'])) ? $data['manager_comments'] : null;
+        $statistics->insident_reference_id = (isset($data['insident_reference_id'])) ? $data['insident_reference_id'] : null;
+        //
+        $statistics->save();
 
-            return redirect()->route('home');
-        } else {
-            // operator don't have edit access
-            return redirect()->back();
-        }
+        return redirect()->route('home');
     }
 
 
@@ -435,7 +425,7 @@ class HotlineController extends Controller
     {
         $UserId = Input::get('UserId');
         $User = User::find($UserId);
-        if (User::find($UserId)->checkRole("admin") && GroupPermission::canuser($UserId, 'delete', 'hotline')) {
+        if (User::find($UserId)->hasRole("Admin") && GroupPermission::canuser($UserId, 'delete', 'hotline')) {
             $helpline = Helpline::find($id);
             $helpline->delete();
         } else {

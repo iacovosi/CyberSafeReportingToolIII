@@ -4,18 +4,15 @@ namespace App;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Zizaco\Entrust\Traits\EntrustUserTrait;
-use App\Role;
 use Illuminate\Support\Facades\Config;
-use Zizaco\Confide\ConfideUser;
-use Zizaco\Confide\ConfideUserInterface;
-use Zizaco\Entrust\HasRole;
 use Illuminate\Support\Facades\Redis;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     use Notifiable;
-    use EntrustUserTrait;
+    use HasRoles;
+
     /**
      * The attributes that are mass assignable.
      *

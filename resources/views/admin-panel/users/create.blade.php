@@ -13,7 +13,7 @@
     </div>
 
     <div class="panel-body">
-      <form id="create-new-user" class="form-horizontal" method="POST" action="/users">
+      <form id="create-new-user" class="form-horizontal" method="POST" action="{{route('users.store')}}">
 
         {{ csrf_field() }}
 
@@ -35,24 +35,15 @@
             <input type="password" class="form-control" id="password" placeholder="Enter password" name="password" value="">
           </div>
         </div>
-        {{--
-        @foreach($roles as $role)
-          <div class="form-check">
-            <label class="form-check-label">
-              <input class="form-check-input" type="checkbox" id="{{ $role->name }}" value="{{ $role->name }}" aria-label="...">{{ $role->display_name }}
-            </label>
-          </div>
-        @endforeach
-        --}}
 
         <div class="form-group">
-          <label for="role" class="col-sm-2 control-label">Role</label>
+          <label for="role" class="col-sm-2 control-label">Roles</label>
           <div class="col-sm-10">
-            <select class="form-control" name="role_id">
+            <select multiple class="form-control" multiple="multiple" name="role_names[]">
               @foreach($roles as $role)
-                  <option value="{{ $role->id }}">{{ $role->name }}</option>
+                  <option  value="{{ $role->name }}">{{ $role->name }}</option>
               @endforeach
-            </select>
+          </select>
           </div>
         </div>
 
