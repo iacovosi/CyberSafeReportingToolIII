@@ -15,6 +15,11 @@
 //     return view('home');
 // });
 
+
+Route::get('/helpline/submitted','HelplineController@submitted');
+Route::get('/hotline/submitted','HotlineController@submitted');
+
+
 Auth::routes();
 
 Route::group(['middleware' => ['web','auth']], function () {
@@ -23,90 +28,191 @@ Route::group(['middleware' => ['web','auth']], function () {
     
     Route::get('/home', 'HomeController@index')->name('home');
     
-    /**
-     * Users resource that provides all the routes under the /users, and
-     * the UserController is responsible for each REST call.
-     *
-     */
-    Route::resource('users','UserController');
 
-    /**
-    * Roles resource that provides all the routes under the /roles, and
-    * the RoleController is responsible for each REST call.
+    // User Routing, protected with middleware
+
+    Route::group(['middleware' => ['permission:delete_users']], function () {
+        Route::delete('/users/{user}','UserController@destroy')->name('users.destroy');
+    });
+
+    Route::group(['middleware' => ['permission:create_users']], function () {
+        Route::get('/users/create','UserController@create')->name('users.create');
+        Route::post('/users','UserController@store')->name('users.store');
+    });
+
+    Route::group(['middleware' => ['permission:edit_users']], function () {
+        Route::put('/users/{user}','UserController@update')->name('users.update');
+    });
+
+
+    Route::group(['middleware' => ['permission:view_users']], function () {
+        Route::get('/users/{user}/edit','UserController@edit')->name('users.edit');
+        Route::get('/users','UserController@index')->name('users.index');
+    });
+
+
+    // allow to edit yourself
+    Route::get('/profile/edit','UserController@self_edit')->name('profile.edit');
+    Route::put('/profile/edit','UserController@self_update')->name('profile.update');
+    
+    /*
+    *   Roles
     */
-    Route::resource('/roles', 'RoleController',[
-        'names' => [
-            'destroy' => 'delete-role',
-            'index' => 'roles',
-            'update' => 'update-role',
-        ]
-    ]);
+    Route::group(['middleware' => ['permission:delete_roles']], function () {
+        Route::delete('/roles/{role}','RoleController@destroy')->name('roles.delete');
+    });
 
-    /**
-    * Permissions resource that provides all the routes under the /permissions, and
-    * the PermissionController is responsible for each REST call.
-     */
-    Route::resource('/permissions', 'PermissionController');
+    Route::group(['middleware' => ['permission:create_roles']], function () {
+        Route::get('/roles/create','RoleController@create');
+        Route::post('/roles','RoleController@store');
+    });
 
-    /**
-    * Group resource that provides all the routes under the /groups, and
-    * the GroupController is responsible for each REST call.
-     */
-    Route::resource('/groups','GroupController');
+    Route::group(['middleware' => ['permission:delete_roles']], function () {
+        Route::put('/roles/{role}','RoleController@update')->name('roles.update');
+    });
+
+    Route::group(['middleware' => ['permission:view_roles']], function () {
+        Route::get('/roles/{role}/edit','RoleController@edit')->name('roles.edit');
+        Route::get('/roles/{role}','RoleController@show')->name('roles.show');
+        Route::get('/roles','RoleController@index')->name('roles.index');
+    });
 
 
     /*
     *   Inputs
     */
-    Route::resource('resourceType','ResourceTypeController');
-    Route::resource('contentType','ContentTypeController');
-    Route::resource('referenceBy','ReferenceByController');
-    Route::resource('referenceTo','ReferenceToController');
+    
+    Route::group(['middleware' => ['permission:delete_content']], function () {
+        Route::delete('/resourceType/{resourceType}','ResourceTypeController@destroy');
+
+        Route::delete('/contentType/{contentType}','ContentTypeController@destroy');
+
+        Route::delete('/referenceBy/{referenceBy}','ReferenceByController@destroy');
+
+        Route::delete('/referenceTo/{referenceTo}','ReferenceToController@destroy');
+    });
+
+    Route::group(['middleware' => ['permission:create_content']], function () {
+        Route::get('/resourceType/create','ResourceTypeController@create')->name('resourceType.create');
+        Route::post('/resourceType','ResourceTypeController@store');
+
+        Route::get('/contentType/create','ContentTypeController@create')->name('contentType.create');
+        Route::post('/contentType','ContentTypeController@store');
+
+        Route::get('/referenceBy/create','ReferenceByController@create')->name('referenceBy.create');
+        Route::post('/referenceBy','ReferenceByController@store');
+
+        Route::get('/referenceTo/create','ReferenceToController@create')->name('referenceTo.create');
+        Route::post('/referenceTo','ReferenceToController@store');
+    });
+
+    Route::group(['middleware' => ['permission:edit_content']], function () {
+        Route::put('/resourceType/{resourceType}','ResourceTypeController@update')->name('resourceType.update');
+
+        Route::put('/contentType/{contentType}','ContentTypeController@update')->name('contentType.update');
+
+        Route::put('/referenceBy/{referenceBy}','ReferenceByController@update')->name('referenceBy.update');
+
+        Route::put('/referenceTo/{referenceTo}','ReferenceToController@update')->name('referenceTo.update');
+    });
+
+
+    Route::group(['middleware' => ['permission:view_content']], function () {
+        Route::get('/resourceType/{resourceType}/edit','ResourceTypeController@edit')->name('resourceType.edit');
+        Route::get('/resourceType/{resourceType}','ResourceTypeController@show')->name('resourceType.show');
+        Route::get('/resourceType','ResourceTypeController@index')->name('resourceType.index');
+
+        Route::get('/contentType/{contentType}/edit','ContentTypeController@edit')->name('contentType.edit');
+        Route::get('/contentType/{contentType}','ContentTypeController@show')->name('contentType.show');
+        Route::get('/contentType','ContentTypeController@index')->name('contentType.index');
+
+        Route::get('/referenceBy/{referenceBy}/edit','ReferenceByController@edit')->name('referenceBy.edit');
+        Route::get('/referenceBy/{referenceBy}','ReferenceByController@show')->name('referenceBy.show');
+        Route::get('/referenceBy','ReferenceByController@index')->name('referenceBy.index');
+
+        Route::get('/referenceTo/{referenceTo}/edit','ReferenceToController@edit')->name('referenceTo.edit');
+        Route::get('/referenceTo/{referenceTo}','ReferenceToController@show')->name('referenceTo.show');
+        Route::get('/referenceTo','ReferenceToController@index')->name('referenceTo.index');
+    });
+
+
+    /*
+    * Manager
+    */
+    Route::group(['middleware' => ['role:Manager']], function () {
+        Route::get('/helpline/showManager', [ 'as' => 'show-helpline-manager', 'uses' => 'HelplineController@showManager']);
+        Route::get('/helpline/editManager', [ 'as' => 'edit-helpline-manager', 'uses' => 'HelplineController@editManager']);
+        Route::get('/hotline/showManager', [ 'as' => 'hotline.show.manage', 'uses' => 'HotlineController@showManager']);
+        Route::get('/hotline/editManager', [ 'as' => 'edit-hotline-manager', 'uses' => 'HelplineController@editManager']);
+    });
+
+
+    Route::get('/hotline/changeFromHotline', [ 'as' => 'hotline.move-helpline', 'uses' => 'HotlineController@changeFromHotline']);
+    Route::get('/helpline/changeFromHelpLine', [ 'as' => 'helpline.move-hotline', 'uses' => 'HelplineController@changeFromHelpLine']);
+  
+    
+    /*
+    * Helpline
+    */
+
+    Route::group(['middleware' => ['permission:create_helpline']], function () {
+        Route::get('/helpline/create','HelplineController@create')->name('create-helpline'); // form
+    });
+
+    Route::group(['middleware' => ['permission:view_helpline']], function () {
+        Route::get('/helpline/{helpline}','HelplineController@show')->name('show-helpline'); // invastigation form
+        Route::get('/helpline','HelplineController@index'); // show all helpline
+    });
+
+
+    Route::group(['middleware' => ['permission:delete_helpline']], function () {
+        Route::delete('/helpline/{helpline}','HelplineController@destroy'); // delete report
+    });  
+
+
+    /*
+    * Hotline
+    */
+
+    Route::group(['middleware' => ['permission:create_hotline']], function () {
+        Route::get('/hotline/create','HotlineController@create')->name('hotline.create'); // form
+    });
+
+    Route::group(['middleware' => ['permission:view_hotline']], function () {
+        Route::get('/hotline/{hotline}','HotlineController@show')->name('hotline.show'); // invastigation form
+        Route::get('/hotline','HotlineController@index')->name('hotline'); // show all hotline
+    });
+
+    Route::group(['middleware' => ['permission:delete_hotline']], function () {
+        Route::delete('/hotline/{hotline}','HotlineController@destroy')->name('delete-hotline'); // delete report
+    });
+
+
+    /*
+    * Invastigation, this is used for both helpline and hotline.
+    */
+    Route::group(['middleware' => ['permission:edit_helpline, edit_hotline']], function () {
+        Route::get('/helpline/{helpline}/edit','HelplineController@edit')->name('edit-helpline'); // edit invastigation 
+    });
 
     /*
     *   Statistics
     */
-    Route::resource('statistics','StatisticsController');
-    
+    Route::group(['middleware' => ['permission:view_statistics']], function () {
+        Route::resource('statistics','StatisticsController');
+    });
+
     /*
-    | Actions
+    * Actions, depricated?
     */
-    Route::resource('actions','ActionTakenController');
+    // Route::resource('actions','ActionTakenController');
 
-    Route::get('/helpline/showManager', [ 'as' => 'show-helpline-manager', 'uses' => 'HelplineController@showManager']);
-    Route::get('/helpline/editManager', [ 'as' => 'edit-helpline-manager', 'uses' => 'HelplineController@editManager']);
-    Route::get('/hotline/showManager', [ 'as' => 'hotline.show.manage', 'uses' => 'HotlineController@showManager']);
-    Route::get('/hotline/editManager', [ 'as' => 'edit-hotline-manager', 'uses' => 'HelplineController@editManager']);
-
-    Route::get('/hotline/changeFromHotline', [ 'as' => 'hotline.move-helpline', 'uses' => 'HotlineController@changeFromHotline']);
-    Route::get('/helpline/changeFromHelpLine', [ 'as' => 'helpline.move-hotline', 'uses' => 'HelplineController@changeFromHelpLine']);
 });
 
-/*
-*   Routes from this point will not use the auth middleware
-*   and will not need to login to access them
-*/
 
-Route::get('/helpline/submitted','HelplineController@submitted');
-Route::get('/hotline/submitted','HotlineController@submitted');
+// both loggedin users & loggedout can create a resource, this is used by hotline & helpline
+Route::post('/helpline','HelplineController@store')->name('save-helpline'); // create form post request.
 
-
-Route::resource('/hotline','HotlineController',[
-    'names' => [
-        'index' => 'hotline',
-        'destroy' => 'delete-hotline',
-    ]
-]);
-
-Route::resource('/helpline','HelplineController',[
-    'names' => [
-        'create' => 'create-helpline',
-        'store' => 'save-helpline',
-        'destroy' => 'delete-helpline',
-        'show' => 'show-helpline',
-        'edit' => 'edit-helpline',
-    ]
-]);
 
 Route::get('/helpline/{loc}/form/','HelplineController@index');
 Route::get('/hotline/{loc}/form/','HotlineController@index');
@@ -127,6 +233,7 @@ Route::get('/setlang/{lang}', function($lang){
     }
 
 });
+
 /*
   Chatrooms
 */

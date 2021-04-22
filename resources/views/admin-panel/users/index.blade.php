@@ -50,16 +50,16 @@
                    --}}
                    </td>
                    <td>{{$user->email}}</td>
-                   @if( isset($user->roles) )
                      <td>
-                       @foreach($user->roles as $role)
-                         {{ $role->display_name }}
+                       @foreach($roles as $role)
+                          @if($user->hasRole($role->name))
+                            {{ $role->name }},
+                          @endif
                        @endforeach
                      </td>
-                   @endif
                    <td style='white-space: nowrap'>
                      {{--  To delete an item, a form needs to be created --}}
-                  <form method="POST" action="/users/{{$user->id}}">
+                  <form method="POST" action="{{route('users.destroy', $user->id)}}">
                     {{--  Other actions are included in the form for styling purposes  --}}
                     @if(GroupPermission::usercan('edit','users'))                                        
                       <a href="{{route('users.edit', $user->id)}}" class="btn btn-default">

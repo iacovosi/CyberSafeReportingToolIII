@@ -40,7 +40,7 @@ class MessageController extends Controller
 
         if($request->ajax()){
 
-             Message::create(['chat_id' => $request->chat_id , 'sender' => $request->username , 'message' => $request->message ]);
+            Message::create(['chat_id' => $request->chat_id , 'sender' => $request->username , 'message' => $request->message ]);
 
         }
 

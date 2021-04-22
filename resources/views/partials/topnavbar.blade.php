@@ -47,9 +47,6 @@
                         <li><a href="{{ url('/roles')}}">Roles</a></li>
                         @endif
 
-                        @if(GroupPermission::usercan('view','permissions'))
-                        <li><a href="{{ url('/permissions')}}">Permissions</a></li>
-                        @endif
                     </ul>
                 </li>
                 @endif
@@ -94,7 +91,7 @@
                         </a>
                         <ul class="dropdown-menu" role="menu">
                             <li>
-                                <a href="{{route('users.edit', Auth::user()->id)}}">
+                                <a href="{{route('profile.edit')}}">
                                     <i class="fa fa-user" aria-hidden="true"></i> User profile
                                 </a>
                             </li>

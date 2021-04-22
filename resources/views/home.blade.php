@@ -19,7 +19,7 @@
                                 <option value="*" @if (empty(old('filterStatus')) || (old('filterStatus')=='*')))
                                         selected @endif>New & Opened
                                 </option>
-                                @if (auth()->user()->checkRole("operator"))
+                                @if (auth()->user()->hasRole("operator"))
                                     @foreach($status as $astatus)
                                         @if ($astatus->name != "Closed")
                                             <option value="{{ $astatus->name }}"
@@ -149,13 +149,13 @@
                                                     </td>
                                                     <td>
                                                         <?php
-                                                        $usercomments = strip_tags(Crypt::decrypt($report->comments));
+                                                            $usercomments = strip_tags(Crypt::decrypt($report->comments));
 
-                                                        if (strlen($usercomments) > 20) {
-                                                            $stringCut = substr($usercomments, 0, 20);
-                                                            $usercomments = substr($stringCut, 0, strrpos($stringCut, ' ')) . '...';
-                                                        }
-                                                        echo $usercomments;
+                                                            if (strlen($usercomments) > 20) {
+                                                                $stringCut = substr($usercomments, 0, 20);
+                                                                $usercomments = substr($stringCut, 0, strrpos($stringCut, ' ')) . '...';
+                                                            }
+                                                            echo $usercomments;
                                                         ?>
                                                     </td>
                                                     <td>
@@ -165,11 +165,13 @@
                                                         {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $report->updated_at)->diffForHumans()}}
                                                     </td>
                                                     <td class="">
-                                                        @if(GroupPermission::usercan('view','helpline') &&  GroupPermission::usercan('view','managers'))
+                                                        @if(GroupPermission::usercan('view','helpline'))
+                                                        @role('Manager')
                                                             <a href="{{ route('show-helpline-manager',['id' => $report->id]) }}"
                                                                class="btn btn-sm btn-default">
                                                                 <i class="fa fa-eye" aria-hidden="true"></i> View
                                                             </a>
+                                                        @endrole
                                                         @endif
                                                         @if(GroupPermission::usercan('edit','helpline'))
                                                             <a href="{{ route('show-helpline',['id' => $report->id]) }}"
@@ -307,11 +309,13 @@
                                                     <td class="">
                                                         {{-- @if(GroupPermission::usercan('view','hotline')) --}}
                                                         {{-- @endif --}}
-                                                        @if(GroupPermission::usercan('view','hotline') &&  GroupPermission::usercan('view','managers'))
+                                                        @if(GroupPermission::usercan('view','hotline'))
+                                                        @role('Manager')
                                                             <a href="{{ route('hotline.show.manage',['id' => $report->id]) }}"
                                                                class="btn btn-sm btn-default">
                                                                 <i class="fa fa-eye" aria-hidden="true"></i> View
                                                             </a>
+                                                        @endrole
                                                         @endif
                                                         @if(GroupPermission::usercan('edit','hotline'))
                                                             <a href="{{ route('hotline.show',['id' => $report->id]) }}"

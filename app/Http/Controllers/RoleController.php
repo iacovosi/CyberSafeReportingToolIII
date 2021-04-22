@@ -3,22 +3,59 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Role;
 use Response;
 use Validator;
 
+use App\GroupPermissions;
+use App\Group;
+
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+use Session;
+
 class RoleController extends Controller
 {
+    /*
+    * This function returns all the permissions available in this project.
+    *
+    * The ideas is based on view, edit, create, delete.
+    */  
+    public function all_permissions()
+    {
+        $groups = Group::all();
+        $permissions = ['view', 'edit', 'create', 'delete'];
+
+        $all_permissions = array();
+
+        foreach($groups as $group){
+            foreach($permissions as $permission){
+                array_push($all_permissions, $permission.'_'.$group->name);
+            }
+        }
+
+        return $all_permissions;
+    }
+
+
+    public function remove_all_permissions(Role $role)
+    {
+        $all_permissions = $this->all_permissions();
+        
+        foreach($all_permissions as $permission){
+            $role->revokePermissionTo($permission);
+        }
+    }
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
-        //
+    {     
         $roles = Role::all();
-        return view('admin-panel.roles.index', ['roles' => $roles]);
+        $groups = Group::all();
+        return view('admin-panel.roles.index', ['roles' => $roles, 'groups'=> $groups, 'permissions' => ['view', 'edit', 'create', 'delete']]);
     }
 
     /**
@@ -27,9 +64,7 @@ class RoleController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create()
-    {
-        //
-    }
+    {}
 
     /**
      * Store a newly created resource in storage.
@@ -39,15 +74,10 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
-        //
-        if ($request->ajax()) {
-            $role = new Role();
-            $role->name = $request->name;
-            $role->display_name = $request->display_name;
-            $role->description = $request->description;
-            $role->save();
+        $role = Role::create(['name' => $request->name]);
 
-            return Response::json($request);
+        foreach ($request->except('_token', 'name') as $key => $value) {
+            $role->givePermissionTo($key);
         }
     }
 
@@ -57,11 +87,9 @@ class RoleController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Role $role)
     {
-        //
-        $role = Role::find($id);
-        return view('admin-panel.roles.edit', ['role' => $role]);
+    
     }
 
     /**
@@ -70,10 +98,10 @@ class RoleController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Request $request, $id)
+    public function edit(Request $request, Role $role)
     {
-        //
-        return request()->headers->get('referer');
+        $groups = Group::all();
+        return view('admin-panel.roles.edit', ['role' => $role, 'groups'=> $groups, 'permissions' => ['view', 'edit', 'create', 'delete']]);
     }
 
     /**
@@ -83,35 +111,22 @@ class RoleController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Role $role)
     {
-        /**
-         * Validate the request if has the necessary fields
-         * name and display name otherwise redirect
-         * back with errors.
-         */
-        $rules = [
-            'name' => 'required',
-            'display_name' => 'required',
-        ];
-        //Permform the validation check with the custom rules above
+        $request->validate([
+            'name' => 'required|unique:roles,name,'.$role->id,
+        ]);
 
-        $validator = Validator::make($request->all(), $rules);
-        //If it fails turn back with the error messages.
-        if ($validator->fails()) {
-            return Response::json(
-                $validator->messages(), 500);
+        $role->name = $request->name;
+        $role->save();
+        $this->remove_all_permissions($role);
+
+        foreach ($request->except('_token', 'name', '_method') as $key => $value) {
+            $role->givePermissionTo($key);
         }
-        //The validation check has succeded and the values are going to be
-        //Updated and saved.
-        else {
-            $role = Role::find($id);
-            $role->name = $request->name;
-            $role->display_name = $request->display_name;
-            $role->description = $request->description;
-            $role->save();
-            return Response::json($request);
-        }
+
+        Session::flash('message', 'Successfully updated role!');        
+        return redirect('/roles');
     }
 
     /**
@@ -120,17 +135,9 @@ class RoleController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, $id)
+    public function destroy(Request $request, Role $role)
     {
-        if ($request->ajax()) {
-            $role = Role::find($id);
-            $role->delete();
-
-            return Response::json();
-        } else {
-            $role = Role::find($id);
-            $role->delete();
-            return redirect()->back();
-        }
+        $role->delete();
+        
     }
 }

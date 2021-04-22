@@ -60,7 +60,7 @@
 
             <div class="panel panel-default">
                 <div class="panel-heading clearfix">
-                    <h4 class="pull-left"><i class="fa fa-file-text-o"></i>  Reports Statistics (Total of all Records {{ count($statistics)  }})</h4> <!-- $statistics->total() -->
+                    {{-- <h4 class="pull-left"><i class="fa fa-file-text-o"></i>  Reports Statistics (Total of all Records {{ count($statistics)  }})</h4> <!-- $statistics->total() --> --}}
                 </div>
 
                 <div class="panel-body">
