@@ -160,7 +160,7 @@ class HelplineController extends Controller
                 $rules['email'] = 'required_without:phone';
                 $rules['phone'] = 'required_without:email';
             }
-            $rules['g-recaptcha-response'] = 'required | recaptcha';
+            // $rules['g-recaptcha-response'] = 'required | recaptcha';
 
             // Generate a new validator instance
             $validator = Validator::make($request->all(), $rules, Lang::get('validation.custom.entry', array(), Session::get('lang')));
@@ -193,7 +193,9 @@ class HelplineController extends Controller
         $id = Helpline::create($data)->id;
         $helpline = Helpline::find($id);
         $helpline->insident_reference_id = (isset($data['insident_reference_id'])) ? (int)$data['insident_reference_id'] : null;
-        $helpline->call_time = (isset($data['call_time'])) ? $data['call_time'] : null;
+        if (isset($data['call_time'])){
+            $helpline->call_time = $data['call_time'];
+        }
         $helpline->update($data);
 
         $statistics = new Statistics();
@@ -259,7 +261,7 @@ class HelplineController extends Controller
         $users = User::all();
         $status = Status::all();
 
-        if (auth()->user()->hasRole("Operator") && (($helpline->status == 'Closed') )) {
+        if (auth()->user()->hasRole("operator") && (($helpline->status == 'Closed') )) {
             return redirect()->route('home');
         } else {
 
@@ -625,7 +627,7 @@ class HelplineController extends Controller
     public function destroy($id)
     {
         $UserId = Input::get('UserId');
-        if (User::find($UserId)->hasRole("Admin") && GroupPermission::canuser($UserId, 'delete', 'helpline')) {
+        if (User::find($UserId)->hasRole("admin") && GroupPermission::canuser($UserId, 'delete', 'helpline')) {
             $helpline = Helpline::find($id);
             $helpline->delete();
         } else {
@@ -652,7 +654,7 @@ class HelplineController extends Controller
         $users = User::all();
         $operators = Array();
         foreach ($users as $user) {
-            if ($user->hasRole('Operator')) {
+            if ($user->hasRole('operator')) {
                 $operator = Array();
                 $operator['email'] = $user->email;
                 $operator['name'] = $user->name;
