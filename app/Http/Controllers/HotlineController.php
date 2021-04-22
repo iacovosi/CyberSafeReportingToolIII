@@ -155,7 +155,7 @@ class HotlineController extends Controller
         $users = User::all();
         $status = Status::all();
 
-        if (auth()->user()->hasRole('Operator') && (($helpline->status == 'Closed') )) {
+        if (auth()->user()->hasRole('operator') && (($helpline->status == 'Closed') )) {
             return redirect()->route('home');
         } else {
 
@@ -425,7 +425,7 @@ class HotlineController extends Controller
     {
         $UserId = Input::get('UserId');
         $User = User::find($UserId);
-        if (User::find($UserId)->hasRole("Admin") && GroupPermission::canuser($UserId, 'delete', 'hotline')) {
+        if (User::find($UserId)->hasRole("admin") && GroupPermission::canuser($UserId, 'delete', 'hotline')) {
             $helpline = Helpline::find($id);
             $helpline->delete();
         } else {

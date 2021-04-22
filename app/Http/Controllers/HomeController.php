@@ -58,7 +58,7 @@ class HomeController extends Controller
             // ...set filters but dont get resuts yet, due to pagination and export conflict
             //check user permissions
             $user = auth()->user();
-            $IsUserOperator=$user->hasRole("perator") ;
+            $IsUserOperator=$user->hasRole("operator") ;
             // dd($IsUserManager);
             if (!$IsUserOperator) {
                 $helpline = Helpline::ofStatus($statusSelected)->get();
@@ -94,7 +94,7 @@ class HomeController extends Controller
         } else {
             //check user permissions
             $user = auth()->user();
-            $IsUserOperator=$user->hasRole("Operator") ;
+            $IsUserOperator=$user->hasRole("operator") ;
             // dd($IsUserManager);
             if (!$IsUserOperator) {
                 // ...set filters but dont get resuts yet, due to pagination and export conflict

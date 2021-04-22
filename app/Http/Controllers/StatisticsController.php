@@ -118,7 +118,7 @@ class StatisticsController extends Controller
 
         //check user permissions
         $user = auth()->user();
-        $IsUserOnlyHelpline=$user->hasRole("Ηelpline") ;
+        $IsUserOnlyHelpline=$user->hasRole("helpline") ;
 
         
         //dd($IsUserOnlyHelpline);

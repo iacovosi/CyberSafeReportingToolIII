@@ -256,7 +256,7 @@
                                                 <option value selected>No one</option>
                                             @endif
                                             @foreach($users as $user)
-                                                @if($user->hasRole('Operator'))
+                                                @if($user->hasRole('operator'))
                                                     <option value="{{ $user->id }}"
                                                             @if ($helpline->user_assigned == $user->id) selected @endif>{{ $user->name }}</option>
                                                 @endif
