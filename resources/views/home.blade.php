@@ -166,7 +166,7 @@
                                                     </td>
                                                     <td class="">
                                                         @if(GroupPermission::usercan('view','helpline'))
-                                                        @role('Manager')
+                                                        @role('manager')
                                                             <a href="{{ route('show-helpline-manager',['id' => $report->id]) }}"
                                                                class="btn btn-sm btn-default">
                                                                 <i class="fa fa-eye" aria-hidden="true"></i> View
@@ -310,7 +310,7 @@
                                                         {{-- @if(GroupPermission::usercan('view','hotline')) --}}
                                                         {{-- @endif --}}
                                                         @if(GroupPermission::usercan('view','hotline'))
-                                                        @role('Manager')
+                                                        @role('manager')
                                                             <a href="{{ route('hotline.show.manage',['id' => $report->id]) }}"
                                                                class="btn btn-sm btn-default">
                                                                 <i class="fa fa-eye" aria-hidden="true"></i> View
