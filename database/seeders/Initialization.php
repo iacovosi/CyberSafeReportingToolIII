@@ -31,7 +31,8 @@ class Initialization extends Seeder
             ['id' => 3, 'name' => 'operator', 'guard_name' => 'web', 'created_at' => new DateTime, 'updated_at' => new DateTime],
             ['id' => 4, 'name' => 'helpline', 'guard_name' => 'web', 'created_at' => new DateTime, 'updated_at' => new DateTime],
             ['id' => 5, 'name' => 'support', 'guard_name' => 'web', 'created_at' => new DateTime, 'updated_at' => new DateTime],
-            ['id' => 6, 'name' => 'hotline', 'guard_name' => 'web', 'created_at' => new DateTime, 'updated_at' => new DateTime],            
+            ['id' => 6, 'name' => 'hotline', 'guard_name' => 'web', 'created_at' => new DateTime, 'updated_at' => new DateTime], 
+            ['id' => 7, 'name' => 'fakenews', 'guard_name' => 'web', 'created_at' => new DateTime, 'updated_at' => new DateTime],            
         );
         DB::table('roles')->insert($roles);
 
@@ -305,6 +306,38 @@ class Initialization extends Seeder
                 'guard_name' => 'web',
                 'created_at' => new DateTime,
                 'updated_at' => new DateTime,
+            ),
+            32 => 
+            array (
+                'id' => 33,
+                'name' => 'view_fakenews',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            33 => 
+            array (
+                'id' => 34,
+                'name' => 'edit_fakenews',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            34 => 
+            array (
+                'id' => 35,
+                'name' => 'create_fakenews',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            35 => 
+            array (
+                'id' => 36,
+                'name' => 'delete_fakenews',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
             )
         ));
 
@@ -342,6 +375,10 @@ class Initialization extends Seeder
             ['permission_id' => 30, 'role_id' => 1],
             ['permission_id' => 31, 'role_id' => 1],
             ['permission_id' => 32, 'role_id' => 1],
+            ['permission_id' => 33, 'role_id' => 1],
+            ['permission_id' => 34, 'role_id' => 1],
+            ['permission_id' => 35, 'role_id' => 1],
+            ['permission_id' => 36, 'role_id' => 1],
         );
         DB::table('role_has_permissions')->insert($role_has_permissions);
 
@@ -355,6 +392,7 @@ class Initialization extends Seeder
             ['id' => 6, 'name' => 'hotline','created_at'=> new DateTime, 'updated_at' =>new DateTime],
             ['id' => 7, 'name' => 'statistics','created_at'=> new DateTime, 'updated_at' =>new DateTime],
             ['id' => 8, 'name' => 'chat','created_at'=> new DateTime, 'updated_at' =>new DateTime],
+            ['id' => 9, 'name' => 'fakenews','created_at'=> new DateTime, 'updated_at' =>new DateTime],
         );
         DB::table('groups')->insert($groups);
 

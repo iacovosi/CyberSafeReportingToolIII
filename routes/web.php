@@ -187,6 +187,24 @@ Route::group(['middleware' => ['web','auth']], function () {
         Route::delete('/hotline/{hotline}','HotlineController@destroy')->name('delete-hotline'); // delete report
     });
 
+    /*
+    * Fakenews
+    */
+
+    Route::group(['middleware' => ['permission:create_fakenews']], function () {
+        Route::get('/fakenews/create','FakenewsController@create')->name('create.fakenews'); // form
+    });
+
+    Route::group(['middleware' => ['permission:view_fakenews']], function () {
+        Route::get('/fakenews/{fakenews}','FakenewsController@show')->name('show.fakenews'); // invastigation form
+        Route::get('/fakenews','FakenewsController@index'); // show all helpline
+    });
+
+
+    Route::group(['middleware' => ['permission:delete_helpline']], function () {
+        Route::delete('/fakenews/{fakenews}','FakenewsController@destroy')->name('delete.fakenews'); // delete report
+    });  
+
 
     /*
     * Investigation, this is used for both helpline and hotline.
