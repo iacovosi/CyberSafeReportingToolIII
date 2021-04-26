@@ -543,5 +543,13 @@ class Initialization extends Seeder
             ['id' => 2 , 'name' => 'female', 'display_name_gr' => 'Θήλυ', 'display_name_en' => 'Female', 'created_at' => new DateTime, 'updated_at' =>new DateTime],
         );
         DB::table('gender')->insert($gender);
+
+        DB::table('fakenews_types')->delete();
+        $fakenews_types = array(
+            ['id' => 1, 'Hoax' => 'admin', 'typename_en' => 'Hoax','typename_gr' => 'Απάτη','created_at' => new DateTime, 'updated_at' => new DateTime],
+            ['id' => 1, 'Fake_News' => 'admin', 'typename_en' => 'Fake News','typename_gr' => 'Ψευδές ειδήσεις','created_at' => new DateTime, 'updated_at' => new DateTime],
+            ['id' => 1, 'Real_News' => 'admin', 'typename_en' => 'Real News','typename_gr' => 'Πραγματικές ειδήσεις','created_at' => new DateTime, 'updated_at' => new DateTime]
+        );
+        DB::table('fakenews_types')->insert($users);
     }
 }
