@@ -6,7 +6,7 @@
         <!-------------->
         <!-- FILTERS  -->
         <!-------------->
-        @if(GroupPermission::usercan('view','helpline') || GroupPermission::usercan('view','hotline') || GroupPermission::usercan('view','fakenews')  )
+        @if(GroupPermission::usercan('view','helpline') || GroupPermission::usercan('view','hotline') )
             <div class="panel panel-default">
                 <div class="panel-body">
                     <form action="{{ route('home') }} " class="form-inline results-filters">
@@ -206,7 +206,7 @@
                     <!-- /.panel -->
                 @endif
 
-                <!---------------------->
+            <!---------------------->
                 <!-- HOTLINE REPORTS  -->
                 <!---------------------->
                 @if(GroupPermission::usercan('view','hotline'))
@@ -351,163 +351,6 @@
 
             </div>
         </div>
-
-                                                       
-                <!---------------------->
-                <!-- FAKENEWS REPORTS -->
-                <!---------------------->
-                @if(GroupPermission::usercan('view','fakenews'))
-                    <div class="panel panel-default">
-
-                        <div class="panel-heading clearfix">
-                            <h4 class="pull-left"><i class="fa fa-file-text-o"></i> Fakenews Reports
-                                ({{ $helpline->where('is_it_fakenews','=','true')->count() }})</h4>
-                            <div class="pull-right form-actions">
-                                @if(GroupPermission::usercan('create','fakenews'))
-                                    <a href="{{ route('create.fakenews') }}" class="btn btn-primary"><i
-                                                class="fa fa-plus" aria-hidden="true"></i> New</a>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="panel-body">
-                            <div class="table-responsive">
-                                <table class="table table-condensed table-hover" id="" style="">
-                                    <thead>
-                                    <tr>
-                                        <th valign="middle">#</th>
-                                        <th>ID</th>
-                                        <th>Operator(s)</th>
-                                        {{-- <th>Submission Type</th> --}}
-                                        <th>Resource Type</th>
-                                        <th>Content Type</th>
-                                        <th>User Comments</th>
-                                        <th>Status</th>
-                                        <th>Last Updated</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    @if($helpline)
-                                        <?php $counter = 1; ?>
-                                        @foreach ($helpline as $indexKey => $report)
-                                            @if(isset($report->is_it_fakenews) && $report->is_it_fakenews == "true")
-                                                <tr class="{{ $report->priority }}-priority">
-                                                    <td class="col1">
-                                                        {{ $counter++ }}
-                                                    </td>
-                                                    <td>
-                                                        {{$report->id}}
-                                                    </td>
-                                                    <td>
-                                                        @if(isset($report->firstResponder))
-                                                            <?php
-                                                            $words = explode(" ", $report->firstResponder->name);
-                                                            $firstname = $words[0];
-                                                            ?>
-                                                            <span class="top"
-                                                                  title="{{$report->firstResponder->name}}">{{$firstname}}</span>
-                                                        @endif
-                                                        @if(isset($report->lastResponder))
-                                                            <?php
-                                                            $words = explode(" ", $report->lastResponder->name);
-                                                            $firstname = $words[0];
-                                                            ?>
-                                                            <span class="top" title="{{$report->lastResponder->name}}"> -> {{$firstname}}</span>
-                                                        @endif
-														@if($report->forwarded=="true")
-															(Forwarded from Helpline)
-														@endif														
-                                                    </td>
-                                                    {{--
-                                                    <td>
-                                                        @foreach ($submission_types as $submission_type)
-                                                            @if($report->submission_type == $submission_type->name) {{$submission_type->display_name_en}} @endif
-                                                        @endforeach
-                                                    </td>
-                                                    --}}
-                                                    <td>
-                                                        @foreach ($resource_types as $resource_type)
-                                                            @if($report->resource_type == $resource_type->name) {{$resource_type->display_name_en}} @endif
-                                                        @endforeach
-                                                    </td>
-                                                    <td>
-                                                        @foreach ($content_types as $content_type)
-                                                            @if($report->content_type == $content_type->name) {{$content_type->display_name_en}} @endif
-                                                        @endforeach
-                                                    </td>
-                                                    <td>
-                                                        <?php
-                                                        $usercomments = strip_tags(Crypt::decrypt($report->comments));
-
-                                                        if (strlen($usercomments) > 20) {
-                                                            $stringCut = substr($usercomments, 0, 20);
-                                                            $usercomments = substr($stringCut, 0, strrpos($stringCut, ' ')) . '...';
-                                                        }
-                                                        echo $usercomments;
-                                                        ?>
-                                                    </td>
-                                                    <td>
-                                                        {{ $report->status}}
-                                                    </td>
-                                                    <td>
-                                                        {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $report->updated_at)->diffForHumans()}}
-                                                    </td>
-                                                    <td class="">
-                                                        {{-- @if(GroupPermission::usercan('view','fakenews')) --}}
-                                                        {{-- @endif --}}
-                                                        @if(GroupPermission::usercan('view','fakenews'))
-                                                        @role('Manager')
-                                                            <a href="{{ route('hotline.show.manage',['id' => $report->id]) }}"
-                                                               class="btn btn-sm btn-default">
-                                                                <i class="fa fa-eye" aria-hidden="true"></i> View
-                                                            </a>
-                                                        @endrole
-                                                        @endif
-                                                        @if(GroupPermission::usercan('edit','fakenews'))
-                                                            <a href="{{ route('hotline.show',['id' => $report->id]) }}"
-                                                               class="btn btn-sm btn-default">
-                                                                <i class="fa fa-eye" aria-hidden="true"></i> Investigate
-                                                            </a>
-                                                        @endif
-                                                        {{-- @if($report->status=="Closed") --}}
-                                                        @if(GroupPermission::usercan('delete','fakenews'))
-                                                            <button class="btn btn-danger" id="delete-this"
-                                                                    data-target="hotline" data-id="{{ $report->id }}"
-                                                                    data-place="home" data-content="{{Auth::user()->id}}">
-                                                                <span class="glyphicon glyphicon-trash"></span>Delete
-                                                            </button>
-                                                        @endif
-                                                        {{-- @endif --}}
-                                                    </td>
-                                                </tr>
-                                            @endif
-                                        @endforeach
-                                    @else
-                                        <p> Nothing yet</p>
-                                    @endif
-                                    </tbody>
-                                </table>
-                            </div>
-                            <!-- /.table-responsive -->
-                        </div>
-                        <!-- /.panel-body -->
-                    </div>
-                    <!-- /.panel -->
-            @endif <!-- end if GroupPermission::usercan('view','hotline') -->
-
-            </div>
-        </div>
-
-
-
-
-        
-
-
-
-
-
 
 
         @endsection
