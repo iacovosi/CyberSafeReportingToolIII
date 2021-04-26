@@ -16,6 +16,7 @@ class CreateHelplinesTable extends Migration
         Schema::create('helplines', function (Blueprint $table) {
             $table->increments('id');
             $table->string('is_it_hotline')->default('false');
+            $table->string('is_it_fakenews')->default('false');
             $table->string('forwarded')->default('false');
             $table->string('submission_type');
             // user profile
