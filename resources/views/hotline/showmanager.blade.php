@@ -18,7 +18,7 @@
                                     to HELPLINE</a>
                                 <a href="" class="btn btn-default" data-toggle="modal" data-target="#myModal"><i
                                             class="fa fa-times" aria-hidden="true"></i> Cancel</a>
-                                @role('Manager')
+                                @role('manager')
                                     {{--  <input type="submit" name="submit" value="Save & Exit" form="submit-form" class="btn btn-primary">  --}}
                                     <button type="submit" class="btn btn-primary">
                                         <i class="fa fa-floppy-o" aria-hidden="true"></i> Save & Exit
