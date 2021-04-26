@@ -139,7 +139,7 @@ Route::group(['middleware' => ['web','auth']], function () {
     /*
     * Manager
     */
-    Route::group(['middleware' => ['role:Manager']], function () {
+    Route::group(['middleware' => ['role:manager']], function () {
         Route::get('/helpline/showManager', [ 'as' => 'show-helpline-manager', 'uses' => 'HelplineController@showManager']);
         Route::get('/helpline/editManager', [ 'as' => 'edit-helpline-manager', 'uses' => 'HelplineController@editManager']);
         Route::get('/hotline/showManager', [ 'as' => 'hotline.show.manage', 'uses' => 'HotlineController@showManager']);
