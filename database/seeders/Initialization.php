@@ -544,12 +544,12 @@ class Initialization extends Seeder
         );
         DB::table('gender')->insert($gender);
 
-        DB::table('fakenews_types')->delete();
+        DB::table('fakenews_type')->delete();
         $fakenews_types = array(
-            ['id' => 1, 'Hoax' => 'admin', 'typename_en' => 'Hoax','typename_gr' => 'Απάτη','created_at' => new DateTime, 'updated_at' => new DateTime],
-            ['id' => 1, 'Fake_News' => 'admin', 'typename_en' => 'Fake News','typename_gr' => 'Ψευδές ειδήσεις','created_at' => new DateTime, 'updated_at' => new DateTime],
-            ['id' => 1, 'Real_News' => 'admin', 'typename_en' => 'Real News','typename_gr' => 'Πραγματικές ειδήσεις','created_at' => new DateTime, 'updated_at' => new DateTime]
+            ['id' => 1, 'typename'=> 'Hoax', 'typename_en' => 'Hoax','typename_gr' => 'Απάτη','created_at' => new DateTime, 'updated_at' => new DateTime],
+            ['id' => 2, 'typename'=> 'Fake_News', 'typename_en' => 'Fake News','typename_gr' => 'Ψευδές ειδήσεις','created_at' => new DateTime, 'updated_at' => new DateTime],
+            ['id' => 3, 'typename'=> 'Real_News' , 'typename_en' => 'Real News','typename_gr' => 'Πραγματικές ειδήσεις','created_at' => new DateTime, 'updated_at' => new DateTime]
         );
-        DB::table('fakenews_types')->insert($users);
+        DB::table('fakenews_type')->insert($fakenews_types);
     }
 }

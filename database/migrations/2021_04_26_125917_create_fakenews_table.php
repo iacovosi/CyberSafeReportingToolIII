@@ -25,7 +25,7 @@ class CreateFakenewsTable extends Migration
             $table->string('country');
             $table->string('town')->nullable();
             $table->string('specific_area_address')->nullable();
-            $table->JSON("picture_reffs")->nullable();
+            $table->integer("pictures_reff_id")->nullable();
             $table->timestamps();
         });
     }

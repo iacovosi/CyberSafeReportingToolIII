@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'hotline' => 'hata',
+    'hotline' => 'hotline',
     'helpline' => 'Helpline',
 
 ];
