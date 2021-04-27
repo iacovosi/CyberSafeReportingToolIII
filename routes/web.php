@@ -231,9 +231,12 @@ Route::group(['middleware' => ['web','auth']], function () {
 // both loggedin users & loggedout can create a resource, this is used by hotline & helpline
 Route::post('/helpline','HelplineController@store')->name('save-helpline'); // create form post request.
 
+// both loggedin users & loggedout can create a resource, this is used by fakenews
+Route::post('/fakenews','FakenewsController@store')->name('save-fakenews'); // create form post request.
 
 Route::get('/helpline/{loc}/form/','HelplineController@index');
 Route::get('/hotline/{loc}/form/','HotlineController@index');
+Route::get('/fakenews/{loc}/form/','FakenewsController@index');
 
 /*
 /   Route to get the Current language to

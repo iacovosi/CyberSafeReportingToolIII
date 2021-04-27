@@ -23,6 +23,8 @@ return [
         'g_recaptcha_response_legend' => 'Authenticity check',
         'help_block_required' => 'Required fields.',
         'submit' => 'Submit',
+        'title' => "News Title",
+        'source' => 'Source of News'
     ],
     'formHelpline' => [
         'intro' => 'Please, submit your request using the following form. Try to fill in all the necessary information for the operator to provide better assistance to your request. Entering your personal data is optional. Therefore your report will remain anonymous unless you wish otherwise. In the case you will be submitting your personal data, they will remain strictly confidential, in accordance with the Personal Data Protection legislation. When submitting your report to this form, additional items, apart from the ones submitted, are not recorded (for example your IP address).',
