@@ -6,8 +6,9 @@
         <div class="row">
             <div class="col-md-12">
 
-                <form method="PUT" action="{{route('edit-hotline-manager',['id' => $helpline->id ])}}" id="submit-form">
-
+                <form method="POST" action="{{route('edit-hotline-manager',['id' => $helpline->id ])}}" id="submit-form">
+                    @csrf
+                    @method('PATCH')
                     <div class="panel panel-default">
                         <div class="panel-heading clearfix">
                             <h4 class="pull-left">HOTLINE - Report ID : # {{ $helpline->id }}</h4>
