@@ -6,9 +6,10 @@
         <div class="row">
             <div class="col-md-12">
 
-                <form method="PUT" action="{{route('edit-helpline',['id' => $helpline->id ])}}" id="submit-form"
+                <form method="POST" action="{{route('edit-helpline',['id' => $helpline->id ])}}" id="submit-form"
                       class="form-horizontal">
-
+                      @csrf
+                      @method('PATCH')
                     <div class="panel panel-default">
                         <div class="panel-heading clearfix">
                             <h4 class="pull-left">HELPLINE - Report ID : # {{ $helpline->id }}</h4>
