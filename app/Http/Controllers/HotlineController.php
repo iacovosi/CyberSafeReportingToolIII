@@ -155,11 +155,17 @@ class HotlineController extends Controller
         $users = User::all();
         $status = Status::all();
 
+        // only serve hotline reports
+        if ($helpline->is_it_hotline == 'false'){
+            return redirect()->route('home');
+        }
+
+
         if (auth()->user()->hasRole('operator') && (($helpline->status == 'Closed') )) {
             return redirect()->route('home');  
         }
         
-        
+
         // People that can view a report are: admins / first opened / assigned / new reports / not assigned reports
         if ( auth()->user()->hasRole("admin") || (($helpline->user_opened == Auth::id()) || (empty($helpline->user_opened))) || (($helpline->user_assigned == Auth::id() || (empty($helpline->user_assigned))))) {
             $helpline->log="";
