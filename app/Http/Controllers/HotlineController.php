@@ -155,85 +155,94 @@ class HotlineController extends Controller
         $users = User::all();
         $status = Status::all();
 
-        if (auth()->user()->hasRole('operator') && (($helpline->status == 'Closed') )) {
+        // only serve hotline reports
+        if ($helpline->is_it_hotline == 'false'){
             return redirect()->route('home');
-        } else {
-
-            if ( ($helpline->forwarded == "true")   ||  (($helpline->user_opened == Auth::id()) || (empty($helpline->user_opened))) || (($helpline->user_assigned == Auth::id() || (empty($helpline->user_assigned))))) {
-                $helpline->log="";
-                $first=!empty($helpline->firstResponder)?$helpline->firstResponder->name:"";
-                $last=!empty($helpline->lastResponder)?$helpline->lastResponder->name:"";
-                $frwd=($helpline->is_it_hotline == 'true')?"Helpline":"Hotline";
-                // first operator to open the report is stored
-                if ((empty($helpline->user_opened) || $helpline->user_opened == NULL) || ($helpline->forwarded == "true") )  {
-                    $helpline->log .= "Before Forwarded  (From ".$frwd."):" . $first."->".$last ;
-                    $helpline->user_opened = Auth::id();
-                    $helpline->user_assigned =null;
-
-                }
-                if ($helpline->status != 'Closed') {
-                    // $helpline->user_assigned = Auth::id();
-                    $helpline->log .= "| Assigned to :" . Auth::User()->email;
-                    $helpline->status = "Opened";
-
-                    $statistics = Statistics::where('tracking_id', '=', $helpline->id)->first();
-
-                    // first operator to open the report is stored
-                    if (empty($helpline->user_opened) || $helpline->user_opened == NULL || ($helpline->forwarded == "true") )  {
-                        $statistics->user_opened = Auth::id();
-                        $statistics->user_assigned =null;
-                    }
-
-
-                    $statistics->status = "Opened";
-                    $statistics->forwarded="false";
-                    $statistics->save();
-                }
-                $helpline->forwarded="false";
-                $helpline->save();
-
-                $new_date = date('d/m/Y h:i', strtotime($helpline->call_time));
-                $helpline->call_time = $new_date;
-
-                $referenceidInfo = null;
-                if (!empty($helpline->insident_reference_id)) {
-                    $referenceidInfo = Array();
-                    $refData = Helpline::find($helpline->insident_reference_id);
-                    if (isset($refData) && !empty($refData)) {
-                        $referenceidInfo['is_it_hotline'] = $refData->is_it_hotline;
-                    } else {
-                        $helpline->insident_reference_id = null;
-                    }
-                }
-
-                $userThathaveAccessonHotline = Array();
-                foreach ($users as $user) {
-                    if ( (Auth::id() != $user->id) &&  GroupPermission::canuser($user->id, 'edit', 'hotline')) {
-                        $userThathaveAccessonHotline[] = $user;
-                    }
-
-                }
-
-                return view('hotline.edit')->with([
-                    'helpline' => $helpline,
-                    'resource_types' => $resource_types,
-                    'content_types' => $content_types,
-                    'age_groups' => $age_groups,
-                    'genders' => $genders,
-                    'report_roles' => $report_roles,
-                    'submission_types' => $submission_types,
-                    'references_by' => $references_by,
-                    'references_to' => $references_to,
-                    'priorities' => $priorities,
-                    'status' => $status,
-                    'users' => $userThathaveAccessonHotline,//$users,
-                    'actionstaken' => $actions,
-                    'referenceidInfo' => $referenceidInfo
-                ]);
-            } else {
-                return redirect()->route('home');
-            }
         }
+
+
+        if (auth()->user()->hasRole('operator') && (($helpline->status == 'Closed') )) {
+            return redirect()->route('home');  
+        }
+        
+
+        // People that can view a report are: admins / first opened / assigned / new reports / not assigned reports
+        if ( auth()->user()->hasRole("admin") || (($helpline->user_opened == Auth::id()) || (empty($helpline->user_opened))) || (($helpline->user_assigned == Auth::id() || (empty($helpline->user_assigned))))) {
+            $helpline->log="";
+            $first=!empty($helpline->firstResponder)?$helpline->firstResponder->name:"";
+            $last=!empty($helpline->lastResponder)?$helpline->lastResponder->name:"";
+            $frwd=($helpline->is_it_hotline == 'true')?"Helpline":"Hotline";
+            // first operator to open the report is stored
+            if ((empty($helpline->user_opened) || $helpline->user_opened == NULL) || ($helpline->forwarded == "true") )  {
+                $helpline->log .= "Before Forwarded  (From ".$frwd."):" . $first."->".$last ;
+                $helpline->user_opened = Auth::id();
+                $helpline->user_assigned =null;
+
+            }
+            if ($helpline->status != 'Closed') {
+                // $helpline->user_assigned = Auth::id();
+                $helpline->log .= "| Assigned to :" . Auth::User()->email;
+                $helpline->status = "Opened";
+
+                $statistics = Statistics::where('tracking_id', '=', $helpline->id)->first();
+
+                // first operator to open the report is stored
+                if (empty($helpline->user_opened) || $helpline->user_opened == NULL || ($helpline->forwarded == "true") )  {
+                    $statistics->user_opened = Auth::id();
+                    $statistics->user_assigned =null;
+                }
+
+
+                $statistics->status = "Opened";
+                $statistics->forwarded="false";
+                $statistics->save();
+            }
+            $helpline->forwarded="false";
+            $helpline->save();
+
+            $new_date = date('d/m/Y h:i', strtotime($helpline->call_time));
+            $helpline->call_time = $new_date;
+
+            $referenceidInfo = null;
+            if (!empty($helpline->insident_reference_id)) {
+                $referenceidInfo = Array();
+                $refData = Helpline::find($helpline->insident_reference_id);
+                if (isset($refData) && !empty($refData)) {
+                    $referenceidInfo['is_it_hotline'] = $refData->is_it_hotline;
+                } else {
+                    $helpline->insident_reference_id = null;
+                }
+            }
+
+            $userThathaveAccessonHotline = Array();
+            foreach ($users as $user) {
+                if ( (Auth::id() != $user->id) &&  GroupPermission::canuser($user->id, 'edit', 'hotline')) {
+                    $userThathaveAccessonHotline[] = $user;
+                }
+
+            }
+
+            return view('hotline.edit')->with([
+                'helpline' => $helpline,
+                'resource_types' => $resource_types,
+                'content_types' => $content_types,
+                'age_groups' => $age_groups,
+                'genders' => $genders,
+                'report_roles' => $report_roles,
+                'submission_types' => $submission_types,
+                'references_by' => $references_by,
+                'references_to' => $references_to,
+                'priorities' => $priorities,
+                'status' => $status,
+                'users' => $userThathaveAccessonHotline,//$users,
+                'actionstaken' => $actions,
+                'referenceidInfo' => $referenceidInfo
+            ]);
+        }
+        
+        
+        return redirect()->route('home');
+         
     }
 
 
