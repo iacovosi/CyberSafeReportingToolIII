@@ -17,6 +17,7 @@
 
 
 Route::get('/helpline/submitted','HelplineController@submitted');
+Route::get('/fakenews/submitted','FakenewsController@submitted');
 Route::get('/hotline/submitted','HotlineController@submitted');
 
 

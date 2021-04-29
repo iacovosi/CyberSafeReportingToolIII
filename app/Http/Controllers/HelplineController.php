@@ -176,7 +176,7 @@ class HelplineController extends Controller
         }
 
         $data = $request->all();
-
+        
         // Default is Electronic form.
         $data['submission_type'] = (!empty($request->submission_type)) ? $request->submission_type : 'electronic-form';
 

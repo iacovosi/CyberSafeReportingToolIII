@@ -25,7 +25,16 @@ class CreateFakenewsTable extends Migration
             $table->string('country');
             $table->string('town')->nullable();
             $table->string('specific_area_address')->nullable();
-            $table->integer("pictures_reff_id")->nullable();
+            $table->string('submission_type');
+            // user profile
+            $table->string('name')->nullable();
+            $table->string('surname')->nullable();
+            $table->string('email')->nullable();
+            $table->integer('phone')->nullable();
+            $table->string('age')->nullable();
+            $table->string('gender')->nullable();
+            $table->string('report_role')->nullable();
+            // meta data
             $table->timestamps();
         });
     }
