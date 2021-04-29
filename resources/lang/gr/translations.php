@@ -24,7 +24,8 @@ return [
         'help_block_required' => 'Υποχρεωτικό πεδίο.',
         'submit' => 'Υποβολή',
         'title' => 'Tίτλος ειδήσεων',
-        'source' => 'Πηγή ειδήσεως'
+        'source' => 'Πηγή ειδήσεως',
+        'upload' => 'Μεταφόρτωση'
 
     ],
     'formHelpline' => [

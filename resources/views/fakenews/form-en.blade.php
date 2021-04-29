@@ -8,7 +8,7 @@
 
     <!-- <p>@lang('translations.formHelpline.intro')</p> -->
     <p>FAKENEWS PLACEHOLDER</p> 
-    <form method="post" action=" {{ route('save-fakenews') }}" class="userReportForm fakenewsForm">
+    <form method="post" action=" {{ route('save-fakenews') }}" class="userReportForm fakenewsForm" enctype = 'multipart/form-data'>
 
         <!-- Fakenews Type -->
         <fieldset class="scheduler-border">
@@ -19,9 +19,10 @@
                     @if($fakenews_type->typename != "irrelevant") 
                         <div class="radio">
                             <label>
-                                <input type="radio" name="fakenews_type" value="{{ $fakenews_type->typename }}" 
-                                @if (old('fakenews_type') == $fakenews_type->typename) checked  @endif >
+                                <input type="radio" name="fakenews_type" value="{{ $fakenews_type->typename }}" @if (old('fakenews_type') == $fakenews_type->typename) checked  @endif > 
+                                
                                 {{ $fakenews_type->typename_en }}
+                                 </input>
                             </label>
                         </div>
                     @endif
@@ -30,43 +31,74 @@
                 <span class="text-danger">{{ $errors->first('fakenews_type') }}</span>
 
             </div>
-
-            <!-- Title of news -->
-            <div class="form-group" id="news_title">
-                <label for="news_title">@lang('translations.form.title') *</label>
-                <input type="text" name="title" class="form-control" value=>
-                <span class="text-danger">{{ $errors->first('resource_url') }}</span>
+        </fieldset>
+        <!-- uploading images-->
+        <fieldset class="scheduler-border">
+            <legend class="scheduler-border"> Upload images placeholder</legend>
+            <div class="form-group">
+                <input required type="file" class="form-control" name="images[]" multiple placeholder="address" >
+<!--                 <div class="form-group"
+                    <button type="submit" class="btn btn-success" value="@lang('translations.form.upload')">@lang('translations.form.upload') </button>
+                </div> -->
             </div>
-
-            <!-- source of news -->
-            <div class="form-group" id="source">
-                <label for="source">@lang('translations.form.source') *</label>
-                <input type="text" name="title" class="form-control" value=>
-                <span class="text-danger">{{ $errors->first('resource_url') }}</span>
-            </div>
-
         </fieldset>
 
         <!-- Source document -->
         <fieldset class="scheduler-border">
-            <legend class="scheduler-border">@lang('translations.form.comments_legend') Source document</legend>
+        <legend class="scheduler-border">@lang('translations.form.comments_legend') Source document Info</legend>
+            <!-- Title of news -->
+            <div class="form-group" id="news_title">
+                <label for="title">@lang('translations.form.title') *</label>
+                <input type="text" name="title" class="form-control" value=></input>
+                <span class="text-danger">{{ $errors->first('resource_url') }}</span>
+            </div>
             <div class="form-group">
-                <textarea type="text" name="comments" class="form-control" id="comments" rows="10" maxlength="10000" placeholder="@lang('translations.form.comments_placeholder')">{{ old('comments') }}</textarea>
-                <div class="help-block">Maximum  characters <span class="notification"></span></div>
+                <label for="source_document">@lang('translations.form.title') Source document *</label>
+                <textarea type="text" name="source_document" class="form-control" id="source_document" rows="5" maxlength="10000" placeholder="@lang('translations.form.comments_placeholder')">{{ old('comments') }}</textarea>
+                <div class="help-block">10000 Maximum  characters<span class="notification"></span></div>
+            </div>
+            <!-- source of news -->
+            <div class="form-group" id="source">
+                <label for="source">@lang('translations.form.source') *</label>
+                <input type="text" name="source" class="form-control" value=></input>
             </div>
             <!-- publication date -->
             <div class="form-group">
-                <label for="pub_date">@lang('translations.form.source') publication date *</label>
-                <input type="date" name="pub_date" class="form-control" id="pub_date">
+                <label for="publication_date">@lang('translations.form.source') publication date *</label>
+                <input type="date" name="publication_date" class="form-control" id="publication_date"></input>
                 <div class="help-block"> <span class="notification"></span></div>
             </div>
             <!-- URL source -->
             <div class="form-group">
-                <label for="pub_date">@lang('translations.form.source') publication date *</label>
-                <input type="date" name="pub_date" class="form-control" id="pub_date">
+                <label for="source_url">@lang('translations.form.source') source url *</label>
+                <input type="text" name="source_url" class="form-control" id="source_url"></input>
+                <span class="text-danger">{{ $errors->first('source_url') }}</span>
                 <div class="help-block"> <span class="notification"></span></div>
             </div>
         </fieldset>
+
+        <fieldset class="scheduler-border">
+        <legend class="scheduler-border">Area info</legend>
+            <!-- Country of news -->
+            <div class="form-group" id="country">
+                <label for="country">Country*</label>
+                <input type="text" name="country" class="form-control" value=></input>
+                <span class="text-danger">{{ $errors->first('resource_url') }}</span>
+            </div>
+            <!-- Town -->
+            <div class="form-group" id="town">
+                <label for="town">Town</label>
+                <input type="text" name="town" class="form-control" id="town"></input>
+                <div class="help-block"> <span class="notification"></span></div>
+            </div>
+            <!-- Specific adresss -->
+            <div class="form-group" id="specific_area_address">
+                <label for="address">Address</label>
+                <input type="text" name="specific_area_address" class="form-control" id="specific_area_address"></input>
+                <div class="help-block"> <span class="notification"></span></div>
+            </div>
+
+        </filedset>
         
         <!-- Personal Data -->
         <fieldset class="scheduler-border">
@@ -168,7 +200,6 @@
 
         <div class="help-block"><b>* @lang('translations.form.help_block_required')</b></div>
 
-        <input type="hidden" name="is_it_hotline" value="false">
 
         <div class="form-group">
             <input type="submit" class="btn btn-primary" value="@lang('translations.form.submit')"> {{ csrf_field() }}

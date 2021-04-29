@@ -147,16 +147,22 @@ class FakenewsController extends Controller
     public function store(Request $request)
     {
         // Validate the post...
-        if (!$request->submitted_by_operator) {
+        if (!$request->submitted_by_operator) 
+        {
             
 
             // Set validation rules for fields
             $rules = [
-                'resource_type' => 'required',
-                'resource_url' => 'required_if:resource_type,website,chatroom,social-media',
-                'content_type' => 'required',
+                'fakenews_type' => 'required',
+                'title'=> 'required',
+                'source_document' => 'required',
+                'source' => 'required',
+                'publication_date'=> 'required',
+                'source_url' => 'url|required_if:fakenews_type,fakenews,realnews',
                 'personal_data' => 'required',
+                'country' => 'required',
                 'name' => 'required_if:personal_data,true',
+                'images.image' => 'mimes:jpeg,png,jpg,gif,svg|max:5048',
             ];
             if ($request->personal_data == 'true') {
                 $rules['email'] = 'required_without:phone';
@@ -176,31 +182,53 @@ class FakenewsController extends Controller
                 return redirect()->back()->with(['errors' => $validator->messages()])->withInput();
             }
         }
+        //$fakenews = new Fakenews;
 
         $data = $request->all();
 
-        // Default is Electronic form.
+        // Defaults
         $data['submission_type'] = (!empty($request->submission_type)) ? $request->submission_type : 'electronic-form';
+        $data['evaluation'] = (!empty($request->submission_type)) ? $request->evaluation : '1';
+        
+        //unset($data['submitted_by_operator']);
+        
 
-        $data['comments'] = Crypt::encrypt($request->comments);
-
-        unset($data['submitted_by_operator']);
-
-        if (!empty($data['call_time'])) {
+        /* if (!empty($data['call_time'])) {
             $dateformat = Carbon::createFromFormat('d/m/Y H:i:s', $data['call_time'] . ":00");
             $data['call_time'] = $dateformat;
+        } */
+
+        unset($data['images']);
+        unset($data['_token']);
+        unset($data["g-recaptcha-response"]);
+        $id = Fakenews::create($data)->id;
+        $fakenews = Fakenews::find($id);
+
+        if ($files = $request->images){
+            foreach($files as $file){
+                $imageName = time().'_'.$file->getClientOriginalName();
+                $file->move(storage_path("uploaded_images"),$imageName);
+                $picdata = array(
+                    'picture_path' => storage_path("uploaded_images") . $imageName
+                );
+                $pic = FakenewsPictures::create($picdata);
+                $pic->update($picdata);
+                $picreffdata = array(
+                    'fakenews_reference_id' => $id,
+                    'picture_reference_id'=>$pic->id
+                );
+                $picreff = FakenewsPictureReff::create($picreffdata);
+                $picreff->update($picreffdata);
+            }
         }
 
-
-        $id = Helpline::create($data)->id;
-        $helpline = Helpline::find($id);
-        $helpline->insident_reference_id = (isset($data['insident_reference_id'])) ? (int)$data['insident_reference_id'] : null;
-        if (isset($data['call_time'])){
+        /*if (isset($data['call_time'])){
             $helpline->call_time = $data['call_time'];
-        }
-        $helpline->update($data);
+        } */
 
-        $statistics = new Statistics();
+        $fakenews->update($data);
+
+       /*  $statistics = new Statistics();
 
         // Get the created incident so we add its id to the Statistics so we can track it!!!
         // $returnLatest = Helpline::latest()->first();
@@ -228,16 +256,17 @@ class FakenewsController extends Controller
         $statistics->manager_comments = (isset($data['manager_comments'])) ? $data['manager_comments'] : null;
         $statistics->insident_reference_id = (isset($data['insident_reference_id'])) ? $data['insident_reference_id'] : null;
         //
-        $statistics->save();
+        $statistics->save(); */
 
-        $is_it_hotline = (isset($data['is_it_hotline'])) ? 'Hotline' : 'HelpLine';
         //HelplineController::emailInformOperators($is_it_hotline);  //if email server enabled.. then you can send email!
 
-        if ($request->submitted_by_operator) {
+/*         if ($request->submitted_by_operator) {
             return redirect('home');
         }
-
-        return redirect('helpline/submitted')->with('success-info', Lang::get('success.submited', array(), Session::get('lang')));
+ */
+        return redirect('fakenews/submitted')->with('success-info', Lang::get('success.submited', array(), Session::get('lang')));
     }
+
+
 }
 ?>

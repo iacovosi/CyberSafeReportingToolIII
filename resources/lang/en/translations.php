@@ -5,7 +5,7 @@ return [
         'resource_type_legend' => 'Resource Type',
         'resource_type_label' => 'Please select where the incident occured',
         'resource_url_label' => 'Website information (URL)',
-        'content_type_legend' => 'Content Type;',
+        'content_type_legend' => 'Content Type',
         'content_type_label' => 'Please select the type of content of the incident you wish to report',
         'comments_legend' => 'Incident description',
         'comments_placeholder' => 'Please describe the incident for better support...',
@@ -24,7 +24,8 @@ return [
         'help_block_required' => 'Required fields.',
         'submit' => 'Submit',
         'title' => "News Title",
-        'source' => 'Source of News'
+        'source' => 'Source of News',
+        'upload' => 'Upload'
     ],
     'formHelpline' => [
         'intro' => 'Please, submit your request using the following form. Try to fill in all the necessary information for the operator to provide better assistance to your request. Entering your personal data is optional. Therefore your report will remain anonymous unless you wish otherwise. In the case you will be submitting your personal data, they will remain strictly confidential, in accordance with the Personal Data Protection legislation. When submitting your report to this form, additional items, apart from the ones submitted, are not recorded (for example your IP address).',
