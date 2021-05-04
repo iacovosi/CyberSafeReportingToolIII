@@ -8,40 +8,8 @@
 
     <!-- <p>@lang('translations.formHelpline.intro')</p> -->
     <p>FAKENEWS PLACEHOLDER</p> 
+
     <form method="post" action=" {{ route('save-fakenews') }}" class="userReportForm fakenewsForm" enctype = 'multipart/form-data'>
-
-        <!-- Fakenews Type -->
-        <fieldset class="scheduler-border">
-            <legend class="scheduler-border">@lang('translations.form.content_type_legend') *</legend>
-            <div class="form-group">
-                <label for="fakenews_type">@lang('translations.form.content_type_label')</label>
-                @foreach($fakenews_type as $fakenews_type)
-                    @if($fakenews_type->typename != "irrelevant") 
-                        <div class="radio">
-                            <label>
-                                <input type="radio" name="fakenews_type" value="{{ $fakenews_type->typename }}" @if (old('fakenews_type') == $fakenews_type->typename) checked  @endif > 
-                                
-                                {{ $fakenews_type->typename_en }}
-                                 </input>
-                            </label>
-                        </div>
-                    @endif
-                @endforeach
-
-                <span class="text-danger">{{ $errors->first('fakenews_type') }}</span>
-
-            </div>
-        </fieldset>
-        <!-- uploading images-->
-        <fieldset class="scheduler-border">
-            <legend class="scheduler-border"> Upload images placeholder</legend>
-            <div class="form-group">
-                <input required type="file" class="form-control" name="images[]" multiple placeholder="address" >
-<!--                 <div class="form-group"
-                    <button type="submit" class="btn btn-success" value="@lang('translations.form.upload')">@lang('translations.form.upload') </button>
-                </div> -->
-            </div>
-        </fieldset>
 
         <!-- Source document -->
         <fieldset class="scheduler-border">
@@ -49,7 +17,7 @@
             <!-- Title of news -->
             <div class="form-group" id="news_title">
                 <label for="title">@lang('translations.form.title') *</label>
-                <input type="text" name="title" class="form-control" value=></input>
+                <input type="text" name="title" class="form-control" value={{ old('title') }}></input>
                 <span class="text-danger">{{ $errors->first('resource_url') }}</span>
             </div>
             <div class="form-group">
@@ -74,6 +42,13 @@
                 <input type="text" name="source_url" class="form-control" id="source_url"></input>
                 <span class="text-danger">{{ $errors->first('source_url') }}</span>
                 <div class="help-block"> <span class="notification"></span></div>
+            </div>
+        </fieldset>
+                <!-- uploading images-->
+        <fieldset class="scheduler-border">
+            <legend class="scheduler-border"> Upload images placeholder</legend>
+            <div class="form-group">
+                <input  type="file" class="form-control" name="images[]" multiple placeholder="images only" >
             </div>
         </fieldset>
 

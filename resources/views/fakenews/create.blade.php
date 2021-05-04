@@ -7,7 +7,23 @@
         <div class="col-md-12">
 
             <form method="post" action="{{ route('save-helpline') }}" id="submit-form" class="form-horizontal">
-
+                 <!-- Fakenews Type -->
+                <legend class="scheduler-border">@lang('translations.form.content_type_legend') *</legend>
+                <div class="form-group">
+                    <label for="fakenews_type">@lang('translations.form.content_type_label')</label>
+                    @foreach($fakenews_type as $fakenews_type)
+                        @if($fakenews_type->typename != "irrelevant") 
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="fakenews_type" value="{{ $fakenews_type->typename }}" @if (old('fakenews_type') == $fakenews_type->typename) checked  @endif > 
+                                    {{ $fakenews_type->typename_en }}
+                                    </input>
+                                </label>
+                            </div>
+                        @endif
+                    @endforeach
+                    <span class="text-danger">{{ $errors->first('fakenews_type') }}</span>
+                </div>
                 <div class="panel panel-default">
                     <div class="panel-heading clearfix">
                         <h4 class="pull-left">Fake News - New Report</h4>

@@ -20,8 +20,8 @@ class CreateFakenewsTable extends Migration
             $table->dateTime('publication_date')->nullable(); 
             $table->string('source');
             $table->string('source_url')->nullable(); 
-            $table->integer('evaluation');
-            $table->string('fakenews_type');
+            $table->integer('evaluation')->nullable();
+            $table->string('fakenews_type')->nullable(); 
             $table->string('country');
             $table->string('town')->nullable();
             $table->string('specific_area_address')->nullable();

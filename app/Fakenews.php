@@ -9,5 +9,5 @@ class Fakenews extends Model
     //
     protected $fillable = ['title','source_document','publication_date','source','source_url',
                             'evaluation','fakenews_type','country','town','specific_area_address',
-                        'submission_type'];
+                        'submission_type','name','surname','email','phone','age','gender'];
 }

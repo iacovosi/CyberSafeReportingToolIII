@@ -153,7 +153,6 @@ class FakenewsController extends Controller
 
             // Set validation rules for fields
             $rules = [
-                'fakenews_type' => 'required',
                 'title'=> 'required',
                 'source_document' => 'required',
                 'source' => 'required',
@@ -162,7 +161,7 @@ class FakenewsController extends Controller
                 'personal_data' => 'required',
                 'country' => 'required',
                 'name' => 'required_if:personal_data,true',
-                'images.image' => 'mimes:jpeg,png,jpg,gif,svg|max:5048',
+                'images[]' => 'multiple_of:image|mimes:jpeg,png,jpg,gif,svg|max:5048',
             ];
             if ($request->personal_data == 'true') {
                 $rules['email'] = 'required_without:phone';
@@ -188,10 +187,9 @@ class FakenewsController extends Controller
 
         // Defaults
         $data['submission_type'] = (!empty($request->submission_type)) ? $request->submission_type : 'electronic-form';
-        $data['evaluation'] = (!empty($request->submission_type)) ? $request->evaluation : '1';
+        $data['evaluation'] = (!empty($request->submission_type)) ? $request->evaluation : '0';
         
         //unset($data['submitted_by_operator']);
-        
 
         /* if (!empty($data['call_time'])) {
             $dateformat = Carbon::createFromFormat('d/m/Y H:i:s', $data['call_time'] . ":00");
@@ -199,10 +197,10 @@ class FakenewsController extends Controller
         } */
 
         unset($data['images']);
-        unset($data['_token']);
         unset($data["g-recaptcha-response"]);
         $id = Fakenews::create($data)->id;
-        $fakenews = Fakenews::find($id);
+        //$fakenews = Fakenews::find($id);
+        //$fakenews -> update($data);
 
         if ($files = $request->images){
             foreach($files as $file){
@@ -212,21 +210,21 @@ class FakenewsController extends Controller
                     'picture_path' => storage_path("uploaded_images") . $imageName
                 );
                 $pic = FakenewsPictures::create($picdata);
-                $pic->update($picdata);
+                //$pic->update($picdata);
                 $picreffdata = array(
                     'fakenews_reference_id' => $id,
-                    'picture_reference_id'=>$pic->id
+                    'picture_reference_id'=>$pic -> id
                 );
                 $picreff = FakenewsPictureReff::create($picreffdata);
-                $picreff->update($picreffdata);
+                //$picreff->update($picreffdata);
             }
         }
+
+
 
         /*if (isset($data['call_time'])){
             $helpline->call_time = $data['call_time'];
         } */
-
-        $fakenews->update($data);
 
        /*  $statistics = new Statistics();
 
