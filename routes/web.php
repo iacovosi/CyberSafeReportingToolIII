@@ -198,7 +198,7 @@ Route::group(['middleware' => ['web','auth']], function () {
 
     Route::group(['middleware' => ['permission:view_fakenews']], function () {
         Route::get('/fakenews/{fakenews}','FakenewsController@show')->name('show.fakenews'); // invastigation form
-        Route::get('/fakenews','FakenewsController@index'); // show all helpline
+        Route::get('/fakenews','FakenewsController@index'); // show all fakenews
     });
 
 

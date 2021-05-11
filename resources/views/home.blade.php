@@ -361,7 +361,7 @@
 
                         <div class="panel-heading clearfix">
                             <h4 class="pull-left"><i class="fa fa-file-text-o"></i> Fakenews Reports
-                                ({{ $helpline->where('is_it_fakenews','=','true')->count() }})</h4>
+                            (number placeholder)</h4>
                             <div class="pull-right form-actions">
                                 @if(GroupPermission::usercan('create','fakenews'))
                                     <a href="{{ route('create.fakenews') }}" class="btn btn-primary"><i
@@ -379,8 +379,8 @@
                                         <th>ID</th>
                                         <th>Operator(s)</th>
                                         {{-- <th>Submission Type</th> --}}
-                                        <th>Resource Type</th>
-                                        <th>Content Type</th>
+                                        <th>Fakenews Source Type</th>
+                                        <th>Fakenews Type</th>
                                         <th>User Comments</th>
                                         <th>Status</th>
                                         <th>Last Updated</th>

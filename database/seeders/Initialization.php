@@ -551,5 +551,16 @@ class Initialization extends Seeder
             ['id' => 3, 'typename'=> 'Real_News' , 'typename_en' => 'Real News','typename_gr' => 'Πραγματικές ειδήσεις','created_at' => new DateTime, 'updated_at' => new DateTime]
         );
         DB::table('fakenews_type')->insert($fakenews_types);
+
+        DB::table('fakenews_source_type')->delete();
+        $fakenews_types = array(
+            ['id' => 1, 'typename'=> 'Internet', 'typename_en' => 'Internet','typename_gr' => 'Διαδίκτυο','created_at' => new DateTime, 'updated_at' => new DateTime],
+            ['id' => 2, 'typename'=> 'TV', 'typename_en' => 'TV','typename_gr' => 'Τηλεόραση','created_at' => new DateTime, 'updated_at' => new DateTime],
+            ['id' => 3, 'typename'=> 'Radio' , 'typename_en' => 'Radio','typename_gr' => 'Ραδιόφωνο','created_at' => new DateTime, 'updated_at' => new DateTime],
+            ['id' => 4, 'typename'=> 'Newspaper' , 'typename_en' => 'Newspaper','typename_gr' => 'Εφημερίδα','created_at' => new DateTime, 'updated_at' => new DateTime],
+            ['id' => 5, 'typename'=> 'Advertising/Pamphlets' , 'typename_en' => 'Advertising/Pamphlets','typename_gr' => 'Διαφημιστικά/Φυλλάδια','created_at' => new DateTime, 'updated_at' => new DateTime],
+            ['id' => 6, 'typename'=> 'Other' , 'typename_en' => 'Other','typename_gr' => 'Αλλα','created_at' => new DateTime, 'updated_at' => new DateTime]
+        );
+        DB::table('fakenews_source_type')->insert($fakenews_types);
     }
 }
