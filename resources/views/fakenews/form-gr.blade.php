@@ -18,7 +18,7 @@
                     @foreach($fakenews_source_type as $type)
                     <label class="btn btn-default @if (old('fakenews_source_type') == $type->typename) active  @endif">
                         <input type="radio" name="fakenews_source_type" value="{{$type->typename}}" @if (old('fakenews_source_type') == $type->typename) checked  @endif>
-                        {{$type->typename_en}}
+                        {{$type->typename_gr}}
                     </label>
                     @endforeach
                 </div>
@@ -253,11 +253,11 @@
                 <div class="btn-group" data-toggle="buttons">
                     <label class="btn btn-default">
                         <input type="radio" name="img_upload" value="1" @if (old('img_upload')) checked  @endif>
-                        Yes
+                        Ναί
                     </label>
                     <label class="btn btn-default">
                         <input type="radio" name="img_upload" value="0" @if (old('img_upload')) checked  @endif>
-                        No
+                        Όχι
                     </label>
                 </div>
             </div>
