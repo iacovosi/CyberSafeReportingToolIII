@@ -209,7 +209,7 @@
                     </div>
                 </div>
             </div>
-            <!-- Specific area -->
+            <!-- Specific area code -->
             <div class="form-group" id="area_district">
                 <label for="address">@lang('translations.form.area_district')</label>
                 <input type="text" name="area_district" class="form-control" id="area_district" value={{ old('area_district') }}></input>

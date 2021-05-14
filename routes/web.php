@@ -29,7 +29,6 @@ Route::group(['middleware' => ['web','auth']], function () {
     
     Route::get('/home', 'HomeController@index')->name('home');
     
-
     // User Routing, protected with middleware
 
     Route::group(['middleware' => ['permission:delete_users']], function () {
@@ -45,12 +44,10 @@ Route::group(['middleware' => ['web','auth']], function () {
         Route::put('/users/{user}','UserController@update')->name('users.update');
     });
 
-
     Route::group(['middleware' => ['permission:view_users']], function () {
         Route::get('/users/{user}/edit','UserController@edit')->name('users.edit');
         Route::get('/users','UserController@index')->name('users.index');
     });
-
 
     // allow to edit yourself
     Route::get('/profile/edit','UserController@self_edit')->name('profile.edit');
@@ -77,7 +74,6 @@ Route::group(['middleware' => ['web','auth']], function () {
         Route::get('/roles/{role}','RoleController@show')->name('roles.show');
         Route::get('/roles','RoleController@index')->name('roles.index');
     });
-
 
     /*
     *   Inputs
@@ -117,7 +113,6 @@ Route::group(['middleware' => ['web','auth']], function () {
         Route::put('/referenceTo/{referenceTo}','ReferenceToController@update')->name('referenceTo.update');
     });
 
-
     Route::group(['middleware' => ['permission:view_content']], function () {
         Route::get('/resourceType/{resourceType}/edit','ResourceTypeController@edit')->name('resourceType.edit');
         Route::get('/resourceType/{resourceType}','ResourceTypeController@show')->name('resourceType.show');
@@ -136,7 +131,6 @@ Route::group(['middleware' => ['web','auth']], function () {
         Route::get('/referenceTo','ReferenceToController@index')->name('referenceTo.index');
     });
 
-
     /*
     * Manager
     */
@@ -147,11 +141,9 @@ Route::group(['middleware' => ['web','auth']], function () {
         Route::patch('/hotline/editManager', [ 'as' => 'edit-hotline-manager', 'uses' => 'HelplineController@editManager']);
     });
 
-
     Route::get('/hotline/changeFromHotline', [ 'as' => 'hotline.move-helpline', 'uses' => 'HotlineController@changeFromHotline']);
     Route::get('/helpline/changeFromHelpLine', [ 'as' => 'helpline.move-hotline', 'uses' => 'HelplineController@changeFromHelpLine']);
   
-    
     /*
     * Helpline
     */
@@ -169,7 +161,6 @@ Route::group(['middleware' => ['web','auth']], function () {
     Route::group(['middleware' => ['permission:delete_helpline']], function () {
         Route::delete('/helpline/{helpline}','HelplineController@destroy'); // delete report
     });  
-
 
     /*
     * Hotline
@@ -212,6 +203,10 @@ Route::group(['middleware' => ['web','auth']], function () {
     */
     Route::group(['middleware' => ['permission:edit_helpline, edit_hotline']], function () {
         Route::patch('/helpline/{helpline}/edit','HelplineController@edit')->name('edit-helpline'); // edit Investigation 
+    });
+
+    Route::group(['middleware' => ['permission:edit_fakenews, edit_fakenews']], function () {
+        Route::get('/fakenews/{fakenews}/edit','FakenewsController@edit')->name('edit-fakenews'); // edit invastigation 
     });
 
     /*
