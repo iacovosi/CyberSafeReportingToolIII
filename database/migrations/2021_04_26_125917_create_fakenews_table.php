@@ -43,7 +43,7 @@ class CreateFakenewsTable extends Migration
             $table->boolean('img_upload');
             $table->longtext('comments');
             $table->date('publication_date');
-            $table->dateTime('publication_time',$precision = 0)->nullable(); 
+            $table->time('publication_time',$precision = 0)->nullable(); 
             // user profile
             $table->string('name')->nullable();
             $table->string('surname')->nullable();

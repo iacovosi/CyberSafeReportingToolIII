@@ -95,7 +95,7 @@ class FakenewsController extends Controller
         return view('fakenews.submitted', compact('backtoform', 'language'));
     }
 
-        /**
+    /**
      * Show the form for creating a new resource.
      * 
      * Create a report as an operator/loggedin user.
@@ -141,51 +141,6 @@ class FakenewsController extends Controller
         ]);
     }
     
-    //public function index($loc = null)
-    //{
-
-    //}
-    //
-/* public function create()
-{
-    $actions = ActionTaken::all();
-
-    $resource_types = ResourceType::all();
-    $content_types = ContentType::all();
-    $age_groups = AgeGroup::all();
-    $genders = Gender::all();
-    $report_roles = ReportRole::all();
-    $submission_types = SubmissionType::all();
-    $references_by = ReferenceBy::all();
-    $references_to = ReferenceTo::all();
-    $priorities = Priority::all();
-    $users = User::all();
-    $status = Status::all();
-
-    $userThathaveAccessonFakenews = Array();
-    foreach ($users as $user) {
-        if (GroupPermission::canuser($user->id, 'edit', 'fakenews')) {
-            $userThathaveAccessonFakenews[] = $user;
-        }
-    }
-
-    return view('create.fakenews')->with([
-        'resource_types' => $resource_types,
-        'content_types' => $content_types,
-        'age_groups' => $age_groups,
-        'genders' => $genders,
-        'report_roles' => $report_roles,
-        'submission_types' => $submission_types,
-        'references_by' => $references_by,
-        'references_to' => $references_to,
-        'priorities' => $priorities,
-        'users' => $userThathaveAccessonHotline, //$users,
-        'status' => $status,
-        'actionstaken' => $actions
-    ]);       
-} */
-
-
     /**
      * Store a newly created resource in storage.
      *
@@ -202,32 +157,29 @@ class FakenewsController extends Controller
             // Set validation rules for fields
             $rules = [
                 'fakenews_source_type'=>'required',
-                'comments' => 'required',
                 'publication_date'=> 'required|date',
                 'img_upload'=>"required",
                 'personal_data' => 'required',
                 //internet rules
-                'source_url' => 'required_if:fakenews_source_type,Internet|url',
+                'source_url' => 'required_if:fakenews_source_type,Internet & url',
                 'title'=> 'required_if:fakenews_source_type,Internet',
-                'source_document' => 'required_if:fakenews_source_type,Internet',
                 //TV rules
                 'tv_channel'=>'required_if:fakenews_source_type,TV',
-                'title'=>'required_if:fakenews_source_type,TV',
+                'tv_prog_title'=>'required_if:fakenews_source_type,TV',
+                'tv_publication_time'=>'required_if:fakenews_source_type,TV',
                 //Radio rulea
                 'town'=>'required_if:fakenews_source_type,Radio',
-                'publication_time'=>'required_if:fakenews_source_type,Radio',
+                'radio_publication_time'=>'required_if:fakenews_source_type,Radio',
                 //Newspaper rules
                 'newspaper_name'=>'required_if:fakenews_source_type,Newspaper',
                 //adv/pam rules
                 'country'=>'required_if:fakenews_source_type,Advertising/Pamphlets',
                 'town'=>'required_if:fakenews_source_type,Advertising/Pamphlets',
-                'area_district'=>'required_if:fakenews_source_type,Advertising/Pamphlets',
                 //Other
                 'specific_type'=>'required_if:fakenews_source_type,Other',
                 'country'=>'required_if:fakenews_source_type,Other',
                 'town'=>'required_if:fakenews_source_type,Other',
-
-
+                //Personal details
                 'name' => 'required_if:personal_data,true',
                 'images*' => 'required_if:img_upload:yes',
                 'images.*' => 'mimes:jpeg,png,jpg,gif,svg|max:10120',
@@ -281,6 +233,8 @@ class FakenewsController extends Controller
             unset($data['area_district']);
             unset($data['specific_address']);   
         }elseif($data['fakenews_source_type']=='TV'){
+            $data['publication_time']=$data['tv_publication_time'];
+            unset($data['tv_publication_time']);
             unset($data['source_url']);
             unset($data['title']);
             unset($data['source_document']);
@@ -294,6 +248,8 @@ class FakenewsController extends Controller
             unset($data['area_district']);
             unset($data['specific_address']);   
         }elseif($data['fakenews_source_type']=='Radio'){
+            $data['publication_time']=$data['radio_publication_time'];
+            unset($data['radio_publication_time']);
             unset($data['tv_channel']);
             unset($data['tv_prog_title']);
             unset($data['source_url']);
@@ -339,19 +295,24 @@ class FakenewsController extends Controller
             unset($data['newspaper_name']);
             unset($data['page']);
         };
-        
         unset($data['images']);
         unset($data["g-recaptcha-response"]);
+        
+        $data['comments'] = Crypt::encrypt($request->comments);
+        if ($data['fakenews_source_type']=='Internet'){
+            $data['source_document'] = Crypt::encrypt($request->source_document);
+        } 
+        //dd($data);
         $id = Fakenews::create($data)->id;
         //$fakenews = Fakenews::find($id);
         //$fakenews -> update($data);
 
         if ($files = $request->images){
             foreach($files as $file){
-                $imageName = time().'_'.$file->getClientOriginalName();
-                $file->move(storage_path("uploaded_images"),$imageName);
+                $imageName = time() .'_' . $file -> getClientOriginalName();
+                $file->move(public_path("storage\\uploaded_images"),$imageName);
                 $picdata = array(
-                    'picture_path' => storage_path("uploaded_images") . $imageName
+                    'picture_path' =>  $imageName
                 );
                 $pic = FakenewsPictures::create($picdata);
                 //$pic->update($picdata);
@@ -435,14 +396,12 @@ class FakenewsController extends Controller
             return redirect()->route('home');
         } else {
 
-            if ( ($fakenews->forwarded == "true")   || (($fakenews->user_opened == Auth::id()) || (empty($fakenews->user_opened))) || (($fakenews->user_assigned == Auth::id() || (empty($fakenews->user_assigned))))) {
+            if (  (($fakenews->user_opened == Auth::id()) || (empty($fakenews->user_opened))) || (($fakenews->user_assigned == Auth::id() || (empty($fakenews->user_assigned))))) {
                 $fakenews->log="";
                 $first=!empty($fakenews->firstResponder)?$fakenews->firstResponder->name:"";
                 $last=!empty($fakenews->lastResponder)?$fakenews->lastResponder->name:"";
-                $frwd="Fakenews";
                 // store the id of the first operator that opens the report
-                if ((empty($fakenews->user_opened) || $fakenews->user_opened == NULL) || ($fakenews->forwarded == "true") ){
-                    $fakenews->log .= "Before Forwarded  (From ".$frwd."):" . $first."->".$last ;
+                if ($fakenews->user_opened == NULL){
                     $fakenews->user_opened = Auth::id();
                     $fakenews->user_assigned =null;
                 }
@@ -452,10 +411,10 @@ class FakenewsController extends Controller
                     // $fakenews->user_opened = Auth::id();  // ??????????
                     $fakenews->log .= "| Assigned to :" . Auth::User()->email;
                     $fakenews->status = "Opened";
-
+                    //requires stats data to be introduced when making an incident
                     $statistics = Statistics::where('tracking_id', '=', $fakenews->id)->first();
-
-                    if  (empty($fakenews->user_opened) || $fakenews->user_opened == NULL || ($fakenews->forwarded == "true") ) {
+                    
+                    if  (empty($fakenews->user_opened) || $fakenews->user_opened == NULL) {
                         $statistics->user_opened = Auth::id();
                         $statistics->user_assigned =null;
                     }
@@ -467,12 +426,10 @@ class FakenewsController extends Controller
                     // IF THERE IS THEN IT CAN CHANGE THE STATUS
                     if (!empty($statistics)) {
                         $statistics->status = "Opened";
-                        $statistics->forwarded="false";
+                        $statistics->forwarded ="false";
                         $statistics->save();
                     }
                 }
-                $fakenews->forwarded="false";
-                $fakenews->save();
                 $new_date = date('d/m/Y h:i', strtotime($fakenews->call_time));
                 $fakenews->call_time = $new_date;
                 ##
@@ -481,23 +438,34 @@ class FakenewsController extends Controller
                     $referenceidInfo = Array();
                     $refData = Fakenews::find($fakenews->insident_reference_id);
                     if (isset($refData) && !empty($refData)) {
-                        $referenceidInfo['is_it_hotline'] = $refData->is_it_hotline;
+                        $referenceidInfo['status'] = $refData->status;
                     } else {
                         $fakenews->insident_reference_id = null;
                     }
                 }
 
-                $userThathaveAccessonHotline = Array();
+                $userThathaveAccessonFakenews = Array();
                 foreach ($users as $user) {
-                    if ((Auth::id() != $user->id) &&  GroupPermission::canuser($user->id, 'edit', 'helpline')) {
-                        $userThathaveAccessonHotline[] = $user;
+                    if ((Auth::id() != $user->id) &&  GroupPermission::canuser($user->id, 'edit', 'fakenews')) {
+                        $userThathaveAccessonFakenews[] = $user;
                     }
                 }
-
-                return view('helpline.edit')->with([
-                    'helpline' => $helpline,
-                    'resource_types' => $resource_types,
-                    'content_types' => $content_types,
+                $image_array = Array();
+                if ($fakenews->img_upload==1){
+                    $image_array_ids = FakenewsPictureReff::where('fakenews_reference_id','=',$fakenews->id)->pluck('picture_reference_id');
+                    //dd($image_array_ids);
+                    foreach($image_array_ids as $image_id){
+                        $img_path = FakenewsPictures::where('id','=',$image_id)->pluck('picture_path');
+                        array_push($image_array,$img_path[0]);
+                    }
+                    //dd(asset('public/storage/uploaded_images/' . $img_path[0]));
+                }
+                
+                return view('fakenews.edit')->with([
+                    'pictures'=>$image_array,
+                    'fakenews' => $fakenews,
+                    'fakenews_type' => $fakenewstype,
+                    'fakenews_source_type' => $fakenewssourcetype,
                     'age_groups' => $age_groups,
                     'genders' => $genders,
                     'report_roles' => $report_roles,
@@ -506,7 +474,7 @@ class FakenewsController extends Controller
                     'references_to' => $references_to,
                     'priorities' => $priorities,
                     'status' => $status,
-                    'users' => $userThathaveAccessonHotline,//$users,
+                    'users' => $userThathaveAccessonFakenews,//$users,
                     'actionstaken' => $actions,
                     'referenceidInfo' => $referenceidInfo
                 ]);
@@ -515,7 +483,86 @@ class FakenewsController extends Controller
             }
         }
     }
-    
 
+    /**
+     * Save the data after editing the specified resource.
+     *
+     * @param \App\Helpline $helpline
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Request $request, Fakenews $fakenews)
+    {
+
+
+        $data = $request->all();
+
+        dd($data);
+
+        //In case the user selects to transfer the incident to another user.
+        // if ($request->user_assigned != $request->user_opened) {
+        //     if ( isset($request->user_opened) ){
+        //         $user= User::where('id', $request->user_opened)->first();
+        //     } else {
+        //         $user= User::where('id', $request->user_assigned)->first();
+        //     }
+        //     $data['user_assigned'] = $user->id;
+        //     $transferuser = User::where('id', $request->user_assigned)->first();
+        //     $data['user_opened'] = $transferuser->id;
+        // }
+
+        $data['comments'] = Crypt::encrypt($request->comments);
+
+        if (!empty($data['source_document'])){
+            $data['source_document'] = Crypt::encrypt($request->source_document);
+        }
+
+        // create the mysql date format
+        if (!empty($data['call_time'])) {
+            $dateformat = Carbon::createFromFormat('d/m/Y H:i:s', $data['call_time'] . ":00");
+            $data['call_time'] = $dateformat;
+        }
+
+        $fakenews = Fakenews::find($fakenews->id);
+        $fakenews->insident_reference_id = (isset($data['insident_reference_id'])) ? $data['insident_reference_id'] : null;
+        $fakenews->call_time = (isset($data['call_time'])) ? $data['call_time'] : null;
+        $fakenews->update($data);
+
+        $statistics = Statistics::where('tracking_id', '=', $fakenews->id)->first();
+
+        // 8/6/2018
+        // THERE WAS A CASE WHERE A REPORT WAS CREATED WITHOUT CREATING A STATISTICS ENTRY
+        // NEED TO CHECK WHY THIS HAPPENED - THE REPORT CREATED FROM HELPLINE ONLINE FORM
+        // FOR THIS REASON THE CODE BELOW, CHEKCS IF AN ENTRY IN THE STATISTICS TABLE EXISTS AND IF NOT CREATES A NEW ONE 
+        if (empty($statistics)) {
+            $statistics = new Statistics();
+            $statistics->tracking_id = $helpline->id;
+        }
+
+        $statistics->is_it_hotline = (isset($data['is_it_hotline'])) ? 'true' : 'false';
+        $statistics->submission_type = $data['submission_type'];
+        // user profile
+        $statistics->age = (isset($data['age'])) ? $data['age'] : 'Not Set';
+        $statistics->gender = (isset($data['gender'])) ? $data['gender'] : 'Not set';
+        $statistics->report_role = (isset($data['report_role'])) ? $data['report_role'] : 'Not set';
+        // report description            
+        $statistics->resource_type = $data['resource_type'];
+        $statistics->content_type = $data['content_type'];
+        // operator actions   
+        $statistics->user_opened = (isset($data['user_opened'])) ? $data['user_opened'] : '';
+        if (isset($data['user_assigned'])) $statistics->user_assigned = $data['user_assigned'];
+        $statistics->priority = (isset($data['priority'])) ? $data['priority'] : 'Not set';
+        $statistics->reference_by = (isset($data['reference_by'])) ? $data['reference_by'] : 'Not set';
+        $statistics->reference_to = (isset($data['reference_to'])) ? $data['reference_to'] : 'Not set';
+        $statistics->actions = (isset($data['actions'])) ? $data['actions'] : 'Not set';
+        $statistics->status = $data['status'];
+        $statistics->call_time = (isset($data['call_time'])) ? $data['call_time'] : null;
+        $statistics->manager_comments = (isset($data['manager_comments'])) ? $data['manager_comments'] : null;
+        $statistics->insident_reference_id = (isset($data['insident_reference_id'])) ? $data['insident_reference_id'] : null;
+        //
+        $statistics->save();
+
+
+        return redirect()->route('home');
+    }
 }
 ?>

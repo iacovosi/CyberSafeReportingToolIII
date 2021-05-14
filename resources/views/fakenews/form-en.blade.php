@@ -68,8 +68,8 @@
             </div>
             <!-- publication time -->
             <div class="form-group">
-                <label for="publication_time">@lang('translations.form.publication_time')</label>
-                <input type="time" name="publication_time" class="form-control" id="time" value={{ old('publication_time') }}></input>
+                <label for="tv_publication_time">@lang('translations.form.publication_time')</label>
+                <input type="time" name="tv_publication_time" class="form-control" id="tv_publication_time" value={{ old('tv_publication_time') }}></input>
                 <div class="help-block"> </div>
             </div>
         </fieldset>
@@ -117,8 +117,8 @@
 
             <!-- publication time -->
             <div class="form-group">
-                <label for="publication_time">@lang('translations.form.publication_time')</label>
-                <input type="time" name="publication_time" class="form-control" id="time" value={{ old('publication_time') }}></input>
+                <label for="radio_publication_time">@lang('translations.form.publication_time')</label>
+                <input type="time" name="radio_publication_time" class="form-control" id="radio_publication_time" value={{ old('radio_publication_time') }}></input>
                 <div class="help-block"></div>
             </div>
         </fieldset>
@@ -164,7 +164,7 @@
             </div>
             <!-- Specific area -->
             <div class="form-group" id="area_district">
-                <label for="address">@lang('translations.form.area_district')</label>
+                <label for="area_district">@lang('translations.form.area_district')</label>
                 <input type="text" name="area_district" class="form-control" id="area_district" value={{ old('area_district') }}></input>
                 <div class="help-block"> </div>
             </div>

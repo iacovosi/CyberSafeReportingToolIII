@@ -53,8 +53,6 @@ class Fakenews extends Model
     'call_time',
     
 ];
-}
-
 public function hasStatus(){
     return $this->hasOne(Status::class,'id','status');
 }
@@ -76,3 +74,6 @@ public function scopeOfStatus($query, $status)
         return $query->whereStatus($status);
     }
 }
+
+}
+

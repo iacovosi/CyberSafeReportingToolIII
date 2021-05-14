@@ -548,7 +548,8 @@ class Initialization extends Seeder
         $fakenews_types = array(
             ['id' => 1, 'typename'=> 'Hoax', 'typename_en' => 'Hoax','typename_gr' => 'Απάτη','created_at' => new DateTime, 'updated_at' => new DateTime],
             ['id' => 2, 'typename'=> 'Fake_News', 'typename_en' => 'Fake News','typename_gr' => 'Ψευδές ειδήσεις','created_at' => new DateTime, 'updated_at' => new DateTime],
-            ['id' => 3, 'typename'=> 'Real_News' , 'typename_en' => 'Real News','typename_gr' => 'Πραγματικές ειδήσεις','created_at' => new DateTime, 'updated_at' => new DateTime]
+            ['id' => 3, 'typename'=> 'Real_News' , 'typename_en' => 'Real News','typename_gr' => 'Πραγματικές ειδήσεις','created_at' => new DateTime, 'updated_at' => new DateTime],
+            ['id' => 4, 'typename'=> 'Undefined' , 'typename_en' => 'Undefined','typename_gr' => 'Απροσδιόριστο','created_at' => new DateTime, 'updated_at' => new DateTime]
         );
         DB::table('fakenews_type')->insert($fakenews_types);
 
