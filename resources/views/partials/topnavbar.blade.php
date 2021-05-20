@@ -70,10 +70,16 @@
                 @endif
 
                 @if(GroupPermission::usercan('view','statistics'))
-                <li>
-                    <a href="{{ route('statistics.index') }}">
-                        <i class="fa fa-bar-chart" aria-hidden="true"></i> Statistics
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown">
+                        <i class="fa fa-bar-chart" aria-hidden="true"></i> Statistics 
+                        <span class="caret"></span>
                     </a>
+                    
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ route('statistics.index') }}">Helpline and Hotline</a></li>
+                        <li><a href="">Fakenews</a></li>
+                    </ul>
                 </li>
                 @endif
             </ul>

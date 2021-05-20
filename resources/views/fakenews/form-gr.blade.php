@@ -68,8 +68,8 @@
             </div>
             <!-- publication time -->
             <div class="form-group">
-                <label for="publication_time">@lang('translations.form.publication_time')</label>
-                <input type="time" name="publication_time" class="form-control" id="time" value={{ old('publication_time') }}></input>
+                <label for="tv_publication_time">@lang('translations.form.publication_time')</label>
+                <input type="time" name="tv_publication_time" class="form-control" id="tv_publication_time" value={{ old('tv_publication_time') }}></input>
                 <div class="help-block"> </div>
             </div>
         </fieldset>
@@ -117,8 +117,8 @@
 
             <!-- publication time -->
             <div class="form-group">
-                <label for="publication_time">@lang('translations.form.publication_time')</label>
-                <input type="time" name="publication_time" class="form-control" id="time" value={{ old('publication_time') }}></input>
+                <label for="radio_publication_time">@lang('translations.form.publication_time')</label>
+                <input type="time" name="radio_publication_time" class="form-control" id="radio_publication_time" value={{ old('radio_publication_time') }}></input>
                 <div class="help-block"></div>
             </div>
         </fieldset>
@@ -147,31 +147,30 @@
             <div class="row">
                 <div class="col-sm-6">
                     <!-- Country of news -->
-                    <div class="form-group" id="country">
+                    <div class="form-group" id="adv_country">
                         <label for="country">@lang('translations.form.country')*</label>
-                        <input type="text" name="country" class="form-control" value={{ old('country') }}></input>
-                        <span class="text-danger">{{ $errors->first('resource_url') }}</span>
+                        <input type="text" name="adv_country" class="form-control" value={{ old('adv_country') }}></input>
                     </div>
                 </div>
                 <div class="col-sm-6">
                     <!-- Town -->
-                    <div class="form-group" id="town">
+                    <div class="form-group" id="adv_town">
                         <label for="town">@lang('translations.form.town')*</label>
-                        <input type="text" name="town" class="form-control" id="town" value={{ old('town') }}></input>
+                        <input type="text" name="adv_town" class="form-control" id="adv_town" value={{ old('adv_town') }}></input>
                         <div class="help-block"> </div>
                     </div>
                 </div>
             </div>
             <!-- Specific area -->
-            <div class="form-group" id="area_district">
-                <label for="address">@lang('translations.form.area_district')</label>
-                <input type="text" name="area_district" class="form-control" id="area_district" value={{ old('area_district') }}></input>
+            <div class="form-group" id="adv_area_district">
+                <label for="adv_area_district">@lang('translations.form.area_district')</label>
+                <input type="text" name="adv_area_district" class="form-control" id="adv_area_district" value={{ old('adv_area_district') }}></input>
                 <div class="help-block"> </div>
             </div>
             <!-- Specific adresss -->
-            <div class="form-group" id="specific_address">
-                <label for="address">@lang('translations.form.specific_address')</label>
-                <input type="text" name="specific_address" class="form-control" id="specific_address" value={{ old('specific_address') }}></input>
+            <div class="form-group" id="adv_specific_address">
+                <label for="adv_specific_address">@lang('translations.form.specific_address')</label>
+                <input type="text" name="adv_specific_address" class="form-control" id="adv_specific_address" value={{ old('adv_specific_address') }}></input>
                 <div class="help-block"> </div>
             </div>
             <!-- Report message-->
@@ -186,7 +185,7 @@
             <legend class="scheduler-border">@lang('translations.form.other_route')</legend>
             <!-- specify-->
             <div class="form-group">
-                <label for="address">@lang('translations.form.specify')</label>
+                <label for="specific_type">@lang('translations.form.specify')</label>
                 <input type="text" name="specific_type" class="form-control" id="specific_type" value={{ old('specific_type') }}></input>
                 <div class="help-block"></div>
             </div>
@@ -194,31 +193,30 @@
             <div class="row">
                 <div class="col-sm-6">
                     <!-- Country of news -->
-                    <div class="form-group" id="country">
-                        <label for="country">@lang('translations.form.country')*</label>
-                        <input type="text" name="country" class="form-control" value={{ old('country') }}></input>
-                        <span class="text-danger">{{ $errors->first('resource_url') }}</span>
+                    <div class="form-group" id="other_country">
+                        <label for="other_country">@lang('translations.form.country')*</label>
+                        <input type="text" name="other_country" class="form-control" value={{ old('other_country') }}></input>
                     </div>
                 </div>
                 <div class="col-sm-6">
                     <!-- Town -->
-                    <div class="form-group" id="town">
+                    <div class="form-group" id="other_town">
                         <label for="town">@lang('translations.form.town')*</label>
-                        <input type="text" name="town" class="form-control" id="town" value={{ old('town') }}></input>
+                        <input type="text" name="other_town" class="form-control" id="other_town" value={{ old('other_town') }}></input>
                         <div class="help-block"> </div>
                     </div>
                 </div>
             </div>
-            <!-- Specific area code -->
-            <div class="form-group" id="area_district">
-                <label for="address">@lang('translations.form.area_district')</label>
-                <input type="text" name="area_district" class="form-control" id="area_district" value={{ old('area_district') }}></input>
+            <!-- Specific area -->
+            <div class="form-group" id="other_area_district">
+                <label for="other_area_district">@lang('translations.form.area_district')</label>
+                <input type="text" name="other_area_district" class="form-control" id="other_area_district" value={{ old('other_area_district') }}></input>
                 <div class="help-block"> </div>
             </div>
             <!-- Specific adresss -->
-            <div class="form-group" id="specific_address">
-                <label for="address">@lang('translations.form.specific_address')</label>
-                <input type="text" name="specific_address" class="form-control" id="specific_address" value={{ old('specific_address') }}></input>
+            <div class="form-group" id="other_specific_address">
+                <label for="other_specific_address">@lang('translations.form.specific_address')</label>
+                <input type="text" name="other_specific_address" class="form-control" id="other_specific_address" value={{ old('other_specific_address') }}></input>
                 <div class="help-block"> </div>
             </div>
             <!-- Report message-->
@@ -333,7 +331,7 @@
                             <div class="btn-group" data-toggle="buttons">
                                 @foreach($age_groups as $age_group)
                                 <label class="btn btn-default  @if (old('age') == $age_group->name) active  @endif">
-                                    <input type="radio" name="age" value="{{$age_group->name}}" @if (old('age') == $age_group->name) checked  @endif >{{$age_group->display_name_en}}
+                                    <input type="radio" name="age" value="{{$age_group->name}}" @if (old('age') == $age_group->name) checked  @endif >{{$age_group->display_name_gr}}
                                 </label>
                                 @endforeach
                             </div>
@@ -347,7 +345,7 @@
                             <div class="btn-group" data-toggle="buttons">
                                 @foreach($genders as $gender)
                                 <label class="btn btn-default @if (old('gender') == $gender->name) active  @endif">
-                                    <input type="radio" name="gender" value="{{$gender->name}}" @if (old('gender') == $gender->name) checked  @endif>{{$gender->display_name_en}}
+                                    <input type="radio" name="gender" value="{{$gender->name}}" @if (old('gender') == $gender->name) checked  @endif>{{$gender->display_name_gr}}
                                 </label>
                                 @endforeach
                             </div>

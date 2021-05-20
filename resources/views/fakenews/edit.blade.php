@@ -2,7 +2,6 @@
 
 @section('content')
     <div class="container report-details" id="fakenews-report-edit">
-
         <div class="row">
             <div class="col-md-12">
 
@@ -157,7 +156,7 @@
                                     <!-- Report Contact Method -->
                                     <label for="submission_type" class="col-sm-2 control-label">Contact method</label>
                                     <div class="col-sm-4">
-                                        <select class="form-control" name="submission_type">
+                                        <select class="form-control" name="submission_type" >
                                             <option value="0" @if($fakenews->submission_type == "0") selected
                                                     @endif disabled>Select an option...
                                             </option>
@@ -187,7 +186,7 @@
                                         </select>
                                     </div>
                                     <!-- publication date -->
-                                    <label for="publication_date" class="col-sm-2 control-label">Publication Date</label>
+                                    <label for="publication_date" class="col-sm-2 control-label" required>Publication Date</label>
                                     <div class="col-sm-4">
                                             <input type="date" class="form-control" value="{{ $fakenews->publication_date }}" 
                                             name="publication_date">
@@ -239,7 +238,7 @@
                                         <label for="source_document" class="col-sm-2 control-label">Source Document</label>
                                         <div class="col-sm-10">
                                             @if($fakenews->source_document == null)
-                                                <?php $source_document = "Not provided."; ?>
+                                                <?php $source_document = null; ?>
                                             @else
                                                 <?php $source_document = Crypt::decrypt($fakenews->source_document); ?>
                                             @endif
@@ -274,10 +273,10 @@
                                                 name="radio_station">
                                     </div>
                                     <!-- Radio station frequency -->
-                                    <label for="radio_station_freq" class="col-sm-2 control-label">Radio Station Frequency</label>   
+                                    <label for="radio_freq" class="col-sm-2 control-label">Radio Station Frequency [MHz]</label>   
                                     <div class="col-sm-4">
-                                            <input type="text" class="form-control" value="{{ $fakenews->radio_station_freq }}" 
-                                            name="radio_station_freq">
+                                            <input type="text" class="form-control" value="{{ $fakenews->radio_freq }}" 
+                                            name="radio_freq">
                                     </div>
                                 </fieldset>
                             </fieldset>
@@ -327,7 +326,7 @@
                                                 name="country">
                                     </div>
                                     <!-- Town -->
-                                    <label for="town" class="col-sm-2 control-label">Radio Station Frequency</label>   
+                                    <label for="town" class="col-sm-2 control-label">Town</label>   
                                     <div class="col-sm-4">
                                             <input type="text" class="form-control" value="{{ $fakenews->town }}" 
                                             name="town">
@@ -350,43 +349,78 @@
                             </fieldset>   
                             <fieldset>
                                 <legend>Uploaded pictures </legend>
-                                <!--                                 
-                                <fieldset class="form-group">
-                                        <label for = "specific_type" class = "col-sm-2 control-label">Image test}</label>
-                                        <div class="col-sm-10">
-                                            <img src="{{ asset('storage/' . '1620917448_mountains-190055_1280.jpg') }}" alt="image is not showable.">
-                                        </div>
-                                    </fieldset> 
-                                -->
                                 @if(count($pictures)>0)
-                                    <div class = "form-group">
+                                    <fieldset class = "form-group">
                                         <label for = "image_check" class = "col-sm-2 control-label">Images have been uploaded. would you like to see them?</label>
-                                        <br/>
+                                        <input type = "hidden" name = "img_upload" value = 1></input>
                                         <div class="btn-group col-sm-8" data-toggle="buttons">
                                             <label class="btn btn-default">
-                                                <input type="radio" name="img_upload" value="1" >Show</input>
+                                                <input type="radio" name="img_show" value="1" >Show</input>
                                             </label>
                                             <label class="btn btn-default">
-                                                <input type="radio" name="img_upload" value="0" pressed >Hide</input>
+                                                <input type="radio" name="img_show" value="0" pressed >Hide</input>
                                             </label>
                                         </div>
-                                    </div>
-                                    <div class = "form-group" id = 'img_upload'>
+                                    </fieldset>
+                                    <fieldset class = "form-group" id = 'img_show'>
                                         @foreach($pictures as $img_path)
-                                        <fieldset class="form-group">
-                                            <label for = "evidence_img" class = "col-sm-4 control-label">Image name: {{$img_path}}</label>
-                                            <div class="col-sm-7">
-                                                <img class ="img-thumbnail"  src="{{ asset('storage/uploaded_images/' . $img_path) }}" alt="image is not showable."
-                                                title="{{$img_path}}" id='evidence_img'>
+                                            <fieldset class="form-group">
+                                                <div class = "col-sm-4 control-label" >
+                                                    <label for = "evidence_img" class = "col-sm-4 control-label">Title: {{$img_path}}</label>
+                                                    <a  
+                                                    class="btn btn-danger" data-toggle="modal" data-target="#myModal-delete">
+                                                    <i class="fa fa-times" aria-hidden="true"></i>
+                                                    Remove</a>
+                                                </div>
+                                                <div class="col-sm-7">
+                                                    <img class ="img-thumbnail"  src="{{ asset('storage/uploaded_images/' . $img_path) }}" alt="image is not showable."
+                                                    title="{{$img_path}}" id='evidence_img'>
+                                                </div>
+                                            </fieldset>
+
+                                            <!-- Modal -->
+                                            <div id="myModal-delete" class="modal fade" role="dialog">
+                                                <div class="modal-dialog">
+                                                    <!-- Modal content-->
+                                                    <div class="modal-content">
+                                                        <div class="modal-body">
+                                                            <p>Are you sure you want to delete this image? It will be deleted forever.</p>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                                                            <a class="btn btn-danger" 
+                                                            href = "{{route('delete-image-fakenews',['fakenews'=>$fakenews->id ,'image_id' => array_search($img_path, $pictures)])}}">
+                                                            Delete</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </fieldset>
+                                    </fieldset>
                                         @endforeach
-                                    </div>
+                                    
+                                    <fieldset class = "form-group">
+                                        <label for = "image_check" class="col-sm-2 control-label">Would you like to upload pictures?</label>
+                                        <div class = "col-sm-4 " id = 'img_upload'>
+                                            <input  type="file" class="form-control" name="images[]" multiple placeholder="images only" >
+                                        </div>
+                                        <div class="btn-group col-sm-2" data-toggle="buttons">
+                                            <label class="btn btn-default">
+                                                <input type="radio" name="img_upload" value="1">
+                                                Yes
+                                            </label>
+                                            <label class="btn btn-default">
+                                                <input type="radio" name="img_upload" value="0">
+                                                No
+                                            </label>
+                                        </div>
+
+                                    </fieldset>
                                 @else
                                     <fieldset class="form-group">
                                         <label for = "evidence_img" class = "col-sm-10 control-label" ></label>
                                         <div class="col-sm-10">
                                             <h3>No images were uploaded.</h3>
+                                            <input type = "hidden" name = "img_upload" value = 0></input>
                                         </div>
                                     </fieldset>
                                 @endif
@@ -400,10 +434,12 @@
                                 <legend>Operator actions</legend>
                                 <fieldset class="form-group">
                                     <!-- Evaluation -->
-                                    <label for="evaluation" class="col-sm-2 control-label">Operator Evaluation</label>
+                                    <label for="evaluation" class="col-sm-2 control-label">Operator Fakenews Evaluation</label>
                                     <div class="col-sm-4">
-                                        <input type="range" min="0" max="100" step="10" value="{{ $fakenews->evaluation }}" class="slider" id="evaluation">
+                                        <input type="range" min="0" max="100" step="5" value="{{ $fakenews->evaluation }}" class="slider" id="evaluation" name ="evaluation">
+                                        <span class = 'range-value'>{{ $fakenews->evaluation }}</span>
                                     </div>
+                
                                     <label for="fakenews_type" class="col-sm-2 control-label">Fakenews Type</label>
                                     <div class="col-sm-4">
                                     <select class = "form-control" name = "fakenews_type" id = "fakenews_type">
@@ -419,13 +455,11 @@
                                     <label for="user_opened" class="col-sm-2 control-label">Opened by operator</label>
                                     <div class="col-sm-4">
                                         @if($fakenews->firstResponder == null)
-                                            <input type="text" class="form-control" value="" placeholder="No one"
-                                                   disabled>
+                                            <input type="text" class="form-control" value = null  placeholder="No one" disabled>
                                         @else
-                                            <input type="text" class="form-control"
-                                                value="{{$fakenews->firstResponder->name}}" disabled>
-                                                <input type="hidden" name="user_opened"
-                                                    value="{{$fakenews->firstResponder->id}}">
+                                            <input type = "text" class = "form-control"  value = "{{$fakenews->firstResponder->name}}" 
+                                            disabled>
+                                            <input type = "hidden" name = "user_opened" value = "{{$fakenews->firstResponder->id}}">
                                         @endif
                                     </div>
                                     <!-- Report Forward to operator -->
@@ -570,6 +604,7 @@
     <script>
         $(document).ready(function () {
             $('#img_upload').hide();
+            $('#img_show').hide();
             $('.ping').hide();
 
 /*             $('input[name = "fakenews_source_type"]').change(function(){
@@ -670,9 +705,7 @@
                 $('#newspaper_sellect').hide();
                 $('#adv_sellect').hide();
                 $('#other_sellect').show();
-            }
-        }).change();
-
+            }}).change();
 
             $('input[name="img_upload"]').change(function() {
                 if((this.value === "1") && this.checked) {
@@ -682,11 +715,23 @@
                 }
             }).change();
 
+            $('input[name="img_show"]').change(function() {
+                if((this.value === "1") && this.checked) {
+                    $('#img_show').show();
+                } else if((this.value === "0") && this.checked) {
+                    $('#img_show').hide();
+                }
+            }).change();
+
+            $('.slider').on('input', function() {
+                $(this).next('.range-value').html(this.value);
+            });
 
             $('.js-example-basic-multiple').select2();
             $('#call_time').datetimepicker({
                 locale: 'en-gb'
             });
+
         });
     </script>
 @endsection

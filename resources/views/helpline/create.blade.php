@@ -146,7 +146,7 @@
                             <fieldset class="form-group">
                                 <label for="content_type" class="col-sm-2 control-label">Content Type *</label>
                                 <div class="col-sm-4">
-                                    <select class="form-control" name="content_type" required>
+                                    <select class="form-control" name="content_type" >
                                         <option value="" selected disabled>Select an option...</option>
                                         @foreach($content_types->sortBy('display_name_en') as $content_type)
                                             @if ($content_type->is_for == 'helpline')
@@ -252,7 +252,7 @@
                                 <label for="status" class="col-sm-2 control-label">Reported Date</label>
                                 <div class="col-sm-4">
                                     <label for="call_time">Call Date </label>
-                                    <input name="call_time" type='text' id="call_time" class="form-control form-inline" value="{{date('d/m/Y H:i')}}"   />
+                                    <input name="call_time" type='text' id="call_time" class="form-control form-inline" value="{{date('d/m/Y H:i')}}"/>
                                 </div>
                             </fieldset>
 
