@@ -45,7 +45,8 @@ Route::group(['middleware' => ['web','auth']], function () {
     });
 
     Route::group(['middleware' => ['permission:view_users']], function () {
-        Route::get('/users/{user}/edit','UserController@edit')->name('users.edit');
+        Route::get('/users/{user}/
+        ','UserController@edit')->name('users.edit');
         Route::get('/users','UserController@index')->name('users.index');
     });
 
@@ -193,10 +194,13 @@ Route::group(['middleware' => ['web','auth']], function () {
     });
 
 
-    Route::group(['middleware' => ['permission:delete_helpline']], function () {
+    Route::group(['middleware' => ['permission:delete_fakenews']], function () {
         Route::delete('/fakenews/{fakenews}','FakenewsController@destroy')->name('delete.fakenews'); // delete report
     });  
 
+    Route::group(['middleware' => ['permission:edit_fakenews']], function () {
+        Route::get('/fakenews/{fakenews}/delete/{image_id}','FakenewsController@deleteimage')->name('delete-image-fakenews');
+    });
 
     /*
     * Investigation, this is used for both helpline and hotline.
@@ -208,6 +212,7 @@ Route::group(['middleware' => ['web','auth']], function () {
     Route::group(['middleware' => ['permission:edit_fakenews, edit_fakenews']], function () {
         Route::get('/fakenews/{fakenews}/edit','FakenewsController@edit')->name('edit-fakenews'); // edit invastigation 
     });
+
 
     /*
     *   Statistics
