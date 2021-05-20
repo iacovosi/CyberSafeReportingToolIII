@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use App;
+use Storage;
 use Session;
 use Response;
 use Validator;
@@ -32,6 +33,7 @@ use App\FakenewsType;
 use App\FakenewsPictures;
 use App\FakenewsPictureReff;
 use App\FakenewsSourceType;
+use App\FakenewsStatistics;
 use Carbon\Carbon;
 use Mail;  // <<<<
 
@@ -95,6 +97,7 @@ class FakenewsController extends Controller
         return view('fakenews.submitted', compact('backtoform', 'language'));
     }
 
+
     /**
      * Show the form for creating a new resource.
      * 
@@ -120,7 +123,7 @@ class FakenewsController extends Controller
 
         $userThathaveAccessonFakenews = Array();
         foreach ($users as $user) {
-            if (GroupPermission::canuser($user->id, 'edit', 'Fakenews')) {
+            if (GroupPermission::canuser($user->id, 'edit', 'fakenews')) {
                 $userThathaveAccessonFakenews[] = $user;
             }
         }
@@ -150,10 +153,9 @@ class FakenewsController extends Controller
     public function store(Request $request)
     {
         // Validate the post...
+        //dd(!$request->submitted_by_operator);
         if (!$request->submitted_by_operator) 
         {
-            
-
             // Set validation rules for fields
             $rules = [
                 'fakenews_source_type'=>'required',
@@ -167,18 +169,18 @@ class FakenewsController extends Controller
                 'tv_channel'=>'required_if:fakenews_source_type,TV',
                 'tv_prog_title'=>'required_if:fakenews_source_type,TV',
                 'tv_publication_time'=>'required_if:fakenews_source_type,TV',
-                //Radio rulea
+                //Radio rules
                 'town'=>'required_if:fakenews_source_type,Radio',
                 'radio_publication_time'=>'required_if:fakenews_source_type,Radio',
                 //Newspaper rules
                 'newspaper_name'=>'required_if:fakenews_source_type,Newspaper',
                 //adv/pam rules
-                'country'=>'required_if:fakenews_source_type,Advertising/Pamphlets',
-                'town'=>'required_if:fakenews_source_type,Advertising/Pamphlets',
+                'adv_country'=>'required_if:fakenews_source_type,Advertising/Pamphlets',
+                'adv_town'=>'required_if:fakenews_source_type,Advertising/Pamphlets',
                 //Other
                 'specific_type'=>'required_if:fakenews_source_type,Other',
-                'country'=>'required_if:fakenews_source_type,Other',
-                'town'=>'required_if:fakenews_source_type,Other',
+                'other_country'=>'required_if:fakenews_source_type,Other',
+                'other_town'=>'required_if:fakenews_source_type,Other',
                 //Personal details
                 'name' => 'required_if:personal_data,true',
                 'images*' => 'required_if:img_upload:yes',
@@ -206,108 +208,127 @@ class FakenewsController extends Controller
                 return redirect()->back()->with(['errors' => $validator->messages()])->withInput();
             }
         }
-        //$fakenews = new Fakenews;
 
         $data = $request->all();
-        
+        //dd($data);
         // Defaults
         $data['submission_type'] = (!empty($request->submission_type)) ? $request->submission_type : 'electronic-form';
-        $data['evaluation'] = (!empty($request->submission_type)) ? $request->evaluation : '50';
+        $data['evaluation'] = (!empty($request->evaluation)) ? $request->evaluation : '50';
+        $data['img_upload'] = (!empty($request->img_upload)) ? $request->img_upload : 0;
         
         //unset($data['submitted_by_operator']);
 
-        /* if (!empty($data['call_time'])) {
+        if (!empty($data['call_time'])) {
             $dateformat = Carbon::createFromFormat('d/m/Y H:i:s', $data['call_time'] . ":00");
             $data['call_time'] = $dateformat;
-        } */
-        if ($data['fakenews_source_type']=='Internet'){
-            unset($data['tv_channel']);
-            unset($data['tv_prog_title']);
-            unset($data['radio_station']);
-            unset($data['radio_freq']);
-            unset($data['newspaper_name']);
-            unset($data['page']);
-            unset($data['specific_type']);
-            unset($data['country']);
-            unset($data['town']);
-            unset($data['area_district']);
-            unset($data['specific_address']);   
-        }elseif($data['fakenews_source_type']=='TV'){
-            $data['publication_time']=$data['tv_publication_time'];
-            unset($data['tv_publication_time']);
-            unset($data['source_url']);
-            unset($data['title']);
-            unset($data['source_document']);
-            unset($data['radio_station']);
-            unset($data['radio_freq']);
-            unset($data['newspaper_name']);
-            unset($data['page']);
-            unset($data['specific_type']); 
-            unset($data['country']);
-            unset($data['town']);
-            unset($data['area_district']);
-            unset($data['specific_address']);   
-        }elseif($data['fakenews_source_type']=='Radio'){
-            $data['publication_time']=$data['radio_publication_time'];
-            unset($data['radio_publication_time']);
-            unset($data['tv_channel']);
-            unset($data['tv_prog_title']);
-            unset($data['source_url']);
-            unset($data['title']);
-            unset($data['source_document']);
-            unset($data['newspaper_name']);
-            unset($data['page']);
-            unset($data['specific_type']); 
-            unset($data['area_district']);
-            unset($data['specific_address']); 
-        }elseif($data['fakenews_source_type']=='Newspaper'){
-            unset($data['tv_channel']);
-            unset($data['tv_prog_title']);
-            unset($data['source_url']);
-            unset($data['radio_station']);
-            unset($data['radio_freq']);
-            unset($data['title']);
-            unset($data['source_document']);
-            unset($data['specific_type']);
-            unset($data['country']);
-            unset($data['town']);
-            unset($data['area_district']);
-            unset($data['specific_address']);    
-        }elseif($data['fakenews_source_type']=='Advertising/Pamphlets'){
-            unset($data['tv_channel']);
-            unset($data['tv_prog_title']);
-            unset($data['source_url']);
-            unset($data['radio_station']);
-            unset($data['radio_freq']);
-            unset($data['title']);
-            unset($data['source_document']);
-            unset($data['specific_type']);
-            unset($data['newspaper_name']);
-            unset($data['page']);
-        }elseif($data['fakenews_source_type']=='Other'){
-            unset($data['tv_channel']);
-            unset($data['tv_prog_title']);
-            unset($data['source_url']);
-            unset($data['radio_station']);
-            unset($data['radio_freq']);
-            unset($data['title']);
-            unset($data['source_document']);
-            unset($data['newspaper_name']);
-            unset($data['page']);
-        };
+        }
+
+       
         unset($data['images']);
         unset($data["g-recaptcha-response"]);
         
         $data['comments'] = Crypt::encrypt($request->comments);
-        if ($data['fakenews_source_type']=='Internet'){
+        if ($data['fakenews_source_type']=='Internet' & (!empty($data['source_document']))){
             $data['source_document'] = Crypt::encrypt($request->source_document);
         } 
+        if (!$request->submitted_by_operator){
+            if ($data['fakenews_source_type']=='Internet'){
+                unset($data['tv_channel']);
+                unset($data['tv_prog_title']);
+                unset($data['radio_station']);
+                unset($data['radio_freq']);
+                unset($data['newspaper_name']);
+                unset($data['page']);
+                unset($data['specific_type']);
+                unset($data['country']);
+                unset($data['town']);
+                unset($data['area_district']);
+                unset($data['specific_address']);   
+            }elseif($data['fakenews_source_type']=='TV'){
+                $data['publication_time']=$data['tv_publication_time'];
+                unset($data['tv_publication_time']);
+                unset($data['source_url']);
+                unset($data['title']);
+                unset($data['source_document']);
+                unset($data['radio_station']);
+                unset($data['radio_freq']);
+                unset($data['newspaper_name']);
+                unset($data['page']);
+                unset($data['specific_type']); 
+                unset($data['country']);
+                unset($data['town']);
+                unset($data['area_district']);
+                unset($data['specific_address']);   
+            }elseif($data['fakenews_source_type']=='Radio'){
+                $data['publication_time']=$data['radio_publication_time'];
+                unset($data['radio_publication_time']);
+                unset($data['tv_channel']);
+                unset($data['tv_prog_title']);
+                unset($data['source_url']);
+                unset($data['title']);
+                unset($data['source_document']);
+                unset($data['newspaper_name']);
+                unset($data['page']);
+                unset($data['specific_type']); 
+                unset($data['area_district']);
+                unset($data['specific_address']); 
+            }elseif($data['fakenews_source_type']=='Newspaper'){
+                unset($data['tv_channel']);
+                unset($data['tv_prog_title']);
+                unset($data['source_url']);
+                unset($data['radio_station']);
+                unset($data['radio_freq']);
+                unset($data['title']);
+                unset($data['source_document']);
+                unset($data['specific_type']);
+                unset($data['country']);
+                unset($data['town']);
+                unset($data['area_district']);
+                unset($data['specific_address']);    
+            }elseif($data['fakenews_source_type']=='Advertising/Pamphlets'){
+                $data['country'] = $data['adv_country'];
+                unset($data['adv_country']);
+                $data['town'] = $data['adv_town'];
+                unset($data['adv_town']);
+                $data['area_district'] = $data['adv_area_district'];
+                unset($data['adv_area_district']);
+                $data['specific_address'] = $data['adv_specific_address'];
+                unset($data['adv_specific_address']);
+                unset($data['tv_channel']);
+                unset($data['tv_prog_title']);
+                unset($data['source_url']);
+                unset($data['radio_station']);
+                unset($data['radio_freq']);
+                unset($data['title']);
+                unset($data['source_document']);
+                unset($data['specific_type']);
+                unset($data['newspaper_name']);
+                unset($data['page']);
+            }elseif($data['fakenews_source_type']=='Other'){
+                $data['country'] = $data['other_country'];
+                unset($data['other_country']);
+                $data['town'] = $data['other_town'];
+                unset($data['other_town']);
+                $data['area_district'] = $data['other_area_district'];
+                unset($data['other_area_district']);
+                $data['specific_address'] = $data['other_specific_address'];
+                unset($data['other_specific_address']);
+                unset($data['tv_channel']);
+                unset($data['tv_prog_title']);
+                unset($data['source_url']);
+                unset($data['radio_station']);
+                unset($data['radio_freq']);
+                unset($data['title']);
+                unset($data['source_document']);
+                unset($data['newspaper_name']);
+                unset($data['page']);
+            };
+        };
+        
         //dd($data);
         $id = Fakenews::create($data)->id;
-        //$fakenews = Fakenews::find($id);
-        //$fakenews -> update($data);
 
-        if ($files = $request->images){
+        if (($files = $request->images) & (!empty($request->images))){
             foreach($files as $file){
                 $imageName = time() .'_' . $file -> getClientOriginalName();
                 $file->move(public_path("storage\\uploaded_images"),$imageName);
@@ -325,28 +346,29 @@ class FakenewsController extends Controller
             };
         };
 
-
-
-        /*if (isset($data['call_time'])){
-            $helpline->call_time = $data['call_time'];
-        } */
-
-       /*  $statistics = new Statistics();
+        $statistics = new FakenewsStatistics();
 
         // Get the created incident so we add its id to the Statistics so we can track it!!!
         // $returnLatest = Helpline::latest()->first();
         $statistics->tracking_id = $id;// $returnLatest->id;
         //
-        $statistics->is_it_hotline = (isset($data['is_it_hotline'])) ? 'true' : 'false';
         $statistics->submission_type = $data['submission_type'];
         // user profile
         $statistics->age = (isset($data['age'])) ? $data['age'] : 'Not Set';
         $statistics->gender = (isset($data['gender'])) ? $data['gender'] : 'Not set';
         $statistics->report_role = (isset($data['report_role'])) ? $data['report_role'] : 'Not set';
         // report description
-        $statistics->resource_type = $data['resource_type'];
-        $statistics->content_type = $data['content_type'];
-        // operator actions        
+        $statistics->fakenews_source_type = $data['fakenews_source_type'];
+        $statistics->fakenews_type = (isset($data['fakenews_type'])) ? $data['fakenews_type'] : 'Undefined';
+        $statistics->evaluation = $data['evaluation'];
+        $statistics->img_upload = $data['img_upload'];
+
+        $statistics->loc_available = (  isset($data['country']) | 
+                                        isset($data['town']) | 
+                                        isset($data['area_district']) |
+                                        isset($data['specific_address'])  ) 
+                                        ? 1: 0;
+        // operator actions
         $statistics->user_opened = (isset($data['user_opened'])) ? $data['user_opened'] : null;
         // $statistics->user_assigned = (isset($data['user_assigned'])) ? $data['user_assigned'] : '';
         if (isset($data['user_assigned'])) $statistics->user_assigned = $data['user_assigned'];
@@ -359,14 +381,14 @@ class FakenewsController extends Controller
         $statistics->manager_comments = (isset($data['manager_comments'])) ? $data['manager_comments'] : null;
         $statistics->insident_reference_id = (isset($data['insident_reference_id'])) ? $data['insident_reference_id'] : null;
         //
-        $statistics->save(); */
+        $statistics->save();
 
         //HelplineController::emailInformOperators($is_it_hotline);  //if email server enabled.. then you can send email!
 
-        /*  if ($request->submitted_by_operator) {
+        if ($request->submitted_by_operator) {
             return redirect('home');
         }
-       */
+       
         return redirect('fakenews/submitted')->with('success-info', Lang::get('success.submited', array(), Session::get('lang')));
     }
       /**
@@ -451,14 +473,15 @@ class FakenewsController extends Controller
                     }
                 }
                 $image_array = Array();
+                //$image_id_array = Array();
                 if ($fakenews->img_upload==1){
                     $image_array_ids = FakenewsPictureReff::where('fakenews_reference_id','=',$fakenews->id)->pluck('picture_reference_id');
                     //dd($image_array_ids);
                     foreach($image_array_ids as $image_id){
                         $img_path = FakenewsPictures::where('id','=',$image_id)->pluck('picture_path');
-                        array_push($image_array,$img_path[0]);
+                        $image_array[$image_id]=$img_path[0];
                     }
-                    //dd(asset('public/storage/uploaded_images/' . $img_path[0]));
+                    //dd($image_array);
                 }
                 
                 return view('fakenews.edit')->with([
@@ -493,10 +516,9 @@ class FakenewsController extends Controller
     public function edit(Request $request, Fakenews $fakenews)
     {
 
-
         $data = $request->all();
 
-        dd($data);
+        //dd($data);
 
         //In case the user selects to transfer the incident to another user.
         // if ($request->user_assigned != $request->user_opened) {
@@ -527,28 +549,34 @@ class FakenewsController extends Controller
         $fakenews->call_time = (isset($data['call_time'])) ? $data['call_time'] : null;
         $fakenews->update($data);
 
-        $statistics = Statistics::where('tracking_id', '=', $fakenews->id)->first();
+        $statistics = FakenewsStatistics::where('tracking_id', '=', $fakenews->id)->first();
 
         // 8/6/2018
         // THERE WAS A CASE WHERE A REPORT WAS CREATED WITHOUT CREATING A STATISTICS ENTRY
         // NEED TO CHECK WHY THIS HAPPENED - THE REPORT CREATED FROM HELPLINE ONLINE FORM
         // FOR THIS REASON THE CODE BELOW, CHEKCS IF AN ENTRY IN THE STATISTICS TABLE EXISTS AND IF NOT CREATES A NEW ONE 
-        if (empty($statistics)) {
-            $statistics = new Statistics();
-            $statistics->tracking_id = $helpline->id;
+          if (empty($statistics)) {
+            $statistics = new FakenewsStatistics();
+            $statistics->tracking_id = $fakenews->id;
         }
 
-        $statistics->is_it_hotline = (isset($data['is_it_hotline'])) ? 'true' : 'false';
         $statistics->submission_type = $data['submission_type'];
         // user profile
         $statistics->age = (isset($data['age'])) ? $data['age'] : 'Not Set';
         $statistics->gender = (isset($data['gender'])) ? $data['gender'] : 'Not set';
         $statistics->report_role = (isset($data['report_role'])) ? $data['report_role'] : 'Not set';
-        // report description            
-        $statistics->resource_type = $data['resource_type'];
-        $statistics->content_type = $data['content_type'];
-        // operator actions   
-        $statistics->user_opened = (isset($data['user_opened'])) ? $data['user_opened'] : '';
+        // report description       
+        $statistics->fakenews_source_type = $data['fakenews_source_type'];
+        $statistics->fakenews_type = (isset($data['fakenews_type'])) ? $data['fakenews_type'] : 'Undefined';
+        $statistics->evaluation = $data['evaluation'];
+        $statistics->img_upload = $data['img_upload'];
+        $statistics->loc_available = (  isset($data['country']) | 
+                                        isset($data['town']) | 
+                                        isset($data['area_district']) |
+                                        isset($data['specific_address'])  ) 
+                                        ? 1: 0;
+        // operator actions
+        $statistics->user_opened = (isset($data['user_opened'])) ? $data['user_opened'] : null;
         if (isset($data['user_assigned'])) $statistics->user_assigned = $data['user_assigned'];
         $statistics->priority = (isset($data['priority'])) ? $data['priority'] : 'Not set';
         $statistics->reference_by = (isset($data['reference_by'])) ? $data['reference_by'] : 'Not set';
@@ -558,11 +586,41 @@ class FakenewsController extends Controller
         $statistics->call_time = (isset($data['call_time'])) ? $data['call_time'] : null;
         $statistics->manager_comments = (isset($data['manager_comments'])) ? $data['manager_comments'] : null;
         $statistics->insident_reference_id = (isset($data['insident_reference_id'])) ? $data['insident_reference_id'] : null;
-        //
+        //dd($statistics);
         $statistics->save();
 
-
         return redirect()->route('home');
+    }
+
+    public function destroy($id)
+    {
+        $UserId = Input::get('UserId');
+        if (User::find($UserId)->hasRole("admin") && GroupPermission::canuser($UserId, 'delete', 'fakenews')) {
+            $fakenews = Fakenews::find($id);
+            $fakenews->delete();
+        } else {
+            if (GroupPermission::canuser($UserId, 'delete', 'fakenews')) {
+                $fakenews = Fakenews::find($id);
+                if ($fakenews->status == "Closed") {
+                    $fakenews->delete();
+                } else {
+                    return Response::json('Report must be in Closed status', 500);
+                }
+            } else {
+                return Response::json('error');
+            }
+        }
+    }
+
+    public function deleteimage($id,$image_id)
+    {   
+        $picture_title=FakenewsPictures::where('id','=',$image_id)->pluck('picture_path');
+        if(unlink(public_path("storage\\uploaded_images" . '\\'. $picture_title[0]))){
+            FakenewsPictures::where('id','=',$image_id)->delete();
+            FakenewsPictureReff::where('picture_reference_id','=',$image_id)->delete();
+        }
+       
+        return redirect()->back();
     }
 }
 ?>
