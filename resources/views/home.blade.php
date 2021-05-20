@@ -458,8 +458,7 @@
                                                             echo "<strong>";
                                                         };
                                                         @endphp
-                                                        @if($report->fakenews_type == $type->typename) {{$type->typename_en}} @if($type->typename_en !="Undefined") {{ '('. $report->evaluation . '%' . ')' }} @endif @endif
-                                                        
+                                                        @if($report->fakenews_type == $type->typename) {{$type->typename_en}} @endif
                                                     @endforeach
                                                 </td>
                                                 <td>
