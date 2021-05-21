@@ -198,9 +198,6 @@ Route::group(['middleware' => ['web','auth']], function () {
         Route::delete('/fakenews/{fakenews}','FakenewsController@destroy')->name('delete.fakenews'); // delete report
     });  
 
-    Route::group(['middleware' => ['permission:edit_fakenews']], function () {
-        Route::get('/fakenews/{fakenews}/delete/{image_id}','FakenewsController@deleteimage')->name('delete-image-fakenews');
-    });
 
     /*
     * Investigation, this is used for both helpline and hotline.
@@ -209,10 +206,11 @@ Route::group(['middleware' => ['web','auth']], function () {
         Route::patch('/helpline/{helpline}/edit','HelplineController@edit')->name('edit-helpline'); // edit Investigation 
     });
 
-    Route::group(['middleware' => ['permission:edit_fakenews, edit_fakenews']], function () {
-        Route::get('/fakenews/{fakenews}/edit','FakenewsController@edit')->name('edit-fakenews'); // edit invastigation 
+    Route::group(['middleware' => ['permission:edit_fakenews']], function () {
+        Route::post('/fakenews/{fakenews}/edit','FakenewsController@edit')->name('edit-fakenews'); // edit invastigation
+        Route::get('/fakenews/{fakenews}/delete/{image_id}','FakenewsController@deleteimage')->name('delete-image-fakenews');
+        //Route::get('/fakenews/{fakenews/add_image}','FakenewsController@deleteimage')->name('add-image-fakenews');
     });
-
 
     /*
     *   Statistics

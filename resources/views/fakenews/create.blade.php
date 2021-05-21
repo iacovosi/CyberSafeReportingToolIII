@@ -312,33 +312,36 @@
                                                 </div>
                                         </div>
                                 </fieldset> 
-                            </fieldset>       
-                            
+                            </fieldset>
+
                             <!---------------------->
-                            <!-- Operator actions -->
+                            <!-- Report Evaluation-->
                             <!---------------------->
-                            <!-- need to add evaluation and fake news type here -->
                             <fieldset>
-                                <legend>Operator actions</legend>
+                                <legend>Report evaluation</legend>
                                 <fieldset class="form-group">
                                     <!-- Evaluation -->
-                                    <label for="evaluation" class="col-sm-2 control-label">Operator Fakenews Evaluation</label>
-                                    <div class="col-sm-4">
-                                        <input type="range" min="0" max="100" step="5" value="50" class="slider" id="evaluation" name ="evaluation">
-                                        <span class = 'range-value'>50</span>
-                                    </div>
                                     <label for="fakenews_type" class="col-sm-2 control-label">Fakenews Type</label>
                                     <div class="col-sm-4">
                                     <select class = "form-control" name = "fakenews_type" id = "fakenews_type">
-                                        <option value="" disabled selected>Choose a fakenews type...</option>
-                                            @foreach($fakenews_type->sortBy('typename_en') as $type)
+                                        @foreach($fakenews_type->sortBy('typename_en') as $type)
                                                 <option value="{{ $type->typename }}" @if($type->typename=='Undefined') selected @endif>
                                                     {{ $type->typename_en }}
                                                 </option>
                                             @endforeach
                                         </select>
                                     </div>
-                                </fieldset>
+                                    <label for="evaluation" class="col-sm-2 control-label">Evaluation (%Confidence)</label>
+                                    <div class="col-sm-4">
+                                        <input type="range" min="0" max="100" step="5" value="50" class="slider" id="evaluation" name ="evaluation">
+                                        <span class = 'range-value'>50</span>
+                                    </div>
+                            </fieldset>
+                            <!---------------------->
+                            <!-- Operator actions -->
+                            <!---------------------->
+                            </fieldset>
+                                <legend>Operator evaluation</legend>       
                                 <fieldset class="form-group">
                                     <!-- Report Opened by operator -->
                                     <label for="user_opened" class="col-sm-2 control-label">Opened by operator</label>

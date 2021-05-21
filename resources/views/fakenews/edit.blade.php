@@ -5,9 +5,10 @@
         <div class="row">
             <div class="col-md-12">
 
-                <form method="PUT" action="{{route('edit-fakenews',['id' => $fakenews->id ])}}" id="submit-form"
-                      class="form-horizontal">
-
+                <form method="POST" action="{{route('edit-fakenews',['id' => $fakenews->id ])}}" id="submit-form"
+                class="form-horizontal" enctype = 'multipart/form-data'>
+                {{-- @method('PUT') --}}
+                @csrf
                     <div class="panel panel-default">
                         <div class="panel-heading clearfix">
                             <h4 class="pull-left">FAKENEWS - Report ID : # {{ $fakenews->id }}</h4>
@@ -16,7 +17,7 @@
                                             class="fa fa-times" aria-hidden="true"></i> Cancel</a>
                                 @if (GroupPermission::usercan('edit','fakenews'))
                                     {{--  <input type="submit" name="submit" value="Save & Exit" form="submit-form" class="btn btn-primary">  --}}
-                                    <button type="submit" class="btn btn-primary">
+                                    <button class="btn btn-primary">
                                         <i class="fa fa-floppy-o" aria-hidden="true"></i> Save & Exit
                                     </button>
                                 @endif
@@ -363,45 +364,48 @@
                                         </div>
                                     </fieldset>
                                     <fieldset class = "form-group" id = 'img_show'>
-                                        @foreach($pictures as $img_path)
+                                        @foreach($pictures as $key => $img_path)
                                             <fieldset class="form-group">
                                                 <div class = "col-sm-4 control-label" >
                                                     <label for = "evidence_img" class = "col-sm-4 control-label">Title: {{$img_path}}</label>
-                                                    <a  
-                                                    class="btn btn-danger" data-toggle="modal" data-target="#myModal-delete">
-                                                    <i class="fa fa-times" aria-hidden="true"></i>
-                                                    Remove</a>
+                                                    <a href="#" class="btn btn-danger" data-toggle="modal" data-target="#myModal-{{$key}}">
+                                                    <i class="fa fa-times" aria-hidden="true"></i>Remove
+                                                    </a>
                                                 </div>
                                                 <div class="col-sm-7">
                                                     <img class ="img-thumbnail"  src="{{ asset('storage/uploaded_images/' . $img_path) }}" alt="image is not showable."
                                                     title="{{$img_path}}" id='evidence_img'>
                                                 </div>
-                                            </fieldset>
-
-                                            <!-- Modal -->
-                                            <div id="myModal-delete" class="modal fade" role="dialog">
-                                                <div class="modal-dialog">
-                                                    <!-- Modal content-->
-                                                    <div class="modal-content">
-                                                        <div class="modal-body">
-                                                            <p>Are you sure you want to delete this image? It will be deleted forever.</p>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
-                                                            <a class="btn btn-danger" 
-                                                            href = "{{route('delete-image-fakenews',['fakenews'=>$fakenews->id ,'image_id' => array_search($img_path, $pictures)])}}">
-                                                            Delete</a>
+                                                <!-- Delete image Modal -->
+                                                <div id="myModal-{{$key}}" class="modal fade" role="dialog">
+                                                    <div class="modal-dialog">
+                                                        <!-- Modal content-->
+                                                        <div class="modal-content">
+                                                            <div class="modal-body">
+                                                                <p>Are you sure you want to delete {{$img_path}}? It will be deleted forever.</p>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                                                                <a class="btn btn-danger" 
+                                                                href = "{{route('delete-image-fakenews',['fakenews'=>$fakenews->id ,'image_id' => array_search($img_path, $pictures)])}}">
+                                                                Delete</a>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                    </fieldset>
+                                            </fieldset>
                                         @endforeach
-                                    
+                                    </fieldset>
+                                     
                                     <fieldset class = "form-group">
-                                        <label for = "image_check" class="col-sm-2 control-label">Would you like to upload pictures?</label>
+                                        <label for = "image_check" class="col-sm-2 control-label">Would you like to add more pictures to this report?</label>
                                         <div class = "col-sm-4 " id = 'img_upload'>
-                                            <input  type="file" class="form-control" name="images[]" multiple placeholder="images only" >
+                                            <input type="file" class="form-control" name="images[]" multiple placeholder="images only" >
+                                            <br>
+                                            <button class="btn btn-primary">
+                                                <i class="fa fa-floppy-o" aria-hidden="true"></i> Save Image & Refresh
+                                            </button>
+                                            <span class="text-danger">{{ $errors->first("images" ) }}</span>
                                         </div>
                                         <div class="btn-group col-sm-2" data-toggle="buttons">
                                             <label class="btn btn-default">
@@ -425,21 +429,13 @@
                                     </fieldset>
                                 @endif
                             </fieldset>       
-                            
                             <!---------------------->
-                            <!-- Operator actions -->
+                            <!-- Report Evaluation-->
                             <!---------------------->
-                            <!-- need to add evaluation and fake news type here -->
                             <fieldset>
-                                <legend>Operator actions</legend>
+                                <legend>Report evaluation</legend>
                                 <fieldset class="form-group">
                                     <!-- Evaluation -->
-                                    <label for="evaluation" class="col-sm-2 control-label">Operator Fakenews Evaluation</label>
-                                    <div class="col-sm-4">
-                                        <input type="range" min="0" max="100" step="5" value="{{ $fakenews->evaluation }}" class="slider" id="evaluation" name ="evaluation">
-                                        <span class = 'range-value'>{{ $fakenews->evaluation }}</span>
-                                    </div>
-                
                                     <label for="fakenews_type" class="col-sm-2 control-label">Fakenews Type</label>
                                     <div class="col-sm-4">
                                     <select class = "form-control" name = "fakenews_type" id = "fakenews_type">
@@ -449,7 +445,17 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                </fieldset>
+                                    <label for="evaluation" class="col-sm-2 control-label">Evaluation (%Confidence)</label>
+                                    <div class="col-sm-4" id='slider'>
+                                        <input type="range" min="0" max="100" step="5" value="{{ $fakenews->evaluation }}" class="slider" id="evaluation" name ="evaluation">
+                                        <span class = 'range-value'>{{ $fakenews->evaluation }}</span>
+                                    </div>
+                            </fieldset>
+                            <!---------------------->
+                            <!-- Operator actions -->
+                            <!---------------------->
+                            </fieldset>
+                                <legend>Operator evaluation</legend>
                                 <fieldset class="form-group">
                                     <!-- Report Opened by operator -->
                                     <label for="user_opened" class="col-sm-2 control-label">Opened by operator</label>
@@ -607,61 +613,6 @@
             $('#img_show').hide();
             $('.ping').hide();
 
-/*             $('input[name = "fakenews_source_type"]').change(function(){
-                var selection = $('#business-fakenews_source_type').val();
-                
-                switch(selection){
-                    case "Internet":
-                        $('#int_sellect').show();
-                        break;
-                }
-            }); */
-        
-/*             if($("#fakenews_source_type").val() == "Internet") {
-                $('#int_sellect').show();
-                $('#tv_sellect').hide();
-                $('#radio_sellect').hide();
-                $('#newspaper_sellect').hide();
-                $('#adv_sellect').hide();
-                $('#other_sellect').hide();
-            } else if($("#fakenews_source_type").val()== "TV") {
-                $('#int_sellect').hide();
-                $('#tv_sellect').show();
-                $('#radio_sellect').hide();
-                $('#newspaper_sellect').hide();
-                $('#adv_sellect').hide();
-                $('#other_sellect').hide();
-            } else if($("#fakenews_source_type").val() == "Radio") {
-                $('#int_sellect').hide();
-                $('#tv_sellect').hide();
-                $('#radio_sellect').show();
-                $('#newspaper_sellect').hide();
-                $('#adv_sellect').hide();
-                $('#other_sellect').hide();
-            }else if($("#fakenews_source_type").val() == "Newspaper")  {
-                $('#int_sellect').hide();
-                $('#tv_sellect').hide();
-                $('#radio_sellect').hide();
-                $('#newspaper_sellect').show();
-                $('#adv_sellect').hide();
-                $('#other_sellect').hide();
-            }else if($("#fakenews_source_type").val() == "Advertising/Pamphlets") {
-                $('#int_sellect').hide();
-                $('#tv_sellect').hide();
-                $('#radio_sellect').hide();
-                $('#newspaper_sellect').hide();
-                $('#adv_sellect').show();
-                $('#other_sellect').hide();
-            }else if($("#fakenews_source_type").val() == "Other") {
-                $('#int_sellect').hide();
-                $('#tv_sellect').hide();
-                $('#radio_sellect').hide();
-                $('#newspaper_sellect').hide();
-                $('#adv_sellect').hide();
-                $('#other_sellect').show();
-            } */
-
-            //alert($("#fakenews_source_type").val());
             $('#fakenews_source_type').change(function() {
             if(this.value == "Internet") {
                 $('#int_sellect').show();
@@ -731,6 +682,8 @@
             $('#call_time').datetimepicker({
                 locale: 'en-gb'
             });
+
+
 
         });
     </script>

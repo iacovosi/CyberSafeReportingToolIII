@@ -54,6 +54,41 @@ class StatisticsController extends Controller
     }
 
     /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index_fakenews(Request $request)
+    {
+        //
+        $submission_types = SubmissionType::all();
+        $report_roles = ReportRole::all();
+        $fakenews_source_type = FakenewsSourceType::all();
+        $fakenews_types = FakenewsType::all();
+        $references_by = ReferenceBy::all();
+        $references_to = ReferenceTo::all();
+        $actions = ActionTaken::all();
+
+        $users = User::all();
+        $status = Status::all();
+        $statistics = FakenewsStatistics::all();
+        //$statistics = Statistics::paginate(10);
+
+        return view('statistics.index',[
+            'report_roles'=>$report_roles,
+            'fakenews_source_type'=>$fakenews_source_type,
+            'fakenews_types'=>$fakenews_types,
+            'submission_types'=> $submission_types,
+            'statistics' => $statistics,
+            'references_by' => $references_by,
+            'references_to' => $references_to,
+            'users' => $users,
+            'status'=> $status,
+            'actionsTaken' => $actions
+        ]);
+    }
+
+    /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
@@ -62,7 +97,6 @@ class StatisticsController extends Controller
     {
 
     }
-
 
     /**
      * Store a newly created resource in storage.
