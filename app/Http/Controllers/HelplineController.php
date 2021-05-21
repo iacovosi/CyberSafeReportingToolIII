@@ -638,11 +638,15 @@ class HelplineController extends Controller
         if (User::find($UserId)->hasRole("admin") && GroupPermission::canuser($UserId, 'delete', 'helpline')) {
             $helpline = Helpline::find($id);
             $helpline->delete();
+            $statistics = Statistics::where('tracking_id', '=', $id)->first();
+            $statistics -> delete();
         } else {
             if (GroupPermission::canuser($UserId, 'delete', 'helpline')) {
                 $helpline = Helpline::find($id);
                 if ($helpline->status == "Closed") {
                     $helpline->delete();
+                    $statistics = Statistics::where('tracking_id', '=', $id)->first();
+                    $statistics -> delete();
                 } else {
                     return Response::json('Report must be in Closed status', 500);
                 }

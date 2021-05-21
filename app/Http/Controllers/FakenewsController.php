@@ -507,6 +507,8 @@ class FakenewsController extends Controller
         }
     }
 
+
+
     /**
      * Save the data after editing the specified resource.
      *
@@ -517,8 +519,6 @@ class FakenewsController extends Controller
     {
 
         $data = $request->all();
-
-        //dd($data);
 
         //In case the user selects to transfer the incident to another user.
         // if ($request->user_assigned != $request->user_opened) {
@@ -586,8 +586,34 @@ class FakenewsController extends Controller
         $statistics->call_time = (isset($data['call_time'])) ? $data['call_time'] : null;
         $statistics->manager_comments = (isset($data['manager_comments'])) ? $data['manager_comments'] : null;
         $statistics->insident_reference_id = (isset($data['insident_reference_id'])) ? $data['insident_reference_id'] : null;
-        //dd($statistics);
         $statistics->save();
+
+        if ((!empty($request->images)) & ($request->img_upload == 1)){
+
+            $validate_images = $request->validate([
+                'images.*' => 'mimes:jpeg,png,jpg,gif,svg|max:10120'
+            ]);
+
+            if ($files = $request->images){
+                foreach($files as $file){
+                    $imageName = time() .'_' . $file -> getClientOriginalName();
+                    $file->move(public_path("storage\\uploaded_images"),$imageName);
+    
+                    $picdata = array(
+                        'picture_path' =>  $imageName
+                    );
+                    $pic = FakenewsPictures::create($picdata);
+                    //$pic->update($picdata);
+                    $picreffdata = array(
+                        'fakenews_reference_id' => $fakenews->id,
+                        'picture_reference_id'=>$pic -> id
+                    );
+                    $picreff = FakenewsPictureReff::create($picreffdata);
+                    //$picreff->update($picreffdata);
+                };
+            };
+            return redirect()->back();
+        };
 
         return redirect()->route('home');
     }
@@ -598,11 +624,15 @@ class FakenewsController extends Controller
         if (User::find($UserId)->hasRole("admin") && GroupPermission::canuser($UserId, 'delete', 'fakenews')) {
             $fakenews = Fakenews::find($id);
             $fakenews->delete();
+            $statistics = FakenewsStatistics::where('tracking_id', '=', $id)->first();
+            $statistics -> delete();
         } else {
             if (GroupPermission::canuser($UserId, 'delete', 'fakenews')) {
                 $fakenews = Fakenews::find($id);
                 if ($fakenews->status == "Closed") {
                     $fakenews->delete();
+                    $statistics = FakenewsStatistics::where('tracking_id', '=', $id)->first();
+                    $statistics -> delete();
                 } else {
                     return Response::json('Report must be in Closed status', 500);
                 }
@@ -614,13 +644,16 @@ class FakenewsController extends Controller
 
     public function deleteimage($id,$image_id)
     {   
-        $picture_title=FakenewsPictures::where('id','=',$image_id)->pluck('picture_path');
-        if(unlink(public_path("storage\\uploaded_images" . '\\'. $picture_title[0]))){
+        //dd($image_id);
+        
+        $picture_title = FakenewsPictures::where('id','=',$image_id)->pluck('picture_path');
+        if(unlink(public_path("storage\\uploaded_images" . '\\'. $picture_title[0])))
+        {
             FakenewsPictures::where('id','=',$image_id)->delete();
             FakenewsPictureReff::where('picture_reference_id','=',$image_id)->delete();
         }
-       
         return redirect()->back();
     }
+
 }
 ?>

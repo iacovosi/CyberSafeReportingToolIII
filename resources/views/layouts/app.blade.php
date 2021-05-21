@@ -149,7 +149,7 @@
     @yield('scripts')
 
    
-     <script src="{{ asset('js/app.js') }}"></script>
+    <script src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('js/chat.js') }}" charset="utf-8"></script>
     <script src="{{ asset('js/jquery-ui.min.js') }}" charset="utf-8"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.2/handlebars.min.js"></script>        
