@@ -207,7 +207,7 @@ Route::group(['middleware' => ['web','auth']], function () {
     });
 
     Route::group(['middleware' => ['permission:edit_fakenews']], function () {
-        Route::post('/fakenews/{fakenews}/edit','FakenewsController@edit')->name('edit-fakenews'); // edit invastigation
+        Route::patch('/fakenews/{fakenews}/edit','FakenewsController@edit')->name('edit-fakenews'); // edit invastigation
         Route::get('/fakenews/{fakenews}/delete/{image_id}','FakenewsController@deleteimage')->name('delete-image-fakenews');
         //Route::get('/fakenews/{fakenews/add_image}','FakenewsController@deleteimage')->name('add-image-fakenews');
     });

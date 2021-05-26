@@ -210,7 +210,6 @@ class FakenewsController extends Controller
         }
 
         $data = $request->all();
-        //dd($data);
         // Defaults
         $data['submission_type'] = (!empty($request->submission_type)) ? $request->submission_type : 'electronic-form';
         $data['evaluation'] = (!empty($request->evaluation)) ? $request->evaluation : '50';
@@ -519,7 +518,7 @@ class FakenewsController extends Controller
     {
 
         $data = $request->all();
-
+        
         //In case the user selects to transfer the incident to another user.
         // if ($request->user_assigned != $request->user_opened) {
         //     if ( isset($request->user_opened) ){

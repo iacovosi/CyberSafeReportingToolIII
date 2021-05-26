@@ -53,24 +53,24 @@
                                     <!-- Report Name -->
                                     <label for="name" class="col-sm-2 control-label">Name</label>
                                     <div class="col-sm-4">
-                                            <input type="text" class="form-control" value="">
+                                            <input type="text" class="form-control" value="" name = 'name'>
                                     </div>
                                     <!-- Report Surname -->
                                     <label for="surname" class="col-sm-2 control-label">Surname</label>
                                     <div class="col-sm-4">
-                                        <input type="text" class="form-control" value="">
+                                        <input type="text" class="form-control" value="" name = 'surname'>
                                     </div>
                                 </fieldset>
                                 <fieldset class="form-group">
                                     <!-- Report Email -->
                                     <label for="email" class="col-sm-2 control-label">Email</label>
                                     <div class="col-sm-4">
-                                        <input type="text" class="form-control" value="">
+                                        <input type="text" class="form-control" value="" name = 'email'>
                                     </div>
                                     <!-- Report Phone -->
                                     <label for="phone" class="col-sm-2 control-label">Phone</label>
                                     <div class="col-sm-4">
-                                        <input type="text" class="form-control" value="">
+                                        <input type="number" class="form-control" value="" name = 'phone'>
                                     </div>
                                 </fieldset>
                                 <fieldset class="form-group">
@@ -183,20 +183,20 @@
                                         <label for="source_url" class="col-sm-2 control-label">Website URL</label>
                                         <div class="col-sm-4">
                                             <input type="text" class="form-control" value=""
-                                                    name="source_url">
+                                                    name="source_url" id ='source_url'>
                                         </div>
                                         <!-- News Title -->
                                         <label for="title" class="col-sm-2 control-label">News Title</label>   
                                         <div class="col-sm-4">
                                                 <input type="text" class="form-control" value="" 
-                                                name="title">
+                                                name="title" id ='title'>
                                         </div>
                                     </fieldset>
                                     <!--Full/Part of Source article/news-->
                                     <fieldset class="form-group">
                                         <label for="source_document" class="col-sm-2 control-label">Source Document</label>
                                         <div class="col-sm-10">
-                                            <textarea class="form-control" name="source_document" rows="3"></textarea>
+                                            <textarea class="form-control" name="source_document" rows="3" id ='source_document'></textarea>
                                         </div>
                                     </fieldset>
                             </fieldset>
@@ -207,13 +207,13 @@
                                         <label for="tv_channel" class="col-sm-2 control-label">Channel Title</label>
                                         <div class="col-sm-4">
                                             <input type="text" class="form-control" value=""
-                                                    name="tv_channel">
+                                                    name="tv_channel" id ='tv_channel'>
                                         </div>
                                         <!-- Programme title -->
                                         <label for="tv_prog_title" class="col-sm-2 control-label">Programme Title</label>   
                                         <div class="col-sm-4">
                                                 <input type="text" class="form-control" value="" 
-                                                name="tv_prog_title">
+                                                name="tv_prog_title" id ='tv_prog_title'>
                                         </div>
                                     </fieldset>
                             </fieldset>
@@ -223,12 +223,12 @@
                                     <!-- Radio_station -->
                                     <label for="radio_station" class="col-sm-2 control-label">Radio Station Name</label>
                                     <div class="col-sm-4">
-                                        <input type="text" class="form-control" value="" name="radio_station">
+                                        <input type="text" class="form-control" value="" name="radio_station" id = 'radio_station'>
                                     </div>
                                     <!-- Radio station frequency -->
                                     <label for="radio_freq" class="col-sm-2 control-label">Radio Station Frequency [MHz]</label>   
                                     <div class="col-sm-4">
-                                            <input type="text" class="form-control" value="" name="radio_freq">
+                                            <input type="text" class="form-control" value="" name="radio_freq" id = 'radio_freq'>
                                     </div>
                                 </fieldset>
                             </fieldset>
@@ -238,12 +238,12 @@
                                     <!-- Newspaper name -->
                                     <label for="newspaper_name" class="col-sm-2 control-label">Newspaper Name</label>
                                     <div class="col-sm-4">
-                                        <input type="text" class="form-control" value="" name="newspaper_name">
+                                        <input type="text" class="form-control" value="" name="newspaper_name" id = 'newspaper_name'>
                                     </div>
                                     <!-- page -->
                                     <label for="page" class="col-sm-2 control-label">Newspaper Page</label>   
                                     <div class="col-sm-4">
-                                            <input type="number" class="form-control" value="" name="page">
+                                            <input type="number" class="form-control" value="" name="page" id = 'page'>
                                     </div>
                                 </fieldset>
                             </fieldset>
@@ -261,7 +261,7 @@
                                 <fieldset class="form-group">
                                     <label for = "specific_type" class = "col-sm-2 control-label">Type Specified</label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" value="" name="specific_type">
+                                        <input type="text" class="form-control" value="" name="specific_type" id ='specific_type'>
                                     </div>
                                 </fieldset>
                             </fieldset>
@@ -485,64 +485,31 @@
         $(document).ready(function () {
             $('#img_upload').hide();
             $('.ping').hide();
+            
+            $('#source_url').prop('disabled',true)
+            $('#title').prop('disabled',true)
+            $('#source_document').prop('disabled',true)
+            $('#tv_channel').prop('disabled',true)
+            $('#tv_prog_title').prop('disabled',true)
+            $('#radio_station').prop('disabled',true)
+            $('#radio_freq').prop('disabled',true)
+            $('#newspaper_name').prop('disabled',true)
+            $('#page').prop('disabled',true)
+            $('#specific_type').prop('disabled',true)
 
-/*             $('input[name = "fakenews_source_type"]').change(function(){
-                var selection = $('#business-fakenews_source_type').val();
-                
-                switch(selection){
-                    case "Internet":
-                        $('#int_sellect').show();
-                        break;
-                }
-            }); */
-        
-/*             if($("#fakenews_source_type").val() == "Internet") {
-                $('#int_sellect').show();
-                $('#tv_sellect').hide();
-                $('#radio_sellect').hide();
-                $('#newspaper_sellect').hide();
-                $('#adv_sellect').hide();
-                $('#other_sellect').hide();
-            } else if($("#fakenews_source_type").val()== "TV") {
-                $('#int_sellect').hide();
-                $('#tv_sellect').show();
-                $('#radio_sellect').hide();
-                $('#newspaper_sellect').hide();
-                $('#adv_sellect').hide();
-                $('#other_sellect').hide();
-            } else if($("#fakenews_source_type").val() == "Radio") {
-                $('#int_sellect').hide();
-                $('#tv_sellect').hide();
-                $('#radio_sellect').show();
-                $('#newspaper_sellect').hide();
-                $('#adv_sellect').hide();
-                $('#other_sellect').hide();
-            }else if($("#fakenews_source_type").val() == "Newspaper")  {
-                $('#int_sellect').hide();
-                $('#tv_sellect').hide();
-                $('#radio_sellect').hide();
-                $('#newspaper_sellect').show();
-                $('#adv_sellect').hide();
-                $('#other_sellect').hide();
-            }else if($("#fakenews_source_type").val() == "Advertising/Pamphlets") {
-                $('#int_sellect').hide();
-                $('#tv_sellect').hide();
-                $('#radio_sellect').hide();
-                $('#newspaper_sellect').hide();
-                $('#adv_sellect').show();
-                $('#other_sellect').hide();
-            }else if($("#fakenews_source_type").val() == "Other") {
-                $('#int_sellect').hide();
-                $('#tv_sellect').hide();
-                $('#radio_sellect').hide();
-                $('#newspaper_sellect').hide();
-                $('#adv_sellect').hide();
-                $('#other_sellect').show();
-            } */
-
-            //alert($("#fakenews_source_type").val());
             $('#fakenews_source_type').change(function() {
             if(this.value == "Internet") {
+                $('#source_url').prop('disabled',false)
+                $('#title').prop('disabled',false)
+                $('#source_document').prop('disabled',false)
+                $('#tv_channel').prop('disabled',true)
+                $('#tv_prog_title').prop('disabled',true)
+                $('#radio_station').prop('disabled',true)
+                $('#radio_freq').prop('disabled',true)
+                $('#newspaper_name').prop('disabled',true)
+                $('#page').prop('disabled',true)
+                $('#specific_type').prop('disabled',true)
+                //messeges
                 $('#int_sellect').show();
                 $('#tv_sellect').hide();
                 $('#radio_sellect').hide();
@@ -550,6 +517,17 @@
                 $('#adv_sellect').hide();
                 $('#other_sellect').hide();
             } else if(this.value == "TV") {
+                $('#source_url').prop('disabled',true)
+                $('#title').prop('disabled',true)
+                $('#source_document').prop('disabled',true)
+                $('#tv_channel').prop('disabled',false)
+                $('#tv_prog_title').prop('disabled',false)
+                $('#radio_station').prop('disabled',true)
+                $('#radio_freq').prop('disabled',true)
+                $('#newspaper_name').prop('disabled',true)
+                $('#page').prop('disabled',true)
+                $('#specific_type').prop('disabled',true)
+                //messeges
                 $('#int_sellect').hide();
                 $('#tv_sellect').show();
                 $('#radio_sellect').hide();
@@ -557,13 +535,35 @@
                 $('#adv_sellect').hide();
                 $('#other_sellect').hide();
             } else if(this.value == "Radio") {
+                $('#source_url').prop('disabled',true)
+                $('#title').prop('disabled',true)
+                $('#source_document').prop('disabled',true)
+                $('#tv_channel').prop('disabled',true)
+                $('#tv_prog_title').prop('disabled',true)
+                $('#radio_station').prop('disabled',false)
+                $('#radio_freq').prop('disabled',false)
+                $('#newspaper_name').prop('disabled',true)
+                $('#page').prop('disabled',true)
+                $('#specific_type').prop('disabled',true)
+                //messeges
                 $('#int_sellect').hide();
                 $('#tv_sellect').hide();
                 $('#radio_sellect').show();
                 $('#newspaper_sellect').hide();
                 $('#adv_sellect').hide();
                 $('#other_sellect').hide();
-            }else if(this.value == "Newspaper")  {
+            }else if(this.value == "Newspaper"){
+                $('#source_url').prop('disabled',true)
+                $('#title').prop('disabled',true)
+                $('#source_document').prop('disabled',true)
+                $('#tv_channel').prop('disabled',true)
+                $('#tv_prog_title').prop('disabled',true)
+                $('#radio_station').prop('disabled',true)
+                $('#radio_freq').prop('disabled',true)
+                $('#newspaper_name').prop('disabled',false)
+                $('#page').prop('disabled',false)
+                $('#specific_type').prop('disabled',true)
+                //messeges
                 $('#int_sellect').hide();
                 $('#tv_sellect').hide();
                 $('#radio_sellect').hide();
@@ -571,6 +571,17 @@
                 $('#adv_sellect').hide();
                 $('#other_sellect').hide();
             }else if(this.value == "Advertising/Pamphlets") {
+                $('#source_url').prop('disabled',true)
+                $('#title').prop('disabled',true)
+                $('#source_document').prop('disabled',true)
+                $('#tv_channel').prop('disabled',true)
+                $('#tv_prog_title').prop('disabled',true)
+                $('#radio_station').prop('disabled',true)
+                $('#radio_freq').prop('disabled',true)
+                $('#newspaper_name').prop('disabled',true)
+                $('#page').prop('disabled',true)
+                $('#specific_type').prop('disabled',true)
+                //messeges
                 $('#int_sellect').hide();
                 $('#tv_sellect').hide();
                 $('#radio_sellect').hide();
@@ -578,6 +589,17 @@
                 $('#adv_sellect').show();
                 $('#other_sellect').hide();
             }else if(this.value == "Other") {
+                $('#source_url').prop('disabled',true)
+                $('#title').prop('disabled',true)
+                $('#source_document').prop('disabled',true)
+                $('#tv_channel').prop('disabled',true)
+                $('#tv_prog_title').prop('disabled',true)
+                $('#radio_station').prop('disabled',true)
+                $('#radio_freq').prop('disabled',true)
+                $('#newspaper_name').prop('disabled',true)
+                $('#page').prop('disabled',true)
+                $('#specific_type').prop('disabled',false)
+                //messeges
                 $('#int_sellect').hide();
                 $('#tv_sellect').hide();
                 $('#radio_sellect').hide();
