@@ -7,8 +7,8 @@
 
                 <form method="POST" action="{{route('edit-fakenews',['id' => $fakenews->id ])}}" id="submit-form"
                 class="form-horizontal" enctype = 'multipart/form-data'>
-                {{-- @method('PUT') --}}
-                @csrf
+                    @csrf
+                    @method('PATCH')
                     <div class="panel panel-default">
                         <div class="panel-heading clearfix">
                             <h4 class="pull-left">FAKENEWS - Report ID : # {{ $fakenews->id }}</h4>
@@ -225,13 +225,13 @@
                                         <label for="source_url" class="col-sm-2 control-label">Website URL</label>
                                         <div class="col-sm-4">
                                             <input type="text" class="form-control" value="{{ $fakenews->source_url }}"
-                                                    name="source_url">
+                                                    name="source_url" id ='source_url'>
                                         </div>
                                         <!-- News Title -->
                                         <label for="title" class="col-sm-2 control-label">News Title</label>   
                                         <div class="col-sm-4">
                                                 <input type="text" class="form-control" value="{{ $fakenews->title }}" 
-                                                name="title">
+                                                name="title" id ='title'>
                                         </div>
                                     </fieldset>
                                     <!--Full/Part of Source article/news-->
@@ -243,7 +243,7 @@
                                             @else
                                                 <?php $source_document = Crypt::decrypt($fakenews->source_document); ?>
                                             @endif
-                                        <textarea class="form-control" name="source_document" rows="5">{{ $source_document  }}</textarea>
+                                        <textarea class="form-control" name="source_document" rows="5" id='source_document'>{{ $source_document  }}</textarea>
                                         </div>
                                     </fieldset>
                             </fieldset>
@@ -254,13 +254,13 @@
                                         <label for="tv_channel" class="col-sm-2 control-label">Channel Title</label>
                                         <div class="col-sm-4">
                                             <input type="text" class="form-control" value="{{ $fakenews->tv_channel }}"
-                                                    name="tv_channel">
+                                                    name="tv_channel" id='tv_channel'>
                                         </div>
                                         <!-- Programme title -->
                                         <label for="tv_prog_title" class="col-sm-2 control-label">Programme Title</label>   
                                         <div class="col-sm-4">
                                                 <input type="text" class="form-control" value="{{ $fakenews->tv_prog_title }}" 
-                                                name="tv_prog_title">
+                                                name="tv_prog_title" id='tv_prog_title'>
                                         </div>
                                     </fieldset>
                             </fieldset>
@@ -271,13 +271,13 @@
                                     <label for="radio_station" class="col-sm-2 control-label">Radio Station Name</label>
                                     <div class="col-sm-4">
                                         <input type="text" class="form-control" value="{{ $fakenews->radio_station }}"
-                                                name="radio_station">
+                                                name="radio_station" id='radio_station'>
                                     </div>
                                     <!-- Radio station frequency -->
                                     <label for="radio_freq" class="col-sm-2 control-label">Radio Station Frequency [MHz]</label>   
                                     <div class="col-sm-4">
                                             <input type="text" class="form-control" value="{{ $fakenews->radio_freq }}" 
-                                            name="radio_freq">
+                                            name="radio_freq" id='radio_freq'>
                                     </div>
                                 </fieldset>
                             </fieldset>
@@ -288,13 +288,13 @@
                                     <label for="newspaper_name" class="col-sm-2 control-label">Newspaper Name</label>
                                     <div class="col-sm-4">
                                         <input type="text" class="form-control" value="{{ $fakenews->newspaper_name }}"
-                                                name="newspaper_name">
+                                                name="newspaper_name" id='newspaper_name'>
                                     </div>
                                     <!-- page -->
                                     <label for="page" class="col-sm-2 control-label">Newspaper Page</label>   
                                     <div class="col-sm-4">
                                             <input type="number" class="form-control" value="{{ $fakenews->page }}" 
-                                            name="page">
+                                            name="page" id='page'>
                                     </div>
                                 </fieldset>
                             </fieldset>
@@ -313,7 +313,7 @@
                                     <label for = "specific_type" class = "col-sm-2 control-label">Type Specified</label>
                                     <div class="col-sm-10">
                                         <input type="text" class="form-control" value="{{ $fakenews->specific_type }}" 
-                                            name="specific_type">
+                                            name="specific_type" id='specific_type'>
                                     </div>
                                 </fieldset>
                             </fieldset>
@@ -615,6 +615,17 @@
 
             $('#fakenews_source_type').change(function() {
             if(this.value == "Internet") {
+                $('#source_url').prop('disabled',false)
+                $('#title').prop('disabled',false)
+                $('#source_document').prop('disabled',false)
+                $('#tv_channel').prop('disabled',true)
+                $('#tv_prog_title').prop('disabled',true)
+                $('#radio_station').prop('disabled',true)
+                $('#radio_freq').prop('disabled',true)
+                $('#newspaper_name').prop('disabled',true)
+                $('#page').prop('disabled',true)
+                $('#specific_type').prop('disabled',true)
+                //messeges
                 $('#int_sellect').show();
                 $('#tv_sellect').hide();
                 $('#radio_sellect').hide();
@@ -622,6 +633,17 @@
                 $('#adv_sellect').hide();
                 $('#other_sellect').hide();
             } else if(this.value == "TV") {
+                $('#source_url').prop('disabled',true)
+                $('#title').prop('disabled',true)
+                $('#source_document').prop('disabled',true)
+                $('#tv_channel').prop('disabled',false)
+                $('#tv_prog_title').prop('disabled',false)
+                $('#radio_station').prop('disabled',true)
+                $('#radio_freq').prop('disabled',true)
+                $('#newspaper_name').prop('disabled',true)
+                $('#page').prop('disabled',true)
+                $('#specific_type').prop('disabled',true)
+                //messeges
                 $('#int_sellect').hide();
                 $('#tv_sellect').show();
                 $('#radio_sellect').hide();
@@ -629,13 +651,35 @@
                 $('#adv_sellect').hide();
                 $('#other_sellect').hide();
             } else if(this.value == "Radio") {
+                $('#source_url').prop('disabled',true)
+                $('#title').prop('disabled',true)
+                $('#source_document').prop('disabled',true)
+                $('#tv_channel').prop('disabled',true)
+                $('#tv_prog_title').prop('disabled',true)
+                $('#radio_station').prop('disabled',false)
+                $('#radio_freq').prop('disabled',false)
+                $('#newspaper_name').prop('disabled',true)
+                $('#page').prop('disabled',true)
+                $('#specific_type').prop('disabled',true)
+                //messeges
                 $('#int_sellect').hide();
                 $('#tv_sellect').hide();
                 $('#radio_sellect').show();
                 $('#newspaper_sellect').hide();
                 $('#adv_sellect').hide();
                 $('#other_sellect').hide();
-            }else if(this.value == "Newspaper")  {
+            }else if(this.value == "Newspaper"){
+                $('#source_url').prop('disabled',true)
+                $('#title').prop('disabled',true)
+                $('#source_document').prop('disabled',true)
+                $('#tv_channel').prop('disabled',true)
+                $('#tv_prog_title').prop('disabled',true)
+                $('#radio_station').prop('disabled',true)
+                $('#radio_freq').prop('disabled',true)
+                $('#newspaper_name').prop('disabled',false)
+                $('#page').prop('disabled',false)
+                $('#specific_type').prop('disabled',true)
+                //messeges
                 $('#int_sellect').hide();
                 $('#tv_sellect').hide();
                 $('#radio_sellect').hide();
@@ -643,6 +687,17 @@
                 $('#adv_sellect').hide();
                 $('#other_sellect').hide();
             }else if(this.value == "Advertising/Pamphlets") {
+                $('#source_url').prop('disabled',true)
+                $('#title').prop('disabled',true)
+                $('#source_document').prop('disabled',true)
+                $('#tv_channel').prop('disabled',true)
+                $('#tv_prog_title').prop('disabled',true)
+                $('#radio_station').prop('disabled',true)
+                $('#radio_freq').prop('disabled',true)
+                $('#newspaper_name').prop('disabled',true)
+                $('#page').prop('disabled',true)
+                $('#specific_type').prop('disabled',true)
+                //messeges
                 $('#int_sellect').hide();
                 $('#tv_sellect').hide();
                 $('#radio_sellect').hide();
@@ -650,6 +705,17 @@
                 $('#adv_sellect').show();
                 $('#other_sellect').hide();
             }else if(this.value == "Other") {
+                $('#source_url').prop('disabled',true)
+                $('#title').prop('disabled',true)
+                $('#source_document').prop('disabled',true)
+                $('#tv_channel').prop('disabled',true)
+                $('#tv_prog_title').prop('disabled',true)
+                $('#radio_station').prop('disabled',true)
+                $('#radio_freq').prop('disabled',true)
+                $('#newspaper_name').prop('disabled',true)
+                $('#page').prop('disabled',true)
+                $('#specific_type').prop('disabled',false)
+                //messeges
                 $('#int_sellect').hide();
                 $('#tv_sellect').hide();
                 $('#radio_sellect').hide();
