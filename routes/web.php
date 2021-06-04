@@ -216,6 +216,7 @@ Route::group(['middleware' => ['web','auth']], function () {
     *   Statistics
     */
     Route::group(['middleware' => ['permission:view_statistics']], function () {
+        Route::get('statistics/fakenews','StatisticsController@index_fakenews')->name('show.fakenews.stats');;
         Route::resource('statistics','StatisticsController');
     });
 

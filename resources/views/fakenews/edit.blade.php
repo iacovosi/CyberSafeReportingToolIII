@@ -740,6 +740,14 @@
                 }
             }).change();
 
+            $('#fakenews_type').change(function() {
+                if(this.value === "Undefined") {
+                    $('#evaluation').prop('disabled',true)
+                } else {
+                    $('#evaluation').prop('disabled',false)
+                }
+            }).change();
+
             $('.slider').on('input', function() {
                 $(this).next('.range-value').html(this.value);
             });

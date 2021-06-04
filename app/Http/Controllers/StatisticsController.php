@@ -14,6 +14,15 @@ use App\ReferenceTo;
 use App\Status;
 use App\ActionTaken;
 use App\Statistics;
+
+use App\Fakenews;
+use App\FakenewsType;
+use App\FakenewsPictures;
+use App\FakenewsPictureReff;
+use App\FakenewsSourceType;
+use App\FakenewsStatistics;
+use App\Charts\FakenewsStatisticsChart;
+
 use Validator;
 
 class StatisticsController extends Controller
@@ -39,6 +48,45 @@ class StatisticsController extends Controller
         $statistics = Statistics::all();
         //$statistics = Statistics::paginate(10);
 
+        $earliest_date = date(Statistics::orderBy('created_at')->pluck('created_at')->first());
+        $up_to =  date('Y-m-d h:i:s', strtotime($earliest_date. '+7 day'));
+        $data_week_help_cntr = Array();
+        $data_week_hot_cntr = Array();
+        $data_date = Array();
+        while ($up_to  < date(today())){
+
+            $help_cnt = Statistics::where('is_it_hotline','=','false')->whereBetween('created_at',[$earliest_date,$up_to])->count();
+            $hot_cnt = Statistics::where('is_it_hotline','=','true')->whereBetween('created_at',[$earliest_date,$up_to])->count();
+
+            array_push($data_week_help_cntr,$help_cnt);
+            array_push($data_week_hot_cntr,$hot_cnt);
+            array_push($data_date,date('Y-m-d',strtotime($earliest_date)) . ' to ' . date('Y-m-d', strtotime($up_to)));
+            $earliest_date = date('Y-m-d h:i:s', strtotime($earliest_date. '+7 day'));
+            $up_to = date('Y-m-d h:i:s', strtotime($up_to. '+7 day'));
+        }
+        array_push($data_week_help_cntr,Statistics::where('is_it_hotline','=','false')->count()-array_sum($data_week_help_cntr));
+        array_push($data_week_hot_cntr,Statistics::where('is_it_hotline','=','true')->count()-array_sum($data_week_hot_cntr));
+        array_push($data_date,date('Y-m-d',strtotime($earliest_date)) . ' to ' . 'today');
+        //dd([$data_date,$data_week_help_cntr,$data_week_hot_cntr]);
+
+        $weekly_input = new FakenewsStatisticsChart;
+        $weekly_input->labels($data_date);
+        $weekly_input->dataset('Helpline Reports made','bar',$data_week_help_cntr)->backgroundColor('yellow');
+        $weekly_input->dataset('Hotline Reports made','bar',$data_week_hot_cntr)->backgroundColor('red');
+        $weekly_input-> title('Number of reports per week');
+        
+        $resource_pie_data = Array();
+        $resources = $resource_types->pluck('name')->values();
+        foreach($resources as $source){
+            $cntr = Statistics::where('resource_type','=',$source)->pluck('id')->count();
+            array_push($resource_pie_data,$cntr);
+        }
+        $sourcetype_pie = new FakenewsStatisticsChart;
+        $sourcetype_pie -> labels($resources);
+        $sourcetype_pie -> dataset('Resource Type Pie Distribution','pie',$resource_pie_data)->backgroundColor(['green','red','purple','blue','yellow']);
+        $sourcetype_pie -> title('Resource Type Pie Distribution');
+        $sourcetype_pie -> displayAxes(false);
+
         return view('statistics.index',[
             'report_roles'=>$report_roles,
             'resource_types'=>$resource_types,
@@ -49,7 +97,9 @@ class StatisticsController extends Controller
             'references_to' => $references_to,
             'users' => $users,
             'status'=> $status,
-            'actionsTaken' => $actions
+            'actionsTaken' => $actions,
+            'weekly_bar' => $weekly_input,
+            'Helpline_types'=> $sourcetype_pie 
         ]);
     }
 
@@ -74,7 +124,46 @@ class StatisticsController extends Controller
         $statistics = FakenewsStatistics::all();
         //$statistics = Statistics::paginate(10);
 
-        return view('statistics.index',[
+        $earliest_date = date(FakenewsStatistics::orderBy('created_at')->pluck('created_at')->first());
+        $up_to =  date('Y-m-d h:i:s', strtotime($earliest_date. '+7 day'));
+        $data_week_cntr = Array();
+        $data_date = Array();
+        while ($up_to  < date(today())){
+            //dd($up_to  < date(today()));
+            $cnt = FakenewsStatistics::whereBetween('created_at',[$earliest_date,$up_to])->count();
+            //dd($cnt);
+            array_push($data_week_cntr,$cnt);
+            array_push($data_date,date('Y-m-d',strtotime($earliest_date)) . ' to ' . date('Y-m-d', strtotime($up_to)));
+            $earliest_date = date('Y-m-d h:i:s', strtotime($earliest_date. '+7 day'));
+            $up_to = date('Y-m-d h:i:s', strtotime($up_to. '+7 day'));
+            //dd($up_to);
+        }
+        array_push($data_week_cntr,FakenewsStatistics::pluck('id',)->count()-array_sum($data_week_cntr));
+        array_push($data_date,date('Y-m-d',strtotime($earliest_date)) . ' to ' . 'today');
+        //dd([$data_week_cntr,$data_date]);
+
+        $weekly_input = new FakenewsStatisticsChart;
+        $weekly_input->labels($data_date);
+        $weekly_input->dataset('Reports made','bar',$data_week_cntr)->backgroundColor('purple');
+        $weekly_input-> title('Number of reports per week');
+        
+        $fakenews_source_pie_data = Array();
+        $fake_sources = $fakenews_source_type->pluck('typename_en')->values();
+        foreach($fake_sources as $source){
+            $cntr = FakenewsStatistics::where('fakenews_source_type','=',$source)->pluck('id')->count();
+            array_push($fakenews_source_pie_data,$cntr);
+        }
+        $sourcetype_pie = new FakenewsStatisticsChart;
+        $sourcetype_pie -> labels($fake_sources);
+        $sourcetype_pie -> dataset('Fakenews Source Pie Distribution','pie',$fakenews_source_pie_data)->backgroundColor(['green','red','purple','blue','yellow','grey']);
+        $sourcetype_pie -> title('Fakenews Source Pie Distribution');
+        $sourcetype_pie -> displayAxes(false);
+
+        //$chart->labels([1,2,3,4]);
+        //$chart->dataset('Fakenews test chart','line',[1,2,3,4]);
+
+
+        return view('statistics.index_fakenews',[
             'report_roles'=>$report_roles,
             'fakenews_source_type'=>$fakenews_source_type,
             'fakenews_types'=>$fakenews_types,
@@ -84,7 +173,9 @@ class StatisticsController extends Controller
             'references_to' => $references_to,
             'users' => $users,
             'status'=> $status,
-            'actionsTaken' => $actions
+            'actionsTaken' => $actions,
+            'weekly_bar' => $weekly_input,
+            'fakenews_source_pie'=> $sourcetype_pie 
         ]);
     }
 
