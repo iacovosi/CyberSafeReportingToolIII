@@ -629,7 +629,7 @@ class FakenewsController extends Controller
             if (GroupPermission::canuser($UserId, 'delete', 'fakenews')) {
                 $fakenews = Fakenews::find($id);
                 if ($fakenews->status == "Closed") {
-                    $fakenews->delete();
+                    $fakenews-> delete();
                     $statistics = FakenewsStatistics::where('tracking_id', '=', $id)->first();
                     $statistics -> delete();
                 } else {
