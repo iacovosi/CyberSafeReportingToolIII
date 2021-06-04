@@ -13,6 +13,7 @@ class CreateFakenewsPicturesTable extends Migration
      */
     public function up()
     {
+        
         Schema::create('fakenews_pictures', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('picture_path');
