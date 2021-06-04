@@ -93,11 +93,7 @@
                                 <!-- possible bug $report->relatedToHelpLine->log, when you delete report the view breaks-->
                                 <!-- it is the relatedToHelpLine value -->
                                 <!-- Error: Trying to get property 'log' of non-object -->
-                                     @if(isset($report->relatedToHelpLine) && !empty($report->relatedToHelpLine))
                                     <td><span class="top" title="{{$report->relatedToHelpLine->log}}"> {{ $report->tracking_id }}</span></td>
-                                    @else
-                                     <td><span class="top" title=""> {{ $report->tracking_id }}</span></td>
-                                     @endif 
                                     <td>
                                         @if(isset($report->firstResponderStats)) 
                                             <?php  
@@ -173,6 +169,24 @@
     </div> <!-- END STATISTICS -->
 
     @endif
+</div>
+
+<div class="container">
+    <div class="panel panel-default" >
+    <div class="panel-heading clearfix">
+        <h4 class="pull-left"><i class="fa fa-bar-chart" aria-hidden="true"></i> General Graphs and Charts</h4>
+    </div>
+        <div class="panel-body">
+            <div class="col-sm-6">
+            {!! $Helpline_types->container() !!}
+            </div>                           
+            <div class="col-sm-6">
+            {!! $weekly_bar->container() !!}
+            </div>
+            {!! $weekly_bar->script() !!}
+            {!! $Helpline_types->script() !!}    
+        </div>
+    </div>
 </div>
 
 

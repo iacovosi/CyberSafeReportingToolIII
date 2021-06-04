@@ -78,7 +78,7 @@
                     
                     <ul class="dropdown-menu">
                         <li><a href="{{ route('statistics.index') }}">Helpline and Hotline</a></li>
-                        <li><a href="">Fakenews</a></li>
+                        <li><a href="{{ route('show.fakenews.stats') }}">Fakenews</a></li>
                     </ul>
                 </li>
                 @endif
