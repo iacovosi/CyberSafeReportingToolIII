@@ -14,8 +14,7 @@
                         <div class="panel-heading clearfix">
                             <h4 class="pull-left">HELPLINE - Report ID : # {{ $helpline->id }}</h4>
                             <div class="pull-right form-actions">
-                                {{-- <a href="{{route('hotline.edit',['id' => $helpline->id])}}" class="btn btn-danger"><i
-                                            class="fa fa-paper-plane-o" aria-hidden="true"></i> Forward to HOTLINE</a> --}}
+                            <a href="{{route('helpline.move-hotline',['id' => $helpline->id])}}" class="btn btn-danger"><i class="fa fa-paper-plane-o" aria-hidden="true"></i> Forward to HOTLINE</a>
                                 <a href="" class="btn btn-default" data-toggle="modal" data-target="#myModal"><i
                                             class="fa fa-times" aria-hidden="true"></i> Cancel</a>
                                 @role('manager')

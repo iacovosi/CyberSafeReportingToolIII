@@ -63,8 +63,7 @@ class HomeController extends Controller
             if ($user->hasRole("admin") || $user->hasRole("manager")) {
                 $helpline = Helpline::ofStatus($statusSelected)->get();
                 $fakenews = Fakenews::ofStatus($statusSelected)->get();
-            }
-            else {
+            }else {
                 if ($statusSelected!="*") {
                     $helpline = Helpline::where(function ($query) use ($statusSelected) {
                         $query->select('*')
@@ -78,22 +77,17 @@ class HomeController extends Controller
                              $query->where('user_opened', Auth::id())
                                 ->orwhere('user_opened',NULL)
                                 ->orwhere('forwarded', "true");
-                        })
-                        ->get();
+                        })->get();
 
                     $fakenews = Fakenews::where('status', '=', $statusSelected)
                         ->where(function ($query) {
                             $query->where('user_assigned', Auth::id())
-                                ->orwhere('user_assigned', NULL)
-                                ->orwhere('forwarded', "true");
+                                ->orwhere('user_assigned', NULL);
                         })->where(function($query) {
                              $query->where('user_opened', Auth::id())
-                                ->orwhere('user_opened',NULL)
-                                ->orwhere('forwarded', "true");
-                        })
-                        ->get();
-                }
-                else {
+                                ->orwhere('user_opened',NULL);
+                        })->get();
+                }else {
                     $helpline = Helpline::ofStatus("*")->where(function ($query) {
                             $query->where('user_assigned', Auth::id())
                                 ->orwhere('user_assigned', NULL)
@@ -102,18 +96,14 @@ class HomeController extends Controller
                             $query->where('user_opened', Auth::id())
                                 ->orwhere('user_opened', NULL)
                                 ->orwhere('forwarded', "true");
-                        })
-                        ->get();
+                        })->get();
                     $fakenews = Fakenews::ofStatus("*")->where(function ($query) {
                             $query->where('user_assigned', Auth::id())
-                                ->orwhere('user_assigned', NULL)
-                                ->orwhere('forwarded', "true");
+                                ->orwhere('user_assigned', NULL);
                         })->where(function($query) {
                             $query->where('user_opened', Auth::id())
-                                ->orwhere('user_opened', NULL)
-                                ->orwhere('forwarded', "true");
-                        })
-                        ->get();
+                                ->orwhere('user_opened', NULL);
+                        })->get();
                 }
             }
         } else {
@@ -135,21 +125,18 @@ class HomeController extends Controller
                     $query->where('user_opened',Auth::id())
                         ->orwhere('user_opened',NULL)
                         ->orwhere('forwarded', "true");
-                    })
-                    ->get();
+                    })->get();
                 $fakenews = Fakenews::where('status','!=','Closed')
                     ->where(function ($query) {
                     $query->where('user_assigned',Auth::id())
-                        ->orwhere('user_assigned',NULL)
-                        ->orwhere('forwarded', "true");
+                        ->orwhere('user_assigned',NULL);
                         })->where(function($query) {
                     $query->where('user_opened',Auth::id())
-                        ->orwhere('user_opened',NULL)
-                        ->orwhere('forwarded', "true");
-                    })
-                    ->get();
+                        ->orwhere('user_opened',NULL);
+                    })->get();
             }
         }
+
 
         return view('home')->with([
                     'helpline'=> $helpline,
@@ -164,62 +151,5 @@ class HomeController extends Controller
                     'status' => $status,
                     'users' => $users
                 ]);
-
-        // if ($status->contains('name',$request->sortStatus) || $request->sortStatus == "*") {
-
-        //     if($request->sortStatus == "*") {
-        //         if($request->sortUser == "*" && $request->sortUser=="default" || $request->sortUser=="*"){
-        //             $helpline = Helpline::all();
-        //         } else if($request->sortUser != "default") {
-        //             $helpline = Helpline::where('user_id',$request->sortUser)->get();
-        //         } else if($request->sortUser == "*" && $request->sortUser=="default" ) {
-        //         $helpline = Helpline::all();
-        //         }
-        //     } else if ($request->sortStatus != "*" && $request->sortUser =="default" || $request->sortUser=="*") {
-        //         $helpline = Helpline::where('status',$request->sortStatus)->get();
-        //     } else if ($request->sortStatus != "*" && $request->sortUser !="default" && $request->sortUser!="*") {
-        //         $helpline = Helpline::where('status',$request->sortStatus)->where('user_id',$request->sortUser)->get();
-        //     } else {
-        //         $helpline = Helpline::all();
-        //     }
-
-        //     $hotline = Hotline::all();
-        //     // $resource_types = ResourceType::all();
-        //     // $content_types  = ContentType::all();
-
-        //     return view('home')->with([
-        //         'helpline'=> $helpline, 
-        //         'hotline' => $hotline,
-        //         'resource_types' => $resource_types, 
-        //         'content_types' => $content_types,
-        //         'references_by' => $references_by, 
-        //         'references_to' => $references_to,
-        //         'status' => $status, 
-        //         'users' => $users , 
-        //         'actions' => $actions
-        //     ]);
-
-        // } else {
-        //     $hotline = Hotline::all();
-
-        //     $helpline = Helpline::where('status','!=','Closed')
-        //         ->where(function ($query) {
-        //             $query->where('user_assigned',Auth::id())
-        //                   ->orwhere('user_assigned',NULL)
-        //                   ->where('user_opened',Auth::id())
-        //                   ->orwhere('user_opened',NULL);
-        //             })
-        //         ->get();
-
-        //     // $resourcetypes = ResourceType::all();
-        //     // $contenttypes  = ContentType::all();
-
-        //     return view('home')->with([
-        //         'helpline'=> $helpline , 'hotline' => $hotline,
-        //         'resource_types' => $resource_types, 'content_types' => $content_types,
-        //         'references_by' => $references_by, 'references_to' => $references_to,
-        //         'status' => $status, 'users' => $users, 'actions' => $actions
-        //     ]);
-        // }
     }
 }
