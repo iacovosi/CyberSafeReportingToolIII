@@ -45,8 +45,7 @@ Route::group(['middleware' => ['web','auth']], function () {
     });
 
     Route::group(['middleware' => ['permission:view_users']], function () {
-        Route::get('/users/{user}/
-        ','UserController@edit')->name('users.edit');
+        Route::get('/users/{user}/','UserController@edit')->name('users.edit');
         Route::get('/users','UserController@index')->name('users.index');
     });
 
