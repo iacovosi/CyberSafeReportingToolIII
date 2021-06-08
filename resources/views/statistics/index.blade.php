@@ -161,7 +161,7 @@
 
                 <div class="panel-footer">
                     {{--  {{ $statistics->appends(Request::only('filterStatus'))->render() }}  --}}
-                    {{--   {{ $statistics->appends(Request::only('page'))->render() }} --}}
+                    {{--  {{ $statistics->appends(Request::only('page'))->render() }} --}}
                 </div> <!-- END .panel-footer -->
 
             </div> <!-- END .panel -->

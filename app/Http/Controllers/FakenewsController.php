@@ -567,7 +567,7 @@ class FakenewsController extends Controller
         // report description       
         $statistics->fakenews_source_type = $data['fakenews_source_type'];
         $statistics->fakenews_type = (isset($data['fakenews_type'])) ? $data['fakenews_type'] : 'Undefined';
-        $statistics->evaluation = $data['evaluation'];
+        $statistics->evaluation = (isset($data['evaluation'])) ? $data['evaluation'] : '50';
         $statistics->img_upload = $data['img_upload'];
         $statistics->loc_available = (  isset($data['country']) | 
                                         isset($data['town']) | 
@@ -652,6 +652,13 @@ class FakenewsController extends Controller
             FakenewsPictureReff::where('picture_reference_id','=',$image_id)->delete();
         }
         return redirect()->back();
+    }
+
+    public function evalview()
+    {   
+
+        
+        return view('fakenews.evals');
     }
 
 }
