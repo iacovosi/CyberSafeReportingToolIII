@@ -215,7 +215,8 @@ Route::group(['middleware' => ['web','auth']], function () {
     *   Statistics
     */
     Route::group(['middleware' => ['permission:view_statistics']], function () {
-        Route::get('statistics/fakenews','StatisticsController@index_fakenews')->name('show.fakenews.stats');;
+        Route::get('statistics/fakenews','StatisticsController@index_fakenews')->name('show.fakenews.stats');
+        Route::get('statistics/gen_charts','StatisticsController@gen_charts')->name('gen.charts');
         Route::resource('statistics','StatisticsController');
     });
 
@@ -237,9 +238,12 @@ Route::post('/helpline','HelplineController@store')->name('save-helpline'); // c
 // both loggedin users & loggedout can create a resource, this is used by fakenews
 Route::post('/fakenews','FakenewsController@store')->name('save-fakenews'); // create form post request.
 
+Route::get('/fakenews/evals/','FakenewsController@evalview');
 Route::get('/helpline/{loc}/form/','HelplineController@index');
 Route::get('/hotline/{loc}/form/','HotlineController@index');
 Route::get('/fakenews/{loc}/form/','FakenewsController@index');
+
+
 
 /*
 /   Route to get the Current language to

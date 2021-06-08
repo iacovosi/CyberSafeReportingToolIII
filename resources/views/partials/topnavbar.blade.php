@@ -72,13 +72,15 @@
                 @if(GroupPermission::usercan('view','statistics'))
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown">
-                        <i class="fa fa-bar-chart" aria-hidden="true"></i> Statistics 
+                        <i class="fa fa-bar-chart" aria-hidden="true"></i> Statistics and Graphs 
                         <span class="caret"></span>
                     </a>
                     
                     <ul class="dropdown-menu">
                         <li><a href="{{ route('statistics.index') }}">Helpline and Hotline</a></li>
                         <li><a href="{{ route('show.fakenews.stats') }}">Fakenews</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="{{ route('gen.charts') }}">Generate Graphs and Charts</a></li>
                     </ul>
                 </li>
                 @endif

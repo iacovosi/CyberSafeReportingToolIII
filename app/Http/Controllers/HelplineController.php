@@ -204,7 +204,7 @@ class HelplineController extends Controller
         // $returnLatest = Helpline::latest()->first();
         $statistics->tracking_id = $id;// $returnLatest->id;
         //
-        $statistics->is_it_hotline = (isset($data['is_it_hotline'])) ? 'true' : 'false';
+        $statistics->is_it_hotline = $data['is_it_hotline'];
         $statistics->submission_type = $data['submission_type'];
         // user profile
         $statistics->age = (isset($data['age'])) ? $data['age'] : 'Not Set';

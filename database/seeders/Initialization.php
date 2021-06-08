@@ -600,5 +600,16 @@ class Initialization extends Seeder
             ['id' => 6, 'typename'=> 'Other' , 'typename_en' => 'Other','typename_gr' => 'Αλλα','created_at' => new DateTime, 'updated_at' => new DateTime]
         );
         DB::table('fakenews_source_type')->insert($fakenews_types);
+
+        DB::table('report_chart_types')->delete();
+        $chart_types = array(
+            ['id' => 1, 'typename' => 'Adult to Non-Adult Ratio', 'description' => 'Shows a barchart which gives the ratio in percantage for adult against non adult reporters.','created_at' => new DateTime, 'updated_at' => new DateTime],
+            ['id' => 2, 'typename' => 'Monthly Report Counts', 'description' => 'Shows a barchart with the ammount of cases reported per months for comparison.','created_at' => new DateTime, 'updated_at' => new DateTime],
+            ['id' => 3, 'typename' => 'Description of Reporters', 'description' => 'Shows a barchart with the reporter/caller type (parent,teacher and ages).','created_at' => new DateTime, 'updated_at' => new DateTime],
+            ['id' => 4, 'typename' => 'Gender Ratio', 'description' => 'Shows a barchart which gives the ratio and number for male against female reporters.','created_at' => new DateTime, 'updated_at' => new DateTime],
+            ['id' => 5, 'typename' => 'Report Methods', 'description' => 'Shows a barchart which compares the reporting method(chat, online form, email and phonecall).','created_at' => new DateTime, 'updated_at' => new DateTime],
+            ['id' => 6, 'typename' => 'Report Types', 'description' => 'Shows a barchart which compares the reporting types given which service is specified. This also outputs a table with case count and percentage.','created_at' => new DateTime, 'updated_at' => new DateTime],
+        );
+        DB::table('report_chart_types')->insert($chart_types);
     }
 }

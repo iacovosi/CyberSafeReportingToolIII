@@ -3,8 +3,7 @@
 @section('content')
 
 <div class="container-fluid">
-
-
+qergwtberjtruk
 </div>
 @endsection
 
@@ -15,4 +14,3 @@
         window.top.postMessage(document.body.scrollHeight, "https://www.cybersafety.cy/fakenews-report");
     }, 500);
 </script>
-@endsection

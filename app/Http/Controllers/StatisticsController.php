@@ -14,15 +14,18 @@ use App\ReferenceTo;
 use App\Status;
 use App\ActionTaken;
 use App\Statistics;
-
+use App\Gender;
 use App\Fakenews;
 use App\FakenewsType;
 use App\FakenewsPictures;
 use App\FakenewsPictureReff;
 use App\FakenewsSourceType;
 use App\FakenewsStatistics;
+use App\report_chart_type;
 use App\Charts\FakenewsStatisticsChart;
 
+use Lang;
+use Session;
 use Validator;
 
 class StatisticsController extends Controller
@@ -67,6 +70,7 @@ class StatisticsController extends Controller
         array_push($data_week_help_cntr,Statistics::where('is_it_hotline','=','false')->count()-array_sum($data_week_help_cntr));
         array_push($data_week_hot_cntr,Statistics::where('is_it_hotline','=','true')->count()-array_sum($data_week_hot_cntr));
         array_push($data_date,date('Y-m-d',strtotime($earliest_date)) . ' to ' . 'today');
+        //dd(Statistics::where('is_it_hotline','=','true')->count());
         //dd([$data_date,$data_week_help_cntr,$data_week_hot_cntr]);
 
         $weekly_input = new FakenewsStatisticsChart;
@@ -393,5 +397,205 @@ class StatisticsController extends Controller
             echo $output;
     }
 
-}
 
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function gen_charts(Request $request)
+    {
+        $report_chart_types = report_chart_type::all();
+        $charts = Array();
+
+        if(!empty($request->to_date))
+            {
+                //dd($request->all(); 
+                // Set validation rules for fields
+                $rules = [
+                    'from_date' => 'required|date',
+                    'to_date' => 'required|date|after:from_date|before:tomorrow',
+                    'data_sellection' => 'required',
+                    'chart_type' => 'required|array'
+                ];
+                // Generate a new validator instance
+                $validator = Validator::make($request->all(), $rules, Lang::get('validation.custom.entry', array(), Session::get('lang')));
+                if ($validator->fails()) {
+                    return redirect()->back()->with(['errors' => $validator->messages()])->withInput();
+                }
+                
+                
+                $data = $request->all();
+                $all_check = false;
+                function querry_call($request){
+                    $data=$request->all();
+                    $end_of_day_to_date = Carbon::parse($request->to_date)->endOfDay()->format('Y-m-d H:m:s');
+                    if ($data['data_sellection'] == 'helpline'){
+                        $stats =  Statistics::whereBetween('created_at',[$data['from_date'], $end_of_day_to_date])->where('is_it_hotline','=','false');
+                    }else if ($data['data_sellection'] == 'hotline'){
+                        $stats =  Statistics::whereBetween('created_at',[$data['from_date'], $end_of_day_to_date])->where('is_it_hotline','=','true');
+                    }else if ($data['data_sellection'] == 'fakenews'){
+                        $stats =  FakenewsStatistics::whereBetween('created_at',[$data['from_date'], $end_of_day_to_date]);
+                    }
+                    return($stats);
+                }
+
+
+                //the all charts check
+                if (in_array('all',$data['chart_type'])){
+                    $all_check = true;
+                }
+                // generating the requested charts
+                if (in_array('Adult to Non-Adult Ratio',$data['chart_type']) | ($all_check == true)){
+                    $stats = querry_call($request);
+
+                    $All_cases=$stats->count();
+                    $adults_num = $stats->where('age','=','18+')->count();
+                    $non_adult_num = $All_cases-$adults_num ;
+                    $data_age = [$adults_num,$non_adult_num];
+                    $age_lab = ['Adults', 'Non-adults'];
+                    $age_chart = new FakenewsStatisticsChart;
+                    $age_chart -> labels($age_lab);
+                    $age_chart -> dataset('Adults vs Non-adults','bar',$data_age)->backgroundColor(['yellow','blue']);
+                    $age_chart -> title('Adults vs Non-adults');
+                    array_push($charts,$age_chart);
+                }
+                //dd(Carbon::parse($request->to_date)->diffInMonths(Carbon::parse($request->from_date)->format('Y-m-d')));
+                // generating the requested charts
+                
+                if (in_array('Monthly Report Counts',$data['chart_type']) | ($all_check == true)){
+                    $stats = querry_call($request);
+
+                    $num_months = Carbon::parse($request->to_date)->diffInMonths(Carbon::parse($request->from_date)->format('Y-m-d')) +1  ;
+                    $init_date = $request->from_date;
+                    $cases_dataset = Array();
+                    $cases_labels = Array();
+                    //dd($num_months);
+                    for ($i = 0 ; $i < $num_months; $i++){
+                        $end_of_month = Carbon::parse($init_date)->endOfMonth();
+                        if ($i==$num_months-1){
+                            $end_of_month=Carbon::parse($request->to_date)->endOfDay()->format('Y-m-d H:m:s');
+                            //dd($end_of_month);
+                        }
+                        //dd(date('Y/m/d',strtotime($init_date)));
+                        //dd($stats->pluck('id'));
+                        $num_cases = $stats->whereBetween('created_at',[date($init_date), date('Y-m-d H:m:s',strtotime($end_of_month))])->count();
+                        array_push($cases_dataset, $num_cases);
+                        array_push($cases_labels, date('Y/m/d',strtotime($init_date)) . ' - '.date('Y/m/d',strtotime($end_of_month)));
+                        if ($i!=$num_months-1){
+                            $init_date = $end_of_month->addDay();
+                        }
+                        $stats = querry_call($request);
+
+                    }
+                    //dd([$cases_labels,$cases_dataset]);
+                    $cases_chart = new FakenewsStatisticsChart;
+                    $cases_chart -> labels($cases_labels);
+                    $cases_chart -> dataset('Reported Cases Per Month','bar',$cases_dataset)->backgroundColor('blue');
+                    $cases_chart -> title('Reported Cases Per Month');
+                    array_push($charts,$cases_chart);
+                }
+
+                if (in_array('Description of Reporters',$data['chart_type']) | ($all_check == true)){
+                    $stats = querry_call($request);
+
+                    $role_types = ReportRole::pluck('name')->values();
+                    $role_dataset = Array();
+                    $role_labels = Array();
+                    //dd($role_types);
+                    foreach($role_types as $role){
+                        $cntr = $stats->where('report_role', '=', $role)->count();
+                        array_push($role_dataset, $cntr);
+                        array_push($role_labels,$role);
+                        $stats = querry_call($request);
+                    }
+                    //dd($role_dataset);
+                    $cntr = $stats->where('report_role', '=', 'Not set')->count();
+                    array_push($role_dataset, $cntr);
+                    array_push($role_labels, 'Not set');
+                    $roles_chart = new FakenewsStatisticsChart;
+                    $roles_chart -> labels($role_labels);
+                    $roles_chart -> dataset('Cases Reported by Each Role','bar',$role_dataset)->backgroundColor(['blue','blue','yellow','yellow','blue','blue']);
+                    $roles_chart -> title('Cases Reported by Each Role');
+                    array_push($charts,$roles_chart);
+                }
+
+                if (in_array('Gender Ratio',$data['chart_type']) | ($all_check == true)){
+                    $stats = querry_call($request);
+
+                    $genders = Gender::pluck('name')->values();
+                    $gender_dataset = Array();
+                    $gender_labels = Array();
+                    //dd($role_types);
+                    foreach($genders as $gender){
+                        $cntr = $stats->where('gender', '=', $gender)->count();
+                        array_push($gender_dataset, $cntr);
+                        array_push($gender_labels, $gender);
+                        $stats = querry_call($request);
+                    }
+                    $cntr = $stats->where('gender', '=','Not set')->count();
+                    array_push($gender_dataset, $cntr);
+                    array_push($gender_labels, 'Not set');
+                    //dd([$genders,$gender_dataset]);
+                    $gender_chart = new FakenewsStatisticsChart;
+                    $gender_chart -> labels($gender_labels);
+                    $gender_chart -> dataset('Cases Reported by Each Gender','bar',$gender_dataset)->backgroundColor(['yellow','blue']);
+                    $gender_chart -> title('Cases Reported by Each Gender');
+                    array_push($charts,$gender_chart);
+                }
+
+                if (in_array('Report Methods',$data['chart_type']) | ($all_check == true)){
+                    $stats = querry_call($request);
+
+                    $sub_types = SubmissionType::pluck('name')->values();
+                    $sub_type_dataset = Array();
+
+                    foreach($sub_types as $type){
+                        $cntr = $stats->where('submission_type', '=', $type)->count();
+                        array_push($sub_type_dataset, $cntr);
+                        $stats = querry_call($request);
+                    }
+
+                    $sub_type_chart = new FakenewsStatisticsChart;
+                    $sub_type_chart -> labels($sub_types);
+                    $sub_type_chart -> dataset('Cases Reported by Each Submission Method','bar',$sub_type_dataset)->backgroundColor('blue');
+                    $sub_type_chart -> title('Cases Reported by Each Submission Method');
+                    array_push($charts,$sub_type_chart);
+                }
+                if (in_array('Report Types',$data['chart_type']) | ($all_check == true)){
+                    $stats = querry_call($request);
+
+                    if ($data['data_sellection']=='helpline'){
+                        $rep_types = ContentType::where('is_for','=','helpline')->pluck('name')->values();
+                    }else if($data['data_sellection']=='hotline'){
+                        $rep_types = ContentType::where('is_for','=','hotline')->pluck('name')->values();
+                    }else if($data['data_sellection']=='fakenews'){
+                        $rep_types = FakenewsSourceType::pluck('typename')->values();
+                    }
+                    $cont_type_dataset = Array();
+
+                    foreach($rep_types as $type){
+                        if ($data['data_sellection']=='helpline'|$data['data_sellection']=='hotline'){
+                            $cntr = $stats->where('content_type', '=', $type)->count();
+                        }else if ($data['data_sellection']=='fakenews'){
+                            $cntr = $stats->where('fakenews_source_type', '=', $type)->count();
+                        }
+                        array_push($cont_type_dataset, $cntr);
+                        $stats = querry_call($request);
+                    }
+
+                    $cont_type_chart = new FakenewsStatisticsChart;
+                    $cont_type_chart -> labels($rep_types);
+                    $cont_type_chart -> dataset('Cases Reported for Each Source Type','bar',$cont_type_dataset)->backgroundColor('blue');
+                    $cont_type_chart -> title('Cases Reported for Each Source Type');
+                    array_push($charts,$cont_type_chart);
+                }
+            }
+
+        return view('statistics.gen_graphs',[
+            'report_chart_types' => $report_chart_types,
+            'charts' => $charts
+            ]);
+    }
+
+}
