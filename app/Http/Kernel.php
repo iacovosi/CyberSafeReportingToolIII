@@ -36,7 +36,7 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
-           // \App\Http\Middleware\LogLastUserActivity::class, comment out in order to create redis and then to check online
+           \App\Http\Middleware\LogLastUserActivity::class,
         ],
 
         'api' => [
