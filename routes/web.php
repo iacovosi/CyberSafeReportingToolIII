@@ -219,6 +219,10 @@ Route::group(['middleware' => ['web','auth']], function () {
         Route::resource('statistics','StatisticsController');
     });
 
+    // Online Users
+    Route::get('/online','OnlineUsersController@index');
+
+
     /*
     * Actions, depricated?
     */
@@ -267,6 +271,7 @@ Route::post('/chatroom/{id}','ChatroomController@edit');
 Route::get('/chatroom/{id}','ChatroomController@show');
 
 Route::get('/chatroom/online','MessageController@show');
+
 
 /*
 |       Extra Pages

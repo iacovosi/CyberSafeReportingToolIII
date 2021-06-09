@@ -18,6 +18,7 @@ use App\User;
 // use App\ActionTaken;
 use Illuminate\Support\Facades\Crypt;
 use Auth;
+use DB;
 
 class HomeController extends Controller
 {
@@ -40,7 +41,6 @@ class HomeController extends Controller
     {
         $status = Status::all();
         $users = User::all();
-        //$fakenews = Fakenews::all();
         $fakenewstype = FakenewsType::all();
         $fakenewssourcetype = FakenewsSourceType::all();
         $resource_types = ResourceType::all();
@@ -50,91 +50,46 @@ class HomeController extends Controller
         $references_to = ReferenceTo::all();
 
         $request->flash();
-        //dd($request);
 
-        // APPLY FILTERING //
-        if ($request->filterStatus) {
+
+        if ($request->filterStatus && $request->filterStatus!=='*') {
             $statusSelected = $request->filterStatus;
-
-            // ...set filters but dont get resuts yet, due to pagination and export conflict
-            $user = auth()->user();
-
-            // admin & manager get all reports.
-            if ($user->hasRole("admin") || $user->hasRole("manager")) {
-                $helpline = Helpline::ofStatus($statusSelected)->get();
-                $fakenews = Fakenews::ofStatus($statusSelected)->get();
-            }else {
-                if ($statusSelected!="*") {
-                    $helpline = Helpline::where(function ($query) use ($statusSelected) {
-                        $query->select('*')
-                                ->where('status', '=', $statusSelected)
-                                ->where('user_assigned', Auth::id())
-                                ->orwhere('user_assigned', NULL)
-                                ->orwhere('user_opened', Auth::id())
-                                ->orwhere('user_opened', NULL)
-                                ->orwhere('forwarded', "true");
-                        })->where(function($query) {
-                             $query->where('user_opened', Auth::id())
-                                ->orwhere('user_opened',NULL)
-                                ->orwhere('forwarded', "true");
-                        })->get();
-
-                    $fakenews = Fakenews::where('status', '=', $statusSelected)
-                        ->where(function ($query) {
-                            $query->where('user_assigned', Auth::id())
-                                ->orwhere('user_assigned', NULL);
-                        })->where(function($query) {
-                             $query->where('user_opened', Auth::id())
-                                ->orwhere('user_opened',NULL);
-                        })->get();
-                }else {
-                    $helpline = Helpline::ofStatus("*")->where(function ($query) {
-                            $query->where('user_assigned', Auth::id())
-                                ->orwhere('user_assigned', NULL)
-                                ->orwhere('forwarded', "true");
-                        })->where(function($query) {
-                            $query->where('user_opened', Auth::id())
-                                ->orwhere('user_opened', NULL)
-                                ->orwhere('forwarded', "true");
-                        })->get();
-                    $fakenews = Fakenews::ofStatus("*")->where(function ($query) {
-                            $query->where('user_assigned', Auth::id())
-                                ->orwhere('user_assigned', NULL);
-                        })->where(function($query) {
-                            $query->where('user_opened', Auth::id())
-                                ->orwhere('user_opened', NULL);
-                        })->get();
-                }
-            }
         } else {
+            $statusSelected = "%";
+        }
+        
+        $user = auth()->user();
 
-            $user = auth()->user();
-            
-            // admin & manager can view everything.
-            if ($user->hasRole("admin") || $user->hasRole("manager")) {
-                $helpline = Helpline::ofStatus("*")->get();
-                $fakenews = Fakenews::ofStatus("*")->get();
-            }
-            else {
-                $helpline = Helpline::where('status','!=','Closed')
-                    ->where(function ($query) {
-                    $query->where('user_assigned',Auth::id())
-                        ->orwhere('user_assigned',NULL)
-                        ->orwhere('forwarded', "true");
-                        })->where(function($query) {
-                    $query->where('user_opened',Auth::id())
-                        ->orwhere('user_opened',NULL)
-                        ->orwhere('forwarded', "true");
-                    })->get();
-                $fakenews = Fakenews::where('status','!=','Closed')
-                    ->where(function ($query) {
-                    $query->where('user_assigned',Auth::id())
-                        ->orwhere('user_assigned',NULL);
-                        })->where(function($query) {
-                    $query->where('user_opened',Auth::id())
-                        ->orwhere('user_opened',NULL);
-                    })->get();
-            }
+        // admin & manager get all reports.
+        if ($user->hasRole("admin") || $user->hasRole("manager")) {
+            $helpline = Helpline::where(function ($query) use ($statusSelected){
+                    $query->where('status', 'LIKE' ,$statusSelected);
+                })->get();
+            $fakenews = Fakenews::where(function ($query) use ($statusSelected){
+                    $query->where('status', 'LIKE' ,$statusSelected);
+                })->get();
+        }else {
+            $helpline = Helpline::where(function ($query ) use ($statusSelected){
+                    $query->where('status', 'LIKE' ,$statusSelected)
+                          ->where('status', '!=', 'Closed') 
+                          ->where('user_assigned', Auth::id()) 
+                          ->orwhere('forwarded', "true") 
+                          ->orwhere('user_opened', NULL);
+                })->orwhere(function($query)  use ($statusSelected) {
+                    $query->where('status', 'LIKE' , $statusSelected)
+                          ->where('status', '!=', 'Closed')
+                          ->where('user_opened', Auth::id())
+                          ->where('user_assigned', NULL);
+                })->get();
+                
+            $fakenews = Fakenews::where(function ($query) use ($statusSelected) {
+                    $query->where('status', 'LIKE' , $statusSelected)
+                          ->where('user_assigned', Auth::id())
+                          ->orwhere('user_opened', NULL);
+                })->where(function($query) {
+                    $query->where('user_opened', Auth::id())
+                          ->where('user_assigned', NULL);
+                })->get();
         }
 
 
@@ -143,7 +98,6 @@ class HomeController extends Controller
                     'fakenews'=> $fakenews,
                     'fakenews_type' => $fakenewstype,
                     'fakenews_source_type' => $fakenewssourcetype,
-                    // 'hotline' => $hotline,
                     'resource_types' => $resource_types,
                     'content_types' => $content_types,
                     'references_by' => $references_by,

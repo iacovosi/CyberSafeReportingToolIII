@@ -22,14 +22,11 @@ class LogLastUserActivity
         // Checking if http request is coming from logged in user
         if(Auth::check()){
 
-            // Creating namespace for Redis
             $id = Auth::user()->id;
-            $browser = $request->server('HTTP_USER_AGENT');
-            $namespace = 'users:'.$id.$browser;
 
-            // Refreshing the expiration of logged user
-            $expire = config('session.lifetime') * 60;
-            Redis::EXPIRE($namespace,$expire);
+            Redis::set('user:'.$id, 1); // set user as online
+            Redis::expire('user:'.$id, 120); // expire every 2 minutes
+
         }
         return $next($request);
     }

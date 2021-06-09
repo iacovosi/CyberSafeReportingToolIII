@@ -272,8 +272,8 @@ class HelplineController extends Controller
 
 
         // People that can view a report are: admins / first opened / assigned
-
-        if ( auth()->user()->hasRole("admin") || (($helpline->user_opened == Auth::id()) || (empty($helpline->user_opened))) || (($helpline->user_assigned == Auth::id() || (empty($helpline->user_assigned))))) {
+        
+        if ( auth()->user()->hasRole("admin") || ($helpline->user_assigned == Auth::id() || $helpline->forwarded == 'true' || empty($helpline->user_opened)) || (($helpline->user_opened == Auth::id()) &&  (empty($helpline->user_assigned)))) {
             $helpline->log="";
             $first=!empty($helpline->firstResponder)?$helpline->firstResponder->name:"";
             $last=!empty($helpline->lastResponder)?$helpline->lastResponder->name:"";
@@ -515,7 +515,7 @@ class HelplineController extends Controller
         $statistics->resource_type = $data['resource_type'];
         $statistics->content_type = $data['content_type'];
         // operator actions   
-        $statistics->user_opened = (isset($data['user_opened'])) ? $data['user_opened'] : '';
+        $statistics->user_opened = (isset($data['user_opened'])) ? $data['user_opened'] : null;
         if (isset($data['user_assigned'])) $statistics->user_assigned = $data['user_assigned'];
         $statistics->priority = (isset($data['priority'])) ? $data['priority'] : 'Not set';
         $statistics->reference_by = (isset($data['reference_by'])) ? $data['reference_by'] : 'Not set';
@@ -579,7 +579,7 @@ class HelplineController extends Controller
             $statistics->resource_type = $data['resource_type'];
             $statistics->content_type = $data['content_type'];
             // operator actions
-            $statistics->user_opened = (isset($data['user_opened'])) ? $data['user_opened'] : '';
+            $statistics->user_opened = (isset($data['user_opened'])) ? $data['user_opened'] : null;
             if (isset($data['user_assigned'])) $statistics->user_assigned = $data['user_assigned'];
             $statistics->priority = (isset($data['priority'])) ? $data['priority'] : 'Not set';
             $statistics->reference_by = (isset($data['reference_by'])) ? $data['reference_by'] : 'Not set';
