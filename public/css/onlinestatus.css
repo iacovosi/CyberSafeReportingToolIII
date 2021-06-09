@@ -94,9 +94,10 @@
 }
 
 #chat {
-    position: absolute;
-	left: 20px;
-	width: 70px;
+    position: fixed;
+	bottom: 30px;
+	left: 50px;
+	width: 90px;
 	border-radius: 3px;
 	padding: 2px 8px;
 	font-size: 12px;
@@ -164,8 +165,7 @@
 	}
 	30%,
 	50%,
-	70%,
-	90% {
+	70%,online
 		-webkit-transform: scale(1.1)rotate(3deg)
 	}
 	40%,
