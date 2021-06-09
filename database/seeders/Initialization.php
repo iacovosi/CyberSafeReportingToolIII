@@ -338,6 +338,38 @@ class Initialization extends Seeder
                 'guard_name' => 'web',
                 'created_at' => new DateTime,
                 'updated_at' => new DateTime,
+            ),
+            36 => 
+            array (
+                'id' => 37,
+                'name' => 'view_online_users',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            37 => 
+            array (
+                'id' => 38,
+                'name' => 'edit_online_users',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            38 => 
+            array (
+                'id' => 39,
+                'name' => 'create_online_users',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            39 => 
+            array (
+                'id' => 40,
+                'name' => 'delete_online_users',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
             )
         ));
 
@@ -379,6 +411,10 @@ class Initialization extends Seeder
             ['permission_id' => 34, 'role_id' => 1],
             ['permission_id' => 35, 'role_id' => 1],
             ['permission_id' => 36, 'role_id' => 1],
+            ['permission_id' => 37, 'role_id' => 1],
+            ['permission_id' => 38, 'role_id' => 1],
+            ['permission_id' => 39, 'role_id' => 1],
+            ['permission_id' => 40, 'role_id' => 1],
         );
         DB::table('role_has_permissions')->insert($role_has_permissions);
 
@@ -393,6 +429,7 @@ class Initialization extends Seeder
             ['id' => 7, 'name' => 'statistics','created_at'=> new DateTime, 'updated_at' =>new DateTime],
             ['id' => 8, 'name' => 'chat','created_at'=> new DateTime, 'updated_at' =>new DateTime],
             ['id' => 9, 'name' => 'fakenews','created_at'=> new DateTime, 'updated_at' =>new DateTime],
+            ['id' => 10, 'name' => 'online_users','created_at'=> new DateTime, 'updated_at' =>new DateTime],
         );
         DB::table('groups')->insert($groups);
 
