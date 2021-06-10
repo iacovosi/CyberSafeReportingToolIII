@@ -656,9 +656,28 @@ class FakenewsController extends Controller
 
     public function evalview()
     {   
+        $fakenews = Fakenews::orderBy('updated_at', 'DESC')->select(['id', 'evaluation', 'comments','fakenews_source_type','fakenews_type', 'img_upload','actions', 'updated_at'])
+                                ->where("fakenews_type",'!=','Undefined')->paginate(4);
+        //dd($fakenews);
+        //return ($fakenews);
+        $img_array= Array();
+        foreach($fakenews as $news)
+        {
+            if ($news['img_upload'] == 1)
+            {
+                $img_ids = FakenewsPictureReff::where('fakenews_reference_id', '=',$news['id'])->pluck('picture_reference_id');
+                $img_names = FakenewsPictures::whereIn('id',$img_ids)->pluck('picture_path');
+                array_push($img_array,$img_names);
+            }
+        }
+        //$test_array= array_merge($fakenews,$img_array);
+        //dd($test_array);
+        //return($fakenews);
+        return view('fakenews.evals')->with([
+            'fakenews'=>$fakenews,
+            'img_array'=>$img_array
 
-        
-        return view('fakenews.evals');
+        ]);
     }
 
 }

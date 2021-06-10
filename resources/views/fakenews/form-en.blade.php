@@ -7,12 +7,12 @@
     {{-- @include('partials.info') --}}
 
     <!-- <p>@lang('translations.formHelpline.intro')</p> -->
-    <p>@lang('translations.form.fakenews_intro')</p> 
+    <p>@lang('translations.formFakenews.intro')</p> 
 
     <form method="post" action=" {{ route('save-fakenews') }}" class="userReportForm fakenewsForm" enctype = 'multipart/form-data'>
         <fieldset class="scheduler-border">
             <div class="form-group">
-                <label for="fakenews_source_type">Source Type (PLACEHOLDER)</label>
+                <label for="fakenews_source_type">@lang('translations.form.source_type')</label>
                 <br/>
                 <div class="btn-group" data-toggle="buttons">
                     @foreach($fakenews_source_type as $type)
@@ -37,13 +37,13 @@
             </div>
             <!-- Title of news -->
             <div class="form-group">
-                <label for="title">@lang('translations.form.title') *</label>
+                <label for="title">@lang('translations.form.title')</label>
                 <input type="text" name="title" class="form-control" id="title" value={{ old('title') }}></input>
                 <span class="text-danger">{{ $errors->first('resource_url') }}</span>
             </div>
             <!-- problematic document or extract of news -->
             <div class="form-group">
-                <label for="source_document">@lang('translations.form.source_doc')</label>
+                <label for="source_document">@lang('translations.form.source_doc')*</label>
                 <textarea type="text" name="source_document" class="form-control" id="source_document" rows="10" maxlength="10000" placeholder="@lang('translations.form.source_doc_placeholder')" >{{ old('source_document') }}</textarea>
                 <div class="help-block">10000 Maximum characters<span class="notification_source_doc"></span></div>
             </div>
@@ -125,10 +125,10 @@
 
         <!-- Newspaper route -->
         <fieldset class="scheduler-border" id ='newspaper'>
-            <legend class="scheduler-border">@lang('translations.form.radio_route')</legend>
+            <legend class="scheduler-border">@lang('translations.form.newspaper_route')</legend>
             <!-- Newspaper source -->
             <div class="form-group">
-                <label for="newspaper_name">Name of Newspaper (PLACEHOLDER) *</label>
+                <label for="newspaper_name">@lang('translations.form.newspaper_name') *</label>
                 <input type="text" name="newspaper_name" class="form-control" id="newspaper_name" value={{ old('newspaper_name') }}></input>
                 <div class="help-block"></div>
             </div>
@@ -227,7 +227,7 @@
 
         <!-- coments and date route -->
         <fieldset class="scheduler-border">
-            <legend class="scheduler-border">@lang('translations.form.comments_date')</legend>
+            <legend class="scheduler-border">@lang('translations.form.comments_route')</legend>
             <!-- Report comments-->
             <div class="form-group">
                 <label for="source_document">@lang('translations.form.comments_legend')</label>
