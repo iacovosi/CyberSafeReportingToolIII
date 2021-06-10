@@ -7,12 +7,12 @@
     {{-- @include('partials.info') --}}
 
     <!-- <p>@lang('translations.formHelpline.intro')</p> -->
-    <p>@lang('translations.form.fakenews_intro')</p> 
+    <p>@lang('translations.formFakenews.intro')</p> 
 
     <form method="post" action=" {{ route('save-fakenews') }}" class="userReportForm fakenewsForm" enctype = 'multipart/form-data'>
         <fieldset class="scheduler-border">
             <div class="form-group">
-                <label for="fakenews_source_type">Source Type (PLACEHOLDER)</label>
+                <label for="fakenews_source_type">@lang('translations.form.source_type')</label>
                 <br/>
                 <div class="btn-group" data-toggle="buttons">
                     @foreach($fakenews_source_type as $type)
@@ -125,10 +125,10 @@
 
         <!-- Newspaper route -->
         <fieldset class="scheduler-border" id ='newspaper'>
-            <legend class="scheduler-border">@lang('translations.form.radio_route')</legend>
+            <legend class="scheduler-border">@lang('translations.form.newspaper_route')</legend>
             <!-- Newspaper source -->
             <div class="form-group">
-                <label for="newspaper_name">Name of Newspaper (PLACEHOLDER) *</label>
+                <label for="newspaper_name">@lang('translations.form.newspaper_route') *</label>
                 <input type="text" name="newspaper_name" class="form-control" id="newspaper_name" value={{ old('newspaper_name') }}></input>
                 <div class="help-block"></div>
             </div>
@@ -227,7 +227,7 @@
 
         <!-- coments and date route -->
         <fieldset class="scheduler-border">
-            <legend class="scheduler-border">@lang('translations.form.comments_date')</legend>
+            <legend class="scheduler-border">@lang('translations.form.comments_route')</legend>
             <!-- Report comments-->
             <div class="form-group">
                 <label for="source_document">@lang('translations.form.comments_legend')</label>

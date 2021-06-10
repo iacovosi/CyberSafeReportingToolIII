@@ -231,14 +231,14 @@ Route::group(['middleware' => ['web','auth']], function () {
 
 });
 
-
+Route::get('/fakenews_evals','FakenewsController@evalview');
 // both loggedin users & loggedout can create a resource, this is used by hotline & helpline
 Route::post('/helpline','HelplineController@store')->name('save-helpline'); // create form post request.
 
 // both loggedin users & loggedout can create a resource, this is used by fakenews
 Route::post('/fakenews','FakenewsController@store')->name('save-fakenews'); // create form post request.
 
-Route::get('/fakenews/evals/','FakenewsController@evalview');
+
 Route::get('/helpline/{loc}/form/','HelplineController@index');
 Route::get('/hotline/{loc}/form/','HotlineController@index');
 Route::get('/fakenews/{loc}/form/','FakenewsController@index');
