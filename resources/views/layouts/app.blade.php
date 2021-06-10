@@ -206,7 +206,7 @@
                 })
 
 
-                setTimeout(function() {
+                setInterval(function() {
                     var id = "{{ Auth::user()->id }}";
                     var name = "{{ Auth::user()->name }}";
                     $.ajax({
