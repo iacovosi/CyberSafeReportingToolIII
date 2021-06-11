@@ -111,7 +111,7 @@ class HelplineObserver
      */
     public function forceDeleted(Helpline $helpline)
     {
-        $statistics = Statistics::where('tracking_id', '=', $id)->first();
+        $statistics = Statistics::where('tracking_id', '=', $helpline->id)->first();
         $statistics -> delete();
     }
 }
