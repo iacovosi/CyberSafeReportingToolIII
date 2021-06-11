@@ -6,6 +6,8 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Hash;
 
+use App\Helpline;
+use App\Observers\HelplineObserver;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -15,9 +17,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
         Schema::defaultStringLength(191);
-
+        Helpline::observe(HelplineObserver::class);
     }
 
     /**

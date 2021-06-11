@@ -496,7 +496,7 @@ class FakenewsController extends Controller
                     'references_to' => $references_to,
                     'priorities' => $priorities,
                     'status' => $status,
-                    'users' => $userThathaveAccessonFakenews,//$users,
+                    'users' => $userThathaveAccessonFakenews,
                     'actionstaken' => $actions,
                     'referenceidInfo' => $referenceidInfo
                 ]);
@@ -619,7 +619,8 @@ class FakenewsController extends Controller
 
     public function destroy($id)
     {
-        $UserId = Input::get('UserId');
+        $UserId = Auth::user()->id;
+        
         if (User::find($UserId)->hasRole("admin") && GroupPermission::canuser($UserId, 'delete', 'fakenews')) {
             $fakenews = Fakenews::find($id);
             $fakenews->delete();
