@@ -251,8 +251,7 @@
                                         
                                     </div>
                                     <!-- Report Forward to operator -->
-                                    <label for="user_assigned" class="col-sm-2 control-label">Forward to
-                                        operator</label>
+                                    <label for="user_assigned" class="col-sm-2 control-label">Forward to operator</label>
                                     <div class="col-sm-4">
                                         <select class="form-control" name="user_assigned">
                                             @if($helpline->user_assigned == null)
@@ -260,9 +259,8 @@
                                             @endif
 
                                             @foreach($users as $user)
-                                                @if($user->hasRole('operator'))
-                                                    <option value="{{ $user->id }}"
-                                                            @if ($helpline->user_assigned == $user->id) selected @endif>{{ $user->name }}</option>
+                                                @if(GroupPermission::canuser($user->id, 'edit', 'hotline') && $user->id!== Auth::id())
+                                                    <option value="{{ $user->id }}" @if ($helpline->user_assigned == $user->id) selected @endif>{{ $user->name }}</option>
                                                 @endif
                                             @endforeach
                                         </select>

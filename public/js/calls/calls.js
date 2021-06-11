@@ -94,45 +94,26 @@ $(document).on('click', '#delete-this', function() {
   //will solve future issues and targeting wrong elements.
   
   var result = confirm("You are about to permanently delete this item?");
+
   if (result) {
     //Logic to delete the item
     var thistarget = this;
     var url = $(thistarget).data('target');
     var value = $(thistarget).data('id');
-    var place= $(thistarget).data('place');
-    var userid= $(thistarget).data('content');
+
     $.ajax({
       headers: {
         'X-CSRF-Token': $('input[name=_token]').val(),
       },
       type: 'DELETE',
-      url: '/' + url + '/' + value+'?'+ $.param({"UserId": userid}),
+      url: '/' + url + '/' + value,
       success: function(data) {
-        console.log(value);
-        if(place != null){
-          location.reload();
-          // window.location.replace("/"+ place +'/');
-        }else{
-          window.location.replace("/" + url);
-        }
-
+        location.reload();
       },
       error: function(data) {
-        var errors = data.responseJSON;
-        $('.success-panel').html('');
-        $('.success-panel').css('display', 'none');
-        $('.error-panel ul').empty();
-        if(data.length > 0){
-          $.each(errors, function(i, val) {
-            $('.error-panel ul').append('<li>' + val + '</li>');
-          })
-        }else{
-          $('.error-panel ul').append('<li>' + errors + '</li>');
-        }
-        $('.error-panel').css('display', 'block');
-
-
-
+        $('#success-panel').css('display', 'none');
+        $('#error-panel').css('display', 'block');
+        $('#error-panel').text(data['responseJSON']);
       }
     })
 

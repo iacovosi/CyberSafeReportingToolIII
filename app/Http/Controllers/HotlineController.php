@@ -27,7 +27,6 @@ use App\ReferenceTo;
 use App\Priority;
 use App\Status;
 use App\ActionTaken;
-use App\Statistics;
 
 
 class HotlineController extends Controller
@@ -39,8 +38,6 @@ class HotlineController extends Controller
      */
     public function index($loc)
     {
-        //
-        //
         $resource_types = ResourceType::all();
         $content_types = ContentType::all();
         $age_groups = AgeGroup::all();
@@ -66,6 +63,23 @@ class HotlineController extends Controller
         }
     }
 
+    public function resources(){
+        return ['actions' => ActionTaken::all(),
+                'resource_types' => ResourceType::all(),
+                'content_types' => ContentType::all(),
+                'age_groups' => AgeGroup::all(),
+                'genders' => Gender::all(),
+                'report_roles' => ReportRole::all(),
+                'submission_types' => SubmissionType::all(),
+                'references_by' => ReferenceBy::all(),
+                'references_to' => ReferenceTo::all(),
+                'priorities' => Priority::all(),
+                'users' => User::all(),
+                'status' => Status::all(),
+            ];
+    }
+
+
     /**
      * Display a message when form submitted succesfully
      */
@@ -82,42 +96,7 @@ class HotlineController extends Controller
      */
     public function create()
     {
-        $actions = ActionTaken::all();
-
-        $resource_types = ResourceType::all();
-        $content_types = ContentType::all();
-        $age_groups = AgeGroup::all();
-        $genders = Gender::all();
-        $report_roles = ReportRole::all();
-        $submission_types = SubmissionType::all();
-        $references_by = ReferenceBy::all();
-        $references_to = ReferenceTo::all();
-        $priorities = Priority::all();
-        $users = User::all();
-        $status = Status::all();
-
-        $userThathaveAccessonHotline = Array();
-        foreach ($users as $user) {
-            if (GroupPermission::canuser($user->id, 'edit', 'hotline')) {
-                $userThathaveAccessonHotline[] = $user;
-            }
-
-        }
-
-        return view('hotline.create')->with([
-            'resource_types' => $resource_types,
-            'content_types' => $content_types,
-            'age_groups' => $age_groups,
-            'genders' => $genders,
-            'report_roles' => $report_roles,
-            'submission_types' => $submission_types,
-            'references_by' => $references_by,
-            'references_to' => $references_to,
-            'priorities' => $priorities,
-            'users' => $userThathaveAccessonHotline, //it was $users
-            'status' => $status,
-            'actionstaken' => $actions
-        ]);
+        return view('hotline.create')->with(self::resources());
     }
 
     /**
@@ -128,7 +107,6 @@ class HotlineController extends Controller
      */
     public function store(Request $request)
     {
-        //
 
     }
 
@@ -140,20 +118,8 @@ class HotlineController extends Controller
      */
     public function show($id)
     {
-        $actions = ActionTaken::all();
+        
         $helpline = Helpline::findOrFail($id);
-        //$helpline = Helpline::where('id', '=', $id)->first();
-        $age_groups = AgeGroup::all();
-        $genders = Gender::all();
-        $resource_types = ResourceType::all();
-        $content_types = ContentType::all();
-        $report_roles = ReportRole::all();
-        $submission_types = SubmissionType::all();
-        $references_by = ReferenceBy::all();
-        $references_to = ReferenceTo::all();
-        $priorities = Priority::all();
-        $users = User::all();
-        $status = Status::all();
 
         // only serve hotline reports
         if ($helpline->is_it_hotline == 'false'){
@@ -172,6 +138,7 @@ class HotlineController extends Controller
             $first=!empty($helpline->firstResponder)?$helpline->firstResponder->name:"";
             $last=!empty($helpline->lastResponder)?$helpline->lastResponder->name:"";
             $frwd=($helpline->is_it_hotline == 'true')?"Helpline":"Hotline";
+
             // first operator to open the report is stored
             if ((empty($helpline->user_opened) || $helpline->user_opened == NULL) || ($helpline->forwarded == "true") )  {
                 $helpline->log .= "Before Forwarded  (From ".$frwd."):" . $first."->".$last ;
@@ -180,23 +147,10 @@ class HotlineController extends Controller
 
             }
             if ($helpline->status != 'Closed') {
-                // $helpline->user_assigned = Auth::id();
                 $helpline->log .= "| Assigned to :" . Auth::User()->email;
                 $helpline->status = "Opened";
-
-                $statistics = Statistics::where('tracking_id', '=', $helpline->id)->first();
-
-                // first operator to open the report is stored
-                if (empty($helpline->user_opened) || $helpline->user_opened == NULL || ($helpline->forwarded == "true") )  {
-                    $statistics->user_opened = Auth::id();
-                    $statistics->user_assigned =null;
-                }
-
-
-                $statistics->status = "Opened";
-                $statistics->forwarded="false";
-                $statistics->save();
             }
+
             $helpline->forwarded="false";
             $helpline->save();
 
@@ -214,30 +168,7 @@ class HotlineController extends Controller
                 }
             }
 
-            $userThathaveAccessonHotline = Array();
-            foreach ($users as $user) {
-                if ( (Auth::id() != $user->id) &&  GroupPermission::canuser($user->id, 'edit', 'hotline')) {
-                    $userThathaveAccessonHotline[] = $user;
-                }
-
-            }
-
-            return view('hotline.edit')->with([
-                'helpline' => $helpline,
-                'resource_types' => $resource_types,
-                'content_types' => $content_types,
-                'age_groups' => $age_groups,
-                'genders' => $genders,
-                'report_roles' => $report_roles,
-                'submission_types' => $submission_types,
-                'references_by' => $references_by,
-                'references_to' => $references_to,
-                'priorities' => $priorities,
-                'status' => $status,
-                'users' => $userThathaveAccessonHotline,//$users,
-                'actionstaken' => $actions,
-                'referenceidInfo' => $referenceidInfo
-            ]);
+            return view('hotline.edit')->with(array_merge(['helpline' => $helpline], self::resources()));
         }
         
         
@@ -258,26 +189,13 @@ class HotlineController extends Controller
     public function showManager()
     {
         $id = Input::get('id', false);
-        $actions = ActionTaken::all();
         $helpline = Helpline::findOrFail($id);
-        $age_groups = AgeGroup::all();
-        $genders = Gender::all();
-        $resource_types = ResourceType::all();
-        $content_types = ContentType::all();
-        $report_roles = ReportRole::all();
-        $submission_types = SubmissionType::all();
-        $references_by = ReferenceBy::all();
-        $references_to = ReferenceTo::all();
-        $priorities = Priority::all();
-        $users = User::all();
-        $status = Status::all();
 
         // first operator to open the report is stored
         if ($helpline->user_opened == NULL) $helpline->user_opened = Auth::id();
 
         if ($helpline->status != 'Closed') {
             $helpline->status = "Opened";
-            $statistics = Statistics::where('tracking_id', '=', $helpline->id)->first();
         }
 
         $new_date = date('d/m/Y h:i', strtotime($helpline->call_time));
@@ -294,22 +212,7 @@ class HotlineController extends Controller
             }
         }
 
-        return view('hotline.showmanager')->with([
-            'helpline' => $helpline,
-            'resource_types' => $resource_types,
-            'content_types' => $content_types,
-            'age_groups' => $age_groups,
-            'genders' => $genders,
-            'report_roles' => $report_roles,
-            'submission_types' => $submission_types,
-            'references_by' => $references_by,
-            'references_to' => $references_to,
-            'priorities' => $priorities,
-            'status' => $status,
-            'users' => $users,
-            'actionstaken' => $actions,
-            'referenceidInfo' => $referenceidInfo
-        ]);
+        return view('hotline.showmanager')->with(array_merge(['helpline' => $helpline], self::resources()));
 
     }
 
@@ -333,18 +236,6 @@ class HotlineController extends Controller
         $helpline->insident_reference_id = (isset($data['insident_reference_id'])) ? $data['insident_reference_id'] : null;
         $helpline->save();
 
-        //$data['manager_comments'] = Crypt::encrypt(($data['manager_comments']);
-        //dd($data);
-        //Helpline::find($helpline->id)->update($data);
-
-        $statistics = Statistics::where('tracking_id', '=', $helpline->id)->first();
-
-
-        $statistics->manager_comments = (isset($data['manager_comments'])) ? $data['manager_comments'] : null;
-        $statistics->insident_reference_id = (isset($data['insident_reference_id'])) ? $data['insident_reference_id'] : null;
-        //
-        $statistics->save();
-
         return redirect()->route('home');
     }
 
@@ -363,23 +254,9 @@ class HotlineController extends Controller
         $helpline = Helpline::where('id', '=', $id)->first();
         $helpline['content_type'] = "Other";
         $helpline['resource_type'] = "Other";
-        // $change['user_opened'] = $hotline->user_assigned;
-        // $change['user_assigned'] = null;
         $helpline['is_it_hotline'] = "true";
         $helpline['forwarded'] = "true";
         $helpline->update();
-
-
-        $statistics = Statistics::where('tracking_id', '=', $id)->first();
-        $statistics['content_type'] = "Other";
-        $statistics['resource_type'] = "Other";
-        // $statistics['user_opened'] = $hotline->user_assigned;
-        // $statistics['user_assigned'] = null;
-        $statistics['is_it_hotline'] = "true";
-        $statistics['forwarded'] = "true";
-        $statistics->update();
-
-
 
 
         return redirect('home');
@@ -395,20 +272,10 @@ class HotlineController extends Controller
         $helpline = Helpline::where('id', '=', $id)->first();
         $helpline['content_type'] = "Other";
         $helpline['resource_type'] = "Other";
-        // $change['user_opened'] = $hotline->user_assigned;
-        // $change['user_assigned'] = null;
         $helpline['is_it_hotline'] = "false";
         $helpline['forwarded'] = "true";
         $helpline->update();
 
-        $statistics = Statistics::where('tracking_id', '=', $id)->first();
-        $statistics['content_type'] = "Other";
-        $statistics['resource_type'] = "Other";
-        $statistics['forwarded'] = "true";
-        // $statistics['user_opened'] = $hotline->user_assigned;
-        // $statistics['user_assigned'] = null;
-        $statistics['is_it_hotline'] = "false";
-        $statistics->update();
         return redirect('home');
     }
 
@@ -432,26 +299,22 @@ class HotlineController extends Controller
      */
     public function destroy($id)
     {
-        $UserId = Input::get('UserId');
-        $User = User::find($UserId);
-        if (User::find($UserId)->hasRole("admin") && GroupPermission::canuser($UserId, 'delete', 'hotline')) {
-            $helpline = Helpline::find($id);
+        $UserId = Auth::user()->id;
+
+        if (User::findOrFail($UserId)->hasRole("admin") && GroupPermission::canuser($UserId, 'delete', 'hotline')) {
+            $helpline = Helpline::findOrFail($id);
             $helpline->delete();
-            $statistics = Statistics::where('tracking_id', '=', $id)->first();
-            $statistics -> delete();
+            return Response::json('Report has been deleted', 200);
         } else {
             if (GroupPermission::canuser($UserId, 'delete', 'hotline')) {
                 $helpline = Helpline::find($id);
                 if ($helpline->status == "Closed") {
                     $helpline->delete();
-                    $statistics = Statistics::where('tracking_id', '=', $id)->first();
-                    $statistics -> delete();
                 } else {
-                    return Response::json(
-                        'Report must be in Closed status', 500);
+                    return Response::json('Report must be in Closed status', 409);
                 }
             } else {
-                return Response::json('error');
+                return Response::json('Something went wrong, try again later', 500);
             }
         }
     }
