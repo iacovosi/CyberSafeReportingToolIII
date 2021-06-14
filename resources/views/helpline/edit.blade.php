@@ -1,5 +1,5 @@
 @extends('layouts.app')
-
+@inject('User', 'App\User')
 @section('content')
     <div class="container report-details" id="helpline-report-edit">
 
@@ -257,8 +257,8 @@
                                                 <option value selected>No one</option>
                                             @endif
                                             @foreach($users as $user)
-                                                @if(GroupPermission::canuser($user->id, 'edit', 'helpline') && $user->id!== Auth::id())
-                                                    <option value="{{ $user->id }}" @if ($helpline->user_assigned == $user->id) selected @endif>{{ $user->name }}</option>
+                                                @if(GroupPermission::canuser($user->id, 'edit', 'helpline'))
+                                                    <option value="{{ $user->id }}" {{$helpline->user_assigned == $user->id ? 'selected':''}} >{{ $user->name }}</option>
                                                 @endif
                                             @endforeach
                                         </select>
@@ -310,13 +310,31 @@
                                     </div>
                                 </fieldset>
                                 <!-- Report Actions -->
-                                <fieldset class="form-group">
-                                    <label for="actions" class="col-sm-2 control-label">Actions</label>
-                                    <div class="col-sm-10">
-                                        <textarea class="form-control" name="actions"
-                                                  rows="3"> {{ $helpline->actions}}</textarea>
-                                    </div>
-                                </fieldset>
+                                
+                                        @if (is_null(json_decode($helpline->actions)))
+                                            <fieldset class="form-group">
+                                            <label for="actions" class="col-sm-2 control-label">Actions</label>
+                                            <div class="col-sm-10">
+                                                <textarea class="form-control" name="actions" rows="3">{{$helpline->actions}}</textarea>
+                                            </div>
+                                        </fieldset>
+                                        @else
+
+                                            @foreach (json_decode($helpline->actions) as $user_id => $actions)
+                                                
+                                                    @if (User::find($user_id))
+                                                    <fieldset class="form-group">
+                                                        <label for="actions" class="col-sm-2 control-label">Actions <br> {{User::find($user_id)->name}} </label>
+                                                        <div class="col-sm-10">
+                                                            <textarea class="form-control" {!!Auth::id()==$user_id ? 'name="actions"' : 'disabled'!!} rows="3">{{$actions}}</textarea>
+                                                        </div>
+                                                    </fieldset>
+                                                    @endif
+                                                    <br>
+                                            @endforeach
+                                        @endif
+                                    
+                                
                                 <!-- Report Status -->
                                 <fieldset class="form-group">
                                     <label for="status" class="col-sm-2 control-label">Status</label>

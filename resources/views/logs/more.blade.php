@@ -151,13 +151,27 @@
                                     </div>
                                 </fieldset>
                                 <!-- Report Actions -->
-                                <fieldset class="form-group">
+                                @if (is_null(json_decode($log->actions)))
+                                    <fieldset class="form-group">
                                     <label for="actions" class="col-sm-2 control-label">Actions</label>
                                     <div class="col-sm-10">
-                                        <textarea class="form-control" name="actions" rows="3"
-                                                  disabled> {{ $log->actions}}</textarea>
+                                        <textarea class="form-control" disabled rows="3">{{$log->actions}}</textarea>
                                     </div>
                                 </fieldset>
+                                @else
+                                    @foreach (json_decode($log->actions) as $user_id => $actions)
+                                        
+                                            @if (User::find($user_id))
+                                            <fieldset class="form-group">
+                                                <label for="actions" class="col-sm-2 control-label">Actions <br> {{User::find($user_id)->name}} </label>
+                                                <div class="col-sm-10">
+                                                    <textarea class="form-control" disabled rows="3">{{$actions}}</textarea>
+                                                </div>
+                                            </fieldset>
+                                            @endif
+                                            <br>
+                                    @endforeach
+                                @endif
                                 <!-- Report Status -->
                                 <fieldset class="form-group">
                                     <label for="status" class="col-sm-2 control-label">Status</label>

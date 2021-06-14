@@ -178,12 +178,17 @@ class HelplineController extends Controller
             return $validation;
         }
 
-        $data = $request->all();
-
+        $data = $request->except('submitted_by_operator');
         $data['comments'] = Crypt::encrypt($request->comments); // encrypt comments
 
-        unset($data['submitted_by_operator']);
-
+        // allow multiple actions
+        if (isset($data['actions']) && $request->submitted_by_operator){
+            $json = [Auth::id() => $data['actions']];
+            $data['actions'] = json_encode($json);
+        }else{
+            $data['actions'] = json_encode([]);
+        }
+        
         if (!empty($data['call_time'])) {
             $dateformat = Carbon::createFromFormat('d/m/Y H:i:s', $data['call_time'] . ":00");
             $data['call_time'] = $dateformat;
@@ -219,6 +224,17 @@ class HelplineController extends Controller
         if ( auth()->user()->hasRole("admin") || auth()->user()->hasRole("manager") || ($helpline->user_assigned == Auth::id() || $helpline->forwarded == 'true' || empty($helpline->user_opened)) || (($helpline->user_opened == Auth::id()) &&  (empty($helpline->user_assigned)))) {
             if ($helpline->status === 'Closed' &&  !auth()->user()->hasRole('manager') && !auth()->user()->hasRole("admin")){
                 return redirect()->route('home');
+            }
+
+            // allow multiple actions 
+            if (!is_null(json_decode($helpline->actions))){ // this is a json formatted action
+                $array = json_decode($helpline['actions'], true);
+  
+                if(!isset($array[Auth::id()])){ // first time opening this request
+                    $array[Auth::id()] = "Not provided";
+                }
+               
+                $helpline['actions'] = json_encode($array);
             }
 
             $helpline->log="";
@@ -261,8 +277,8 @@ class HelplineController extends Controller
         return redirect()->route('home');
     }
 
-    /*---
-    Show read only view for manager
+    /*
+    * Show read only view for manager
     */
     /**
      * Display the specified resource.
@@ -306,10 +322,9 @@ class HelplineController extends Controller
      */
     public function editManager(Request $request)
     {
-        $data = $request->all();
+        $data = $request->except(['id']);
 
-        $id = $data['id'];
-        unset($data['id']);
+        $id = $request->id;
         
         $helpline = Helpline::find($id);
         $rules = [];
@@ -358,6 +373,14 @@ class HelplineController extends Controller
         }
 
         $helpline = Helpline::find($helpline->id);
+
+        // allow multiple actions 
+        if (!is_null(json_decode($helpline->actions))){ // this is a json formatted action
+            $array = json_decode($helpline['actions'], true);
+            $array[Auth::id()] = $data['actions'];
+            $data['actions'] = json_encode($array);
+        }
+
         $helpline->update($data);
 
         return redirect()->route('home');

@@ -10,7 +10,6 @@ use App\User;
 
 class GroupPermission extends Model
 {
-    //
 
     protected $fillable = ['role_id', 'group_id', 'view', 'edit', 'create', 'delete'];
 

@@ -132,6 +132,17 @@ class HotlineController extends Controller
             if ($helpline->status === 'Closed' &&  !auth()->user()->hasRole('manager') && !auth()->user()->hasRole("admin")){
                 return redirect()->route('home');
             }
+
+            // allow multiple actions 
+            if (!is_null(json_decode($helpline->actions))){ // this is a json formatted action
+                $array = json_decode($helpline['actions'], true);
+    
+                if(!isset($array[Auth::id()])){ // first time opening this request
+                    $array[Auth::id()] = "Not provided";
+                }
+                
+                $helpline['actions'] = json_encode($array);
+            }
             
             $helpline->log="";
             $first=!empty($helpline->firstResponder)?$helpline->firstResponder->name:"";
