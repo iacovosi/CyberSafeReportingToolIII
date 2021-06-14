@@ -44,9 +44,23 @@ class HelplinesLogController extends Controller
      * @param  \App\HelplinesLog  $helplines_log
      * @return \Illuminate\Http\Response
      */
-    public function show()
+    public function timeline(Request $request)
     {
-        return view('logs.show')->with([]);
+        $helplineslog = HelplinesLog::where('reference_id',$request->id)->get();
+ 
+        return view('logs.show')->with(['helplineslog' => $helplineslog, 'id' => $request->id]);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\HelplinesLog  $helplines_log
+     * @return \Illuminate\Http\Response
+     */
+    public function show(HelplinesLog $log)
+    {
+
+        return view('logs.more')->with(['log' => $log]);
     }
 
     /**

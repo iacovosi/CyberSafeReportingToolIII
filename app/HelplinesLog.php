@@ -14,7 +14,12 @@ class HelplinesLog extends Model
         'is_it_hotline' => false
     ];
 
-    public function __construct($attributes){
+    public function __construct(array $attributes = array()){
+        
+        if (count($attributes)<=0){
+            parent::__construct($attributes);
+            return;
+        }
 
         // Remove from array
         unset($attributes['id']);
@@ -37,4 +42,17 @@ class HelplinesLog extends Model
         // encrypt url
         $this->resource_url = Crypt::encryptString($attributes['resource_url']);
     }
+
+    public function changedBy(){
+        return $this->hasOne('App\User', 'id', 'changed_by');
+    }
+
+    public function firstOpened(){
+        return $this->hasOne('App\User', 'id', 'user_opened');
+    }
+
+    public function assignedTo(){
+        return $this->hasOne('App\User', 'id', 'user_assigned');
+    }
+
 }
