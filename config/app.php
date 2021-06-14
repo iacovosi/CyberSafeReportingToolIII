@@ -236,7 +236,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'GroupPermission' => App\GroupPermission::class,
-        
+        'User' => App\User::class,
         'Recaptcha' => Greggilbert\Recaptcha\Facades\Recaptcha::class,
     ],
 
