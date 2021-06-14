@@ -227,8 +227,8 @@ Route::group(['middleware' => ['web','auth']], function () {
     *   Logs
     */
     Route::get('logs/hotline_helpline','HelplinesLogController@index')->name('helplinesLogController.index');
-    Route::get('logs/hotline_helpline/{id}','HelplinesLogController@show')->name('helplinesLogController.show');
-
+    Route::get('logs/hotline_helpline/{id}','HelplinesLogController@timeline')->name('helplinesLogController.timeline');
+    Route::get('logs/{log}','HelplinesLogController@show')->name('helplinesLogController.show');
     /*
     * Actions, depricated?
     */

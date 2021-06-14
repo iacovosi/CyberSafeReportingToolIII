@@ -45,14 +45,6 @@ class Helpline extends Model
         }
     }
 
-    // public function scopeOfUser($query, $userId)
-    // {
-    //     if ($status == "*") {
-    //         return;
-    //     } else {
-    //         return $query->where('user_id',$userId);
-    //     }
-    // }
 
     public function relatedToStatistics(){
         return $this->hasOne('App\Statistics','tracking_id','id');

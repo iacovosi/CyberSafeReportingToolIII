@@ -220,7 +220,7 @@ class HelplineController extends Controller
             if ($helpline->status === 'Closed' &&  !auth()->user()->hasRole('manager') && !auth()->user()->hasRole("admin")){
                 return redirect()->route('home');
             }
-            
+
             $helpline->log="";
             $first=!empty($helpline->firstResponder)?$helpline->firstResponder->name:"";
             $last=!empty($helpline->lastResponder)?$helpline->lastResponder->name:"";
