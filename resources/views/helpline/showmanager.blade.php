@@ -311,7 +311,7 @@
                                     <fieldset class="form-group">
                                     <label for="actions" class="col-sm-2 control-label">Actions</label>
                                     <div class="col-sm-10">
-                                        <textarea class="form-control" rows="3">{{$helpline->actions}}</textarea>
+                                        <textarea class="form-control" disabled rows="3">{{$helpline->actions}}</textarea>
                                     </div>
                                 </fieldset>
                                 @else
