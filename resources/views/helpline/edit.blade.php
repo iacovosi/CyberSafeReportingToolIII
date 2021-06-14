@@ -5,9 +5,10 @@
 
         <div class="row">
             <div class="col-md-12">
-
-                <form method="POST" action="{{route('edit-helpline',['id' => $helpline->id ])}}" id="submit-form"
-                      class="form-horizontal">
+                <div class="form-group">
+                    @include('partials.errors')
+                </div>
+                <form method="POST" action="{{route('edit-helpline',['id' => $helpline->id ])}}" id="submit-form" class="form-horizontal">
                       @csrf
                       @method('PATCH')
                     <div class="panel panel-default">

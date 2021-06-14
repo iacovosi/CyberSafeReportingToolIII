@@ -35,7 +35,55 @@ class HelplineController extends Controller
     {
         $this->middleware('checkdelete');
     }
-    
+
+    public function validator(Request $request){
+
+        // Set validation rules for fields
+        $data = $request->all();
+
+        // validation rules for all.
+        $rules = [
+            'resource_type' => 'required',
+            'content_type' => 'required',
+            'name' => 'required_if:personal_data,true',
+        ];
+        // validation rule if you want to provide personal
+        if ($request->personal_data === 'true') {
+            $rules['email'] = 'required_without:phone';
+            $rules['phone'] = 'required_without:email';
+        }
+        
+        // not submited by an operator
+        if (!$request->submitted_by_operator === 'true') {
+            $rules['personal_data'] = 'required';
+            $rules['resource_url'] = 'required_if:resource_type,website,chatroom,social-media';
+            // $rules['g-recaptcha-response'] = 'required | recaptcha';
+        
+        // submited by operator
+        }else{
+            if (isset($data['insident_reference_id'])){
+                $rules['insident_reference_id'] = 'exists:helplines,id';
+            }
+        }
+
+        // Generate a new validator instance
+        $validator = Validator::make($request->all(), $rules, Lang::get('validation.custom.entry', array(), Session::get('lang')));
+        
+        // Add any conditional validation rules
+        $validator->sometimes('phone', 'numerdateformatic', function ($input) {
+            return $input->personal_data == "true" && $input->email == "";
+        });
+
+        if ($validator->fails()) {
+            return redirect()->back()->with(['errors' => $validator->messages()])->withInput();
+        }
+        
+        return null;
+    }
+
+    /**
+     * Return all resources needed
+     */
     public function resources(){
         return ['actions' => ActionTaken::all(),
                 'resource_types' => ResourceType::all(),
@@ -113,7 +161,6 @@ class HelplineController extends Controller
      */
     public function create()
     {
-
         return view('helpline.create')->with(self::resources());
     }
 
@@ -125,46 +172,15 @@ class HelplineController extends Controller
      */
     public function store(Request $request)
     {
-       
-        // Validate the post...
-        if (!$request->submitted_by_operator) {
-            
+        $validation = self::validator($request);
 
-            // Set validation rules for fields
-            $rules = [
-                'resource_type' => 'required',
-                'resource_url' => 'required_if:resource_type,website,chatroom,social-media',
-                'content_type' => 'required',
-                'personal_data' => 'required',
-                'name' => 'required_if:personal_data,true',
-            ];
-            if ($request->personal_data == 'true') {
-                $rules['email'] = 'required_without:phone';
-                $rules['phone'] = 'required_without:email';
-            }
-
-
-            // $rules['g-recaptcha-response'] = 'required | recaptcha';
-
-            // Generate a new validator instance
-            $validator = Validator::make($request->all(), $rules, Lang::get('validation.custom.entry', array(), Session::get('lang')));
-
-            // Add any conditional validation rules
-            $validator->sometimes('phone', 'numeric', function ($input) {
-                return $input->personal_data == "true" && $input->email == "";
-            });
-
-            if ($validator->fails()) {
-                return redirect()->back()->with(['errors' => $validator->messages()])->withInput();
-            }
+        if($validation){ // found an error while validating form
+            return $validation;
         }
 
         $data = $request->all();
-        
-        // Default is Electronic form.
-        $data['submission_type'] = (!empty($request->submission_type)) ? $request->submission_type : 'electronic-form';
 
-        $data['comments'] = Crypt::encrypt($request->comments);
+        $data['comments'] = Crypt::encrypt($request->comments); // encrypt comments
 
         unset($data['submitted_by_operator']);
 
@@ -173,16 +189,7 @@ class HelplineController extends Controller
             $data['call_time'] = $dateformat;
         }
 
-
-        $id = Helpline::create($data)->id;
-        $helpline = Helpline::find($id);
-        $helpline->insident_reference_id = (isset($data['insident_reference_id'])) ? (int)$data['insident_reference_id'] : null;
-
-        if (isset($data['call_time'])){
-            $helpline->call_time = $data['call_time'];
-        }
-        $helpline->update($data);
-
+        Helpline::create($data);
 
         if ($request->submitted_by_operator) {
             return redirect('home');
@@ -263,8 +270,11 @@ class HelplineController extends Controller
      * @param \App\Helpline $helpline
      * @return \Illuminate\Http\Response
      */
-    public function showManager(Helpline $helpline)
+    public function showManager()
     {
+        $id = Input::get('id', false);
+        $helpline = Helpline::findOrFail($id);
+
 
         if ($helpline->status != 'Closed') {
             $helpline->status = "Opened";
@@ -285,7 +295,6 @@ class HelplineController extends Controller
         }
 
         return view('helpline.showmanager')->with(array_merge(['helpline' => $helpline ], self::resources()));
-    
     }
 
 
@@ -298,15 +307,25 @@ class HelplineController extends Controller
     public function editManager(Request $request)
     {
         $data = $request->all();
+
         $id = $data['id'];
         unset($data['id']);
-
-        $data['manager_comments'] = Crypt::encrypt(trim($data['manager_comments']));
-
+        
         $helpline = Helpline::find($id);
+        $rules = [];
 
-        $helpline->manager_comments = (isset($data['manager_comments'])) ? $data['manager_comments'] : null;
-        $helpline->insident_reference_id = (isset($data['insident_reference_id'])) ? $data['insident_reference_id'] : null;
+        if (isset($data['insident_reference_id'])){
+            $rules['insident_reference_id'] = 'exists:helplines,id';
+        }
+
+        $validator = Validator::make($request->all(), $rules, Lang::get('validation.custom.entry', array(), Session::get('lang')));
+
+        if ($validator->fails()) {
+            return redirect()->back()->with(['errors' => $validator->messages()])->withInput();
+        }
+
+        $helpline->manager_comments = Crypt::encrypt(trim($data['manager_comments']));
+        $helpline->insident_reference_id = $data['insident_reference_id'];
         $helpline->save();
 
         return redirect()->route('home');
@@ -322,9 +341,14 @@ class HelplineController extends Controller
     public function edit(Request $request, Helpline $helpline)
     {
 
+        $validation = self::validator($request);
+
+        if($validation){
+            return $validation;
+        }
+
 
         $data = $request->all();
-
         $data['comments'] = Crypt::encrypt($request->comments);
 
         // create the mysql date format
@@ -334,8 +358,6 @@ class HelplineController extends Controller
         }
 
         $helpline = Helpline::find($helpline->id);
-        $helpline->insident_reference_id = (isset($data['insident_reference_id'])) ? $data['insident_reference_id'] : null;
-        $helpline->call_time = (isset($data['call_time'])) ? $data['call_time'] : null;
         $helpline->update($data);
 
         return redirect()->route('home');
@@ -359,6 +381,7 @@ class HelplineController extends Controller
             //Actions
             $actions = $request->actions;
             $data['actions'] = $actions;
+
             // create the mysql date format
             if (!empty($data['call_time'])) {
                 $dateformat = Carbon::createFromFormat('d/m/Y H:i:s', $data['call_time'] . ":00");

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Helplines_log;
+use App\HelplinesLog;
 use Illuminate\Http\Request;
 
 class HelplinesLogController extends Controller
@@ -14,7 +14,7 @@ class HelplinesLogController extends Controller
      */
     public function index()
     {
-        //
+        return view('logs.index')->with([]);
     }
 
     /**
@@ -41,21 +41,21 @@ class HelplinesLogController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Helplines_log  $helplines_log
+     * @param  \App\HelplinesLog  $helplines_log
      * @return \Illuminate\Http\Response
      */
-    public function show(Helplines_log $helplines_log)
+    public function show()
     {
-        //
+        return view('logs.show')->with([]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Helplines_log  $helplines_log
+     * @param  \App\HelplinesLog  $helplines_log
      * @return \Illuminate\Http\Response
      */
-    public function edit(Helplines_log $helplines_log)
+    public function edit(HelplinesLog $helplines_log)
     {
         //
     }
@@ -67,7 +67,7 @@ class HelplinesLogController extends Controller
      * @param  \App\Helplines_log  $helplines_log
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Helplines_log $helplines_log)
+    public function update(Request $request, HelplinesLog $helplines_log)
     {
         //
     }
@@ -78,7 +78,7 @@ class HelplinesLogController extends Controller
      * @param  \App\Helplines_log  $helplines_log
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Helplines_log $helplines_log)
+    public function destroy(HelplinesLog $helplines_log)
     {
         //
     }

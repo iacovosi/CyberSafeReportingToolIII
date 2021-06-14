@@ -84,6 +84,18 @@
                     </ul>
                 </li>
                 @endif
+
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown">
+                        <i class="fa fa-history" aria-hidden="true"></i> Logs 
+                        <span class="caret"></span>
+                    </a>
+                    
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ route('helplinesLogController.index') }}">Helpline and Hotline</a></li>
+                    </ul>
+                </li>
+
             </ul>
 
             @endif

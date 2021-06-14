@@ -5,7 +5,9 @@
 
         <div class="row">
             <div class="col-md-12">
-
+                <div class="form-group">
+                    @include('partials.errors')
+                </div>
                 <form method="POST" action="{{route('edit-helpline',['id' => $helpline->id ])}}" id="submit-form">
                     @csrf
                     @method('PATCH')
