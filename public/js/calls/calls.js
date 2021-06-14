@@ -93,7 +93,7 @@ $(document).on('click', '#delete-this', function() {
   //Multiple delete buttons might be in place, so putting it in a variable @this
   //will solve future issues and targeting wrong elements.
   
-  var result = confirm("You are about to permanently delete this item?");
+  var result = confirm("You are about to permanently delete this report/statistic and all related. Are you sure?");
 
   if (result) {
     //Logic to delete the item

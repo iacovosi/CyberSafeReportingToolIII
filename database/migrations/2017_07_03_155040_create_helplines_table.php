@@ -50,7 +50,7 @@ class CreateHelplinesTable extends Migration
             $table->text('manager_comments')->nullable();
             //field to connect insident with another  
             $table->unsignedInteger('insident_reference_id')->nullable();            // insident_id
-            $table->foreign('insident_reference_id')->references('id')->on('helplines'); // insident_id            
+            $table->foreign('insident_reference_id')->references('id')->on('helplines')->onDelete('cascade'); // insident_id            
             //the call time
             $table->dateTime('call_time')->default(DB::raw('CURRENT_TIMESTAMP'));
 

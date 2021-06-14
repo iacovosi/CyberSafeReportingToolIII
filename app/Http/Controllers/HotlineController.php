@@ -215,53 +215,6 @@ class HotlineController extends Controller
 
     }
 
-
-    /**
-     * Save the data after editing the specified resource.
-     *
-     * @param \App\Helpline $helpline
-     * @return \Illuminate\Http\Response
-     */
-    public function editManager(Request $request, Helpline $helpline)
-    {
-
-
-        $data = $request->all();
-
-        $data['manager_comments'] = Crypt::encrypt(trim($data['manager_comments']));
-
-        $helpline = Helpline::find($id);
-        $helpline->manager_comments = (isset($data['manager_comments'])) ? $data['manager_comments'] : null;
-        $helpline->insident_reference_id = (isset($data['insident_reference_id'])) ? $data['insident_reference_id'] : null;
-        $helpline->save();
-
-        return redirect()->route('home');
-    }
-
-
-    /**
-     * Save the data after editing the specified resource.
-     * change from helpline to hotline
-     * @param \App\Hotline $hotline
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Request $request, Helpline $hotline)
-    {
-        //
-        $change = $request->all();
-        $id =$hotline->id;
-        $helpline = Helpline::where('id', '=', $id)->first();
-        $helpline['content_type'] = "Other";
-        $helpline['resource_type'] = "Other";
-        $helpline['is_it_hotline'] = "true";
-        $helpline['forwarded'] = "true";
-        $helpline->update();
-
-
-        return redirect('home');
-    }
-
-
     /*
     change from hotline to helpline
     */

@@ -6,6 +6,10 @@
     <div class="row">
         <div class="col-md-12">
 
+            <div class="form-group">
+                @include('partials.errors')
+            </div>
+            
             <form method="post" action="{{ route('save-helpline') }}" id="submit-form" class="form-horizontal">
 
                 <div class="panel panel-default">
