@@ -28,7 +28,7 @@ class CreateFakenewsStatisticsTable extends Migration
             $table->string('evaluation');
             $table->boolean('img_upload');
             // location info available?
-            $table->boolean('loc_available');
+            $table->boolean('loc_available')->nullable();
             // operator actions
             $table->integer('user_opened')->unsigned()->nullable();
             $table->foreign('user_opened')->references('id')->on('users');

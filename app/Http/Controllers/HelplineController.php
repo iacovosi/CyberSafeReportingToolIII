@@ -54,7 +54,7 @@ class HelplineController extends Controller
         }
         
         // not submited by an operator
-        if (!$request->submitted_by_operator === 'true') {
+        if (!$request->submitted_by_operator == 'true') {
             $rules['personal_data'] = 'required';
             $rules['resource_url'] = 'required_if:resource_type,website,chatroom,social-media';
             // $rules['g-recaptcha-response'] = 'required | recaptcha';

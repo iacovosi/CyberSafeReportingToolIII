@@ -395,9 +395,6 @@
         $('#other').hide();
         $('#img_upload').hide();
 
-
-
-
         $('input[name="img_upload"]').change(function() {
             if((this.value === "1") && this.checked) {
                 $('#img_upload').show();

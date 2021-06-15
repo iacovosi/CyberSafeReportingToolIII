@@ -115,12 +115,6 @@
                                         @endif
                                     </td> 
                                     <td>
-                                        {{--  {{ $report->fakenews_source_type }}  --}}
-                                        @foreach($fakenews_source_type as $source_type)
-                                            @if( $report->fakenews_source_type == $source_type->typename ) {{ $source_type->typename_en }} @endif
-                                        @endforeach
-                                    </td>
-                                    <td>
                                         @foreach($fakenews_types as $f_type)
                                             @if( $report->fakenews_type == $f_type->typename ) {{ $f_type->typename_en }} 
                                                 @if($f_type->typename_en!='Undefined')
@@ -128,6 +122,13 @@
                                                 @endif 
                                             @endif
                                         @endforeach
+
+                                    <td>
+                                        {{--  {{ $report->fakenews_source_type }}  --}}
+                                        @foreach($fakenews_source_type as $source_type)
+                                            @if( $report->fakenews_source_type == $source_type->typename ) {{ $source_type->typename_en }} @endif
+                                        @endforeach
+                                    </td>
                                     </td>
                                     <td>@if( $report->img_upload==1 ) 
                                             Yes
