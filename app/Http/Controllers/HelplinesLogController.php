@@ -14,7 +14,23 @@ class HelplinesLogController extends Controller
      */
     public function index()
     {
-        return view('logs.index')->with([]);
+        $unique_id = \DB::table('helplines_logs')
+            ->select('reference_id')
+            ->groupBy('reference_id')
+            ->get();
+
+
+        $a = [];
+
+        foreach ($unique_id as $id){
+
+            $item = HelplinesLog::where('reference_id', '=', $id->reference_id)
+            ->orderBy('created_at','DESC')->first();
+
+            array_push($a, $item);
+        }
+
+        return view('logs.index')->with(['logs' => $a]);
     }
 
     /**

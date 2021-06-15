@@ -78,7 +78,7 @@
                                     {{--  <th>Report role</th>  --}}
                                     {{--  <th>Reference by</th>  --}}
                                     {{--  <th>Reference to</th>  --}}
-                                    <th>Operator actions</th>
+                                    {{-- <th>Operator actions</th> --}}
                                     {{--  <th>Priority</th>  --}}
                                     <th>Contact method</th>
                                     <th>Status</th>
@@ -138,7 +138,7 @@
                                     </td>  --}}
                                     {{--  <td>{{ $report->reference_by }}</td>  --}}
                                     {{--  <td>{{ $report->reference_to }}</td>  --}}
-                                    <td>{{ str_limit($report->actions, $limit = 40, $end = '...') }}</td>
+                                    {{-- <td>{{ str_limit($report->actions, $limit = 40, $end = '...') }}</td> --}}
                                     {{--  <td>{{ $report->priority }}</td>  --}}
                                     <td>
                                         {{--  {{ $report->submission_type }}  --}}

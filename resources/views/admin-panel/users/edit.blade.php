@@ -13,12 +13,11 @@
         </div>
 
         <div class="panel-body">
-
-            {{--  
-            To call the update() method, you must make a PUT request. 
-            But HTML forms can't make PUT requests. 
-            So, Laravel provids a way to mimick a PUT request with forms  
-            --}}
+            @if (GroupPermission::usercan('edit','users'))
+                <div class="alert alert-info" role="alert">
+                    To select more than one role hold down the Ctrl key while choosing with your mouse.
+                </div>
+            @endif
             <form id="form-change-password" class="form-horizontal" role="form" method="POST" 
                 action="@if (!\Request::is('profile/edit')){{ route('users.update', $user->id) }} @else {{ route('profile.update') }}  @endif">
 
@@ -63,6 +62,7 @@
                 </div>
 
                 @if (GroupPermission::usercan('edit','users'))
+
                     <div class="form-group">
                         <label for="role" class="col-sm-2 control-label">Roles</label>
                         <div class="col-sm-10">
@@ -89,13 +89,14 @@
                         </a>
                     </div>
                 </div>
+                
 
                 <div class="form-group">
                     <div class="col-sm-offset-0 col-sm-12">
                         @include('partials.errors')
                     </div>
                 </div>
-
+                
                 <!-- will be used to show any messages -->
                 @if (Session::has('message'))
                     <div class="alert alert-info">{{ Session::get('message') }}</div>

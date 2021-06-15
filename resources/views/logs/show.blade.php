@@ -10,6 +10,7 @@
         <div class="col-md-12">
             <div class="page-header">
               <h1>Helpline/Hotline Report #{{$id}}</h1>
+              <a class="btn btn-primary" href="{{route('helplinesLogController.index')}}">&laquo; Back</a>
             </div>
 
             <ul class="timeline">
