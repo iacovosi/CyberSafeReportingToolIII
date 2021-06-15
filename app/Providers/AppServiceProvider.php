@@ -7,7 +7,9 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Hash;
 
 use App\Helpline;
+use App\Fakenews;
 use App\Observers\HelplineObserver;
+use App\Observers\FakenewsObserver;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -19,6 +21,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Schema::defaultStringLength(191);
         Helpline::observe(HelplineObserver::class);
+        Fakenews::observe(FakenewsObserver::class);
     }
 
     /**

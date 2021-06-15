@@ -22,7 +22,7 @@ class HelplineObserver
 
         $statistics = new Statistics(
             collect($helpline)->only('is_it_hotline',
-                                     'submission_type',
+                                    'submission_type',
                                     'age',
                                     'gender',
                                     'report_role',
