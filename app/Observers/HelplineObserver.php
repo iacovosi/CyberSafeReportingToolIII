@@ -43,7 +43,7 @@ class HelplineObserver
         
         $statistics->save();
 
-        $log = new HelplinesLog(array_merge(collect($helpline)->all(), ['change' => 'CREATE', 'changed_by' => Auth::id(), 'reference_id' => $helpline->id]));
+        $log = new HelplinesLog(array_merge(collect($helpline)->except('created_at', 'updated_at')->all(), ['change' => 'CREATE', 'changed_by' => Auth::id(), 'reference_id' => $helpline->id]));
         $log->save();
     }
 
@@ -87,7 +87,7 @@ class HelplineObserver
         $statistics->actions = (isset($helpline->actions)) ? $helpline['actions'] : 'Not set';
         $statistics->save();
 
-        $log = new HelplinesLog(array_merge(collect($helpline)->all(), ['change' => 'UPDATE', 'changed_by' => Auth::id(), 'reference_id' => $helpline->id]));
+        $log = new HelplinesLog(array_merge(collect($helpline)->except('created_at', 'updated_at')->all(), ['change' => 'UPDATE', 'changed_by' => Auth::id(), 'reference_id' => $helpline->id]));
         $log->save();
     }
 
@@ -102,7 +102,7 @@ class HelplineObserver
         $statistics = Statistics::where('tracking_id', '=', $helpline->id)->first();
         $statistics -> delete();
 
-        $log = new HelplinesLog(array_merge(collect($helpline)->all(), ['change' => 'DELETE', 'changed_by' => Auth::id(), 'reference_id' => $helpline->id]));
+        $log = new HelplinesLog(array_merge(collect($helpline)->except('created_at', 'updated_at')->all(), ['change' => 'DELETE', 'changed_by' => Auth::id(), 'reference_id' => $helpline->id]));
         $log->save();
     }
 
@@ -128,7 +128,7 @@ class HelplineObserver
         $statistics = Statistics::where('tracking_id', '=', $helpline->id)->first();
         $statistics -> delete();
 
-        $log = new HelplinesLog(array_merge(collect($helpline)->all(), ['change' => 'DELETE', 'changed_by' => Auth::id(), 'reference_id' => $helpline->id]));
+        $log = new HelplinesLog(array_merge(collect($helpline)->except('created_at', 'updated_at')->all(), ['change' => 'DELETE', 'changed_by' => Auth::id(), 'reference_id' => $helpline->id]));
         $log->save();
     }
 }
