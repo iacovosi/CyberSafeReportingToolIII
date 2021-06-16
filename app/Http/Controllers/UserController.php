@@ -154,8 +154,6 @@ class UserController extends Controller
             $user->password = bcrypt($request->newPassword);
         }
 
-        
-
         //update roles
         if ($request->role_names!= null){
             $user->syncRoles($request->role_names);

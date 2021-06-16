@@ -3,9 +3,10 @@
     @section('content')
 
     <div class="container">
+
         <div class="panel panel-default" >
             <div class="panel-body">
-                <form action="{{ route('statistics.store') }} " class="form-inline results-filters" method="post" id="submit-form">
+                <form action="{{ route('helplinesLogController.index') }} " class="form-inline results-filters" method="GET" id="submit-form">
 
                     <i class="fa fa-filter" aria-hidden="true"> Filters: </i>
 
@@ -14,18 +15,19 @@
                         <select name="filterStatus" class="form-control">
                              <option value="default" disabled>Select status</option> 
                             <option value="*">ALL</option>
+                            @foreach($status as $astatus)
+                            <option value="{{ $astatus->name }}"  @if (old('filterStatus') == $astatus->name) selected  @endif  > {{ $astatus->name }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="fromDate">From</label>
-                        <input name="fromDate" type='date' class="form-control form-inline" value="{{ old('fromDate') }}"   />
+                        <input name="fromDate" type='date' class="form-control form-inline" value="{{ request()->get('fromDate')}}"   />
                     </div>
                     <div class="form-group">
                         <label for="toDate">To</label>
-                        <input name="toDate" type='date' class="form-control form-inline" value="{{ old('toDate') }}" />
+                        <input name="toDate" type='date' class="form-control form-inline" value="{{ request()->get('toDate')}}" />
                     </div>
-
-                    {{ csrf_field() }}
 
                     <div class="pull-right">
                         <button type="submit" class="btn btn-primary">
@@ -38,7 +40,7 @@
     </div>
     
     <div class="container">
-
+        @include('partials.info')
         <div class="row">
             <div class="col-md-12">
                 <div class="panel panel-default">

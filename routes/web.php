@@ -239,11 +239,6 @@ Route::group(['middleware' => ['web','auth']], function () {
     *   Settings
     */
     Route::get('settings/','SettingsController@index')->name('settingsController.index');
-    // Route::get('logs/hotline_helpline/{id}','HelplinesLogController@timeline')->name('helplinesLogController.timeline');
-    // Route::get('logs/{log}','HelplinesLogController@show')->name('helplinesLogController.show');
-    // Route::delete('/logs/hotline_helpline/{id}' ,'HelplinesLogController@destroy')->name('helplinesLogController.destroy');
-    // Route::delete('/logs/hotline_helpline/' ,'HelplinesLogController@mass_destroy')->name('helplinesLogController.mass_destroy');
-
 
     /*
     * Actions, depricated?
