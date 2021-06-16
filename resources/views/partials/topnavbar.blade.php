@@ -96,6 +96,17 @@
                     </ul>
                 </li>
 
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown">
+                        <i class="fa fa-cog" aria-hidden="true"></i> Settings 
+                        <span class="caret"></span>
+                    </a>
+                    
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ route('settingsController.index') }}">Automated Deletion</a></li>
+                    </ul>
+                </li>
+
             </ul>
 
             @endif

@@ -5,10 +5,11 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use App\Status;
 use Illuminate\Support\Facades\Crypt;
-
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Helpline extends Model
-{         
+{        
+    use SoftDeletes;
 
     protected $fillable = [
         // 'resourcetype','contenttype','age','comments','phone','name','surname','email','log','status','user_id','actions','reference','referal','gender','vector','is_it_hotline','submission_type','transfer_from', 'operator'];

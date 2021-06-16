@@ -16,6 +16,7 @@ class CreateHelplinesLogsTable extends Migration
         Schema::create('helplines_logs', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('reference_id')->nullable();            // insident_id
+            $table->foreign('reference_id')->references('id')->on('helplines')->onDelete('cascade');
             $table->string('change'); // UPDATE, DELETE, CREATE etc
             $table->integer('changed_by')->unsigned()->nullable();
             $table->foreign('changed_by')->references('id')->on('users'); // who made the change?

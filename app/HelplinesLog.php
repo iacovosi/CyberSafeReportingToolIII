@@ -26,6 +26,7 @@ class HelplinesLog extends Model
         unset($attributes['log']);
         unset($attributes['first_responder']);
         unset($attributes['last_responder']);
+        unset($attributes['deleted_at']);
 
         // fix strings from helpline to save space
         isset($attributes['is_it_hotline']) && $attributes['is_it_hotline'] === 'true' ? $attributes['is_it_hotline']=true:$attributes['is_it_hotline']=false;
