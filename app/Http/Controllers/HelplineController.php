@@ -451,12 +451,12 @@ class HelplineController extends Controller
         $UserId = Auth::user()->id;
         
         if (User::findOrFail($UserId)->hasRole("admin") && GroupPermission::canuser($UserId, 'delete', 'helpline')) {
-            $helpline->delete();
+            $helpline->forceDelete();
             return Response::json('Report has been deleted', 200);
         } else {
             if (GroupPermission::canuser($UserId, 'delete', 'helpline')) {
                 if ($helpline->status == "Closed") {
-                    $helpline->delete();
+                    $helpline->forceDelete();
                 } else {
                     return Response::json('Report must be in Closed status', 409);
                 }

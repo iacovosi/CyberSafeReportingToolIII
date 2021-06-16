@@ -93,7 +93,7 @@
                                 <!-- possible bug $report->relatedToHelpLine->log, when you delete report the view breaks-->
                                 <!-- it is the relatedToHelpLine value -->
                                 <!-- Error: Trying to get property 'log' of non-object -->
-                                    <td><span class="top" title="{{$report->relatedToHelpLine->log}}"> {{ $report->tracking_id }}</span></td>
+                                    <td><span class="top" title="{{$report->log}}"> {{ $report->tracking_id }}</span></td>
                                     <td>
                                         @if(isset($report->firstResponderStats)) 
                                             <?php  

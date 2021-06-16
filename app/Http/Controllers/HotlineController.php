@@ -266,13 +266,13 @@ class HotlineController extends Controller
 
         if (User::findOrFail($UserId)->hasRole("admin") && GroupPermission::canuser($UserId, 'delete', 'hotline')) {
             $helpline = Helpline::findOrFail($id);
-            $helpline->delete();
+            $helpline->forceDelete();
             return Response::json('Report has been deleted', 200);
         } else {
             if (GroupPermission::canuser($UserId, 'delete', 'hotline')) {
                 $helpline = Helpline::find($id);
                 if ($helpline->status == "Closed") {
-                    $helpline->delete();
+                    $helpline->forceDelete();
                 } else {
                     return Response::json('Report must be in Closed status', 409);
                 }

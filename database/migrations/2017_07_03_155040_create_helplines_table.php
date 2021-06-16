@@ -55,6 +55,8 @@ class CreateHelplinesTable extends Migration
             $table->dateTime('call_time')->default(DB::raw('CURRENT_TIMESTAMP'));
 
             $table->timestamps();
+
+            $table->softDeletes();
         });
     }
 

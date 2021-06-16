@@ -146,28 +146,29 @@
 
     function confirm_mass_delete(){
         const selected_ids = {}
+        if (confirm('You are about to permanently delete all selected log entries. Are you sure?')){
+            $('.delete-check:checkbox:checked').each(function(index) {
+                selected_ids[index] = parseInt($(this).attr("id"))
+            })
 
-        $('.delete-check:checkbox:checked').each(function(index) {
-            selected_ids[index] = parseInt($(this).attr("id"))
-        })
-
-        $.ajax({
-            headers: {
-                'X-CSRF-Token': "{{csrf_token()}}",
-            },
-            url: '{{route('helplinesLogController.mass_destroy')}}',
-            type: 'DELETE',
-            dataType: "json",
-            data: {
-                selected_ids
-            },
-            success: function(result) {
-                location.reload();
-            },
-            error: function(result){
-                // console.log(result.responseJSON);
-            }
-        });
+            $.ajax({
+                headers: {
+                    'X-CSRF-Token': "{{csrf_token()}}",
+                },
+                url: '{{route('helplinesLogController.mass_destroy')}}',
+                type: 'DELETE',
+                dataType: "json",
+                data: {
+                    selected_ids
+                },
+                success: function(result) {
+                    location.reload();
+                },
+                error: function(result){
+                    // console.log(result.responseJSON);
+                }
+            });
+        }
 
     }
 </script>
