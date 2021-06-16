@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\HelplinesLog;
 use Illuminate\Http\Request;
 use Session;
+use App\Status;
+use Illuminate\Support\Facades\Validator;
+
+use Carbon\Carbon;
 
 class HelplinesLogController extends Controller
 {
@@ -13,8 +17,38 @@ class HelplinesLogController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+
+        $validator = Validator::make($request->all(), [
+            'fromDate' => 'date',
+            'toDate' => 'date|after:fromDate',
+        ]);
+
+
+        if($validator->fails() && ($request->fromDate || $request->toDate)){
+            Session::flash('error-info', 'Wrong date format, ignored.');
+            $request->fromDate = null;
+            $request->toDate = null;
+        }
+
+        $status = Status::all();
+
+        // defaulting
+        if (!$request->fromDate){
+            $request->fromDate="1990-01-01";
+        }
+        if (!$request->toDate){
+            $request->toDate="2100-01-01";
+        }
+        if (!$request->filterStatus){
+            $request->filterStatus="*";
+        }
+
+        $start = Carbon::parse($request->fromDate);
+        $end = Carbon::parse($request->toDate);
+
+        
         $unique_id = \DB::table('helplines_logs')
             ->select('reference_id')
             ->groupBy('reference_id')
@@ -28,10 +62,11 @@ class HelplinesLogController extends Controller
             $item = HelplinesLog::where('reference_id', '=', $id->reference_id)
             ->orderBy('created_at','DESC')->first();
 
-            array_push($a, $item);
+            if ($item->created_at >= $start && $item->created_at <= $end &&  ($request->filterStatus === "*" || $request->filterStatus === $item->status ))
+                array_push($a, $item);
         }
 
-        return view('logs.index')->with(['logs' => $a]);
+        return view('logs.index')->with(['logs' => $a, 'status' => $status]);
     }
 
     /**
