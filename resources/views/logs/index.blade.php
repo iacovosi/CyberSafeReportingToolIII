@@ -14,9 +14,6 @@
                         <select name="filterStatus" class="form-control">
                              <option value="default" disabled>Select status</option> 
                             <option value="*">ALL</option>
-                            {{-- @foreach($status as $astatus)
-                                <option value="{{ $astatus->name }}"  @if (old('filterStatus') == $astatus->name) selected  @endif  > {{ $astatus->name }}</option>
-                            @endforeach --}}
                         </select>
                     </div>
                     <div class="form-group">
@@ -49,12 +46,17 @@
                         <h4 class="pull-left">Hotline/Helpline Logs</h4>
                     </div>
                     
+                    
                     <div class="panel-body">
                         <div class="alert alert-info" role="alert">
+                            
                             The table below illustrates all the reports as they are / were in their final form.
                         </div>
+                        
                         <div class="table-responsive">
+                            
                             <table class="table table-condensed table-striped table-hover" id="DataTableStatistics" style="">
+                                
                                 <thead>
                                     <tr>
                                         <th>ID</th>
@@ -65,7 +67,9 @@
                                         <th>Content Type</th>
                                         <th>Status</th>
                                         <th>Last Updated</th>
-                                        <th>Actions</th> 
+                                        <th>Actions</th>
+                                        <th></th>
+                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -79,17 +83,40 @@
                                         <td>{{$log->content_type ? $log->content_type: 'None'}}</td>
                                         <td>{{$log->status ? $log->status: 'None'}}</td>
                                         <td>{{$log->created_at ? $log->created_at: 'None'}}</td>
-                                        <td><a class="btn btn-primary" href="{{route('helplinesLogController.timeline', $log->reference_id)}}">View More</a></td>
+                                        <td><a class="btn btn-primary" href="{{route('helplinesLogController.timeline', $log->reference_id)}}">View More</a>
+                                        </td>
+                                        <td>
+                                            <form id="delete-entry" method="POST" action="{{route('helplinesLogController.destroy', $log->reference_id)}}">
+                                                {{-- @if(GroupPermission::usercan('delete','users'))                                         --}}
+                                                  {{ csrf_field() }}
+                                                  {{ method_field('DELETE') }}
+
+                                                {{-- @endif --}}
+                                              </form>
+
+                                              <button onclick="confirm_delete()" class="btn btn-danger">
+                                                <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                              </button>
+                                        </td>
+                                        <td>
+                                            <form autocomplete="off">
+                                                <input type="checkbox" class="delete-check" id="{{$log->reference_id}}" >
+                                            </form>
+                                        </td>
                                     </tr>
                                     @endforeach
                                 </tbody>
                             </table>
                         </div>
-                                                
+
+                        <button onclick="confirm_mass_delete()" class="btn btn-danger">
+                            <i class="fa fa-trash-o" aria-hidden="true"> Selected</i>
+                        </button>                   
                     </div>
+                    
                 </div>    
             </div>
-        </div> 
+        </div>
     </div> 
     @endsection
 
@@ -110,6 +137,39 @@
             }
     } );
     });
+
+    function confirm_delete(){
+        if (confirm('You are about to permanently delete this log entry. Are you sure?')){
+            $('#delete-entry').submit()
+        }
+    }
+
+    function confirm_mass_delete(){
+        const selected_ids = {}
+
+        $('.delete-check:checkbox:checked').each(function(index) {
+            selected_ids[index] = parseInt($(this).attr("id"))
+        })
+
+        $.ajax({
+            headers: {
+                'X-CSRF-Token': "{{csrf_token()}}",
+            },
+            url: '{{route('helplinesLogController.mass_destroy')}}',
+            type: 'DELETE',
+            dataType: "json",
+            data: {
+                selected_ids
+            },
+            success: function(result) {
+                location.reload();
+            },
+            error: function(result){
+                // console.log(result.responseJSON);
+            }
+        });
+
+    }
 </script>
 
 @endsection

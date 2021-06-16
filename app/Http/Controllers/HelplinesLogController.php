@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\HelplinesLog;
 use Illuminate\Http\Request;
+use Session;
 
 class HelplinesLogController extends Controller
 {
@@ -108,8 +109,32 @@ class HelplinesLogController extends Controller
      * @param  \App\Helplines_log  $helplines_log
      * @return \Illuminate\Http\Response
      */
-    public function destroy(HelplinesLog $helplines_log)
+    public function destroy(Request $request)
     {
-        //
+
+        HelplinesLog::where('reference_id', '=', $request->id)->delete();
+        
+        Session::flash('message', 'Successfully deleted log!');
+        return redirect()->back();
+    }
+
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Helplines_log  $helplines_log
+     * @return \Illuminate\Http\Response
+     */
+    public function mass_destroy(Request $request)
+    {
+        if (!$request->selected_ids){
+            return response(['Message'=>'Wrong Input'], 400);
+        }
+
+        foreach ($request->selected_ids as $id){
+            HelplinesLog::where('reference_id', '=', $id)->delete();
+        }
+
+        return response(['Message'=>'Delete Succesful'], 200);
     }
 }
