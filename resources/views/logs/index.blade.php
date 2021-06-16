@@ -83,7 +83,7 @@
                                         <td>{{$log->content_type ? $log->content_type: 'None'}}</td>
                                         <td>{{$log->status ? $log->status: 'None'}}</td>
                                         <td>{{$log->created_at ? $log->created_at: 'None'}}</td>
-                                        <td><a class="btn btn-primary" href="{{route('helplinesLogController.timeline', $log->reference_id)}}">View More</a>
+                                        <td><a class="btn btn-primary" href="{{route('helplinesLogController.timeline', $log->reference_id)}}">View History</a>
                                         </td>
                                         <td>
                                             <form id="delete-entry" method="POST" action="{{route('helplinesLogController.destroy', $log->reference_id)}}">
