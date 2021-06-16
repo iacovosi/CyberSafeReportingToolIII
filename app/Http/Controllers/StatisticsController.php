@@ -114,7 +114,7 @@ class StatisticsController extends Controller
      */
     public function index_fakenews(Request $request)
     {
-        //
+        
         $submission_types = SubmissionType::all();
         $report_roles = ReportRole::all();
         $fakenews_source_type = FakenewsSourceType::all();
