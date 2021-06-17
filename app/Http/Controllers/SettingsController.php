@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Session;
+
+use App\AppSettings;
 
 class SettingsController extends Controller
 {
@@ -13,7 +17,14 @@ class SettingsController extends Controller
      */
     public function index()
     {
-        return view('settings.index');
+        $delete_after_helpline_hotline = AppSettings::where('name', '=', 'delete_after_helpline_hotline')->first();
+
+
+        if(!$delete_after_helpline_hotline){
+            return view('settings.index')->with(['delete_after_helpline_hotline' => 0]);
+        }
+
+        return view('settings.index')->with(['delete_after_helpline_hotline' => $delete_after_helpline_hotline->value]);
     }
 
     /**
@@ -24,7 +35,19 @@ class SettingsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        $validator = Validator::make($request->all(), [
+            'deleteAfterHelplineHotline' => 'integer|min:0',
+        ]);
+
+        if($validator->fails()){
+            return redirect()->back()->withErrors($validator);
+        }
+
+        AppSettings::updateOrCreate(['name' => 'delete_after_helpline_hotline'], ['value' => $request['deleteAfterHelplineHotline']]);
+
+
+        return redirect()->back();
     }
 
     /**
