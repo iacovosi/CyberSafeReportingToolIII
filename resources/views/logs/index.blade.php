@@ -13,7 +13,7 @@
                     <div class="form-group">
                         <label for="filterStatus">Status</label>
                         <select name="filterStatus" class="form-control">
-                             <option value="default" disabled>Select status</option> 
+                            <option value="default" disabled>Select status</option> 
                             <option value="*">ALL</option>
                             @foreach($status as $astatus)
                             <option value="{{ $astatus->name }}"  @if (old('filterStatus') == $astatus->name) selected  @endif  > {{ $astatus->name }}</option>
@@ -89,16 +89,18 @@
                                         </td>
                                         <td>
                                             <form id="delete-entry" method="POST" action="{{route('helplinesLogController.destroy', $log->reference_id)}}">
-                                                {{-- @if(GroupPermission::usercan('delete','users'))                                         --}}
+                                                                                        
                                                   {{ csrf_field() }}
                                                   {{ method_field('DELETE') }}
 
-                                                {{-- @endif --}}
+                                                
                                               </form>
 
-                                              <button onclick="confirm_delete()" class="btn btn-danger">
-                                                <i class="fa fa-trash-o" aria-hidden="true"></i>
-                                              </button>
+                                              @if(GroupPermission::usercan('delete','logs'))
+                                                <button onclick="confirm_delete()" class="btn btn-danger">
+                                                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                                </button>
+                                              @endif
                                         </td>
                                         <td>
                                             <form autocomplete="off">
@@ -110,10 +112,11 @@
                                 </tbody>
                             </table>
                         </div>
-
-                        <button onclick="confirm_mass_delete()" class="btn btn-danger">
-                            <i class="fa fa-trash-o" aria-hidden="true"> Selected</i>
-                        </button>                   
+                        @if(GroupPermission::usercan('delete','logs'))
+                            <button onclick="confirm_mass_delete()" class="btn btn-danger">
+                                <i class="fa fa-trash-o" aria-hidden="true"> Selected</i>
+                            </button>
+                        @endif                   
                     </div>
                     
                 </div>    

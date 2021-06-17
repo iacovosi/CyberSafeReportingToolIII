@@ -1,5 +1,6 @@
 @if ($errors->any())
-    <div class="alert alert-danger">{{ $errors->first()}}</div>
+    <div class="alert alert-danger">{{ $errors->first()}}
+    </div>
 @endif
 
 <div id="success-panel" class="alert alert-success" style="display:none;"></div>

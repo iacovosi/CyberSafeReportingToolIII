@@ -370,6 +370,38 @@ class Initialization extends Seeder
                 'guard_name' => 'web',
                 'created_at' => new DateTime,
                 'updated_at' => new DateTime,
+            ),
+            40 => 
+            array (
+                'id' => 41,
+                'name' => 'view_logs',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            41 => 
+            array (
+                'id' => 42,
+                'name' => 'edit_logs',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            42 => 
+            array (
+                'id' => 43,
+                'name' => 'create_logs',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            43 => 
+            array (
+                'id' => 44,
+                'name' => 'delete_logs',
+                'guard_name' => 'web',
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
             )
         ));
 
@@ -415,6 +447,10 @@ class Initialization extends Seeder
             ['permission_id' => 38, 'role_id' => 1],
             ['permission_id' => 39, 'role_id' => 1],
             ['permission_id' => 40, 'role_id' => 1],
+            ['permission_id' => 41, 'role_id' => 1],
+            ['permission_id' => 42, 'role_id' => 1],
+            ['permission_id' => 43, 'role_id' => 1],
+            ['permission_id' => 44, 'role_id' => 1],
         );
         DB::table('role_has_permissions')->insert($role_has_permissions);
 
@@ -430,6 +466,7 @@ class Initialization extends Seeder
             ['id' => 8, 'name' => 'chat','created_at'=> new DateTime, 'updated_at' =>new DateTime],
             ['id' => 9, 'name' => 'fakenews','created_at'=> new DateTime, 'updated_at' =>new DateTime],
             ['id' => 10, 'name' => 'online_users','created_at'=> new DateTime, 'updated_at' =>new DateTime],
+            ['id' => 11, 'name' => 'logs','created_at'=> new DateTime, 'updated_at' =>new DateTime],
         );
         DB::table('groups')->insert($groups);
 

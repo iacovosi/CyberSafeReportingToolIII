@@ -85,6 +85,7 @@
                 </li>
                 @endif
 
+                @if(GroupPermission::usercan('view','logs'))
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown">
                         <i class="fa fa-history" aria-hidden="true"></i> Logs 
@@ -95,7 +96,9 @@
                         <li><a href="{{ route('helplinesLogController.index') }}">Helpline and Hotline</a></li>
                     </ul>
                 </li>
-
+                @endif
+                
+                @if(GroupPermission::usercan('view','settings'))
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown">
                         <i class="fa fa-cog" aria-hidden="true"></i> Settings 
@@ -106,6 +109,7 @@
                         <li><a href="{{ route('settingsController.index') }}">Automated Deletion</a></li>
                     </ul>
                 </li>
+                @endif
 
             </ul>
 

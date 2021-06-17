@@ -228,17 +228,26 @@ Route::group(['middleware' => ['web','auth']], function () {
     /*
     *   Logs
     */
-    Route::get('logs/hotline_helpline','HelplinesLogController@index')->name('helplinesLogController.index');
-    Route::get('logs/hotline_helpline/{id}','HelplinesLogController@timeline')->name('helplinesLogController.timeline');
-    Route::get('logs/{log}','HelplinesLogController@show')->name('helplinesLogController.show');
-    Route::delete('/logs/hotline_helpline/{id}' ,'HelplinesLogController@destroy')->name('helplinesLogController.destroy');
-    Route::delete('/logs/hotline_helpline/' ,'HelplinesLogController@mass_destroy')->name('helplinesLogController.mass_destroy');
+    Route::group(['middleware' => ['permission:view_logs']], function () {
+        Route::get('logs/hotline_helpline','HelplinesLogController@index')->name('helplinesLogController.index');
+        Route::get('logs/hotline_helpline/{id}','HelplinesLogController@timeline')->name('helplinesLogController.timeline');
+        Route::get('logs/{log}','HelplinesLogController@show')->name('helplinesLogController.show');
+    });
 
+    Route::group(['middleware' => ['permission:delete_logs']], function () {
+        Route::delete('/logs/hotline_helpline/{id}' ,'HelplinesLogController@destroy')->name('helplinesLogController.destroy');
+        Route::delete('/logs/hotline_helpline/' ,'HelplinesLogController@mass_destroy')->name('helplinesLogController.mass_destroy');
+    });
 
     /*
     *   Settings
     */
-    Route::get('settings/','SettingsController@index')->name('settingsController.index');
+    Route::group(['middleware' => ['permission:view_settings']], function () {
+        Route::get('settings/automated_deletion','SettingsController@index')->name('settingsController.index');
+    });
+    Route::group(['middleware' => ['permission:edit_settings']], function () {
+        Route::post('settings/automated_deletion/update-helpline','SettingsController@store')->name('settingsController.store');
+    });
 
     /*
     * Actions, depricated?
