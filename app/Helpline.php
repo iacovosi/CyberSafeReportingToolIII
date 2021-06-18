@@ -60,7 +60,7 @@ class Helpline extends Model
 
     public static function archieve($id){
 
-        $record = Helpline::find($id);
+        $record = Helpline::findOrFail($id);
 
         $record->name = Crypt::encrypt($record->name);
         $record->surname = Crypt::encrypt($record->surname);
@@ -82,7 +82,7 @@ class Helpline extends Model
                 ->restore();
         
 
-        $record = Helpline::find($id);
+        $record = Helpline::findOrFail($id);
         
         $record->name = Crypt::decrypt($record->name);
         $record->surname = Crypt::decrypt($record->surname);
@@ -91,6 +91,13 @@ class Helpline extends Model
         $record->resource_url = Crypt::decrypt($record->resource_url);
 
         $record->save();
+    }
+
+    // returns true if report is closed
+    public static function isClosed($id){
+        $record = Helpline::findOrFail($id);
+
+        return ($record && $record->status === 'Closed');
     }
 
 

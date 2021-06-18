@@ -114,6 +114,11 @@ class HelplinesLogController extends Controller
     }
 
     public function archieve(Request $request){
+        if (!Helpline::isClosed($request->id)){
+            Session::flash('error-info', 'Report must be in a closed state.');
+            return redirect()->back();
+        }
+
         Helpline::archieve($request->id);
 
         return redirect()->back();

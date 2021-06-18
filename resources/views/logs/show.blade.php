@@ -5,10 +5,11 @@
 <link rel="stylesheet" href="{{ asset('css/tickets.css') }} ">
 
 <div class="container">
-    		
+
     <div class="row">
         <div class="col-md-12">
             <div class="page-header">
+                @include('partials.info')
               <h1>Helpline/Hotline Report #{{$id}} {{ $helpline ? '':'- Archived'}}</h1>
               <a class="btn btn-primary" href="{{route('helplinesLogController.index')}}">&laquo; Back</a>
               @if ($helpline === null)
