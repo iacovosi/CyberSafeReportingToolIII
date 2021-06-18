@@ -239,6 +239,11 @@ Route::group(['middleware' => ['web','auth']], function () {
         Route::delete('/logs/hotline_helpline/' ,'HelplinesLogController@mass_destroy')->name('helplinesLogController.mass_destroy');
     });
 
+    Route::group(['middleware' => ['permission:edit_logs']], function () {
+        Route::get('/logs/hotline_helpline/recover/{id}' ,'HelplinesLogController@recover')->name('helplinesLogController.recover');
+        Route::get('/logs/hotline_helpline/archieve/{id}' ,'HelplinesLogController@archieve')->name('helplinesLogController.archieve');
+    });
+
     /*
     *   Settings
     */

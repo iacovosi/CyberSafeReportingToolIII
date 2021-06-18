@@ -56,6 +56,9 @@ class HelplineObserver
      */
     public function updated(Helpline $helpline)
     {
+        if (!$helpline->timestamps){ // do not update on scheduled deletion
+            return;
+        }
 
         $statistics = Statistics::updateOrCreate(
             ['tracking_id' => $helpline->id],

@@ -5,6 +5,12 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
+
+use App\Helpline;
+use App\AppSettings;
+
+use Carbon\Carbon;
+
 class Kernel extends ConsoleKernel
 {
     
@@ -26,8 +32,23 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->call(function () {
-            
-        })->dailyAt('22:00');;
+
+            $delete_after_helpline_hotline = AppSettings::where('name', '=', 'delete_after_helpline_hotline')->first();
+
+            if ($delete_after_helpline_hotline && (int)($delete_after_helpline_hotline->value)>0){
+
+                $date = Carbon::now()->subMonths($delete_after_helpline_hotline->value);
+
+                Helpline::softDelete($date);
+
+            }
+
+
+        })->everyMinute();
+        //->dailyAt('5:00');
+
+        //->everyMinute();
+         
     }
 
     /**

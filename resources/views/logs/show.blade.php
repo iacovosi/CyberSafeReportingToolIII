@@ -9,8 +9,13 @@
     <div class="row">
         <div class="col-md-12">
             <div class="page-header">
-              <h1>Helpline/Hotline Report #{{$id}}</h1>
+              <h1>Helpline/Hotline Report #{{$id}} {{ $helpline ? '':'- Archived'}}</h1>
               <a class="btn btn-primary" href="{{route('helplinesLogController.index')}}">&laquo; Back</a>
+              @if ($helpline === null)
+                <a class="btn btn-warning" href="{{route('helplinesLogController.recover', $id)}}">Recover</a>
+              @else
+                <a class="btn btn-warning" href="{{route('helplinesLogController.archieve', $id)}}">Archieve</a>
+              @endif
             </div>
 
             <ul class="timeline">
