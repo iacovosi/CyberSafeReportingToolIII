@@ -46,6 +46,53 @@ class Helpline extends Model
         }
     }
 
+    public static function softDelete($before){
+
+        $records = Helpline::where('status', '=', 'Closed')
+                            ->where( 'updated_at', '<=', $before )->get();
+
+        
+        foreach($records as $record){
+            Helpline::archieve($record->id);
+        }
+
+    }
+
+    public static function archieve($id){
+
+        $record = Helpline::find($id);
+
+        $record->name = Crypt::encrypt($record->name);
+        $record->surname = Crypt::encrypt($record->surname);
+        $record->email = Crypt::encrypt($record->email);
+        $record->phone = Crypt::encrypt($record->phone);
+        $record->resource_url = Crypt::encrypt($record->resource_url);
+
+
+        $record->timestamps = false;
+        $record->save();
+        $record->delete();
+    }
+
+
+    public static function recover($id){
+
+        Helpline::withTrashed()
+                ->where('id', $id)
+                ->restore();
+        
+
+        $record = Helpline::find($id);
+        
+        $record->name = Crypt::decrypt($record->name);
+        $record->surname = Crypt::decrypt($record->surname);
+        $record->email = Crypt::decrypt($record->email);
+        $record->phone = Crypt::decrypt($record->phone);
+        $record->resource_url = Crypt::decrypt($record->resource_url);
+
+        $record->save();
+    }
+
 
     public function relatedToStatistics(){
         return $this->hasOne('App\Statistics','tracking_id','id');

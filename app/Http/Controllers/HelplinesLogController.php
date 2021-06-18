@@ -6,6 +6,7 @@ use App\HelplinesLog;
 use Illuminate\Http\Request;
 use Session;
 use App\Status;
+use App\Helpline;
 use Illuminate\Support\Facades\Validator;
 
 use Carbon\Carbon;
@@ -98,9 +99,24 @@ class HelplinesLogController extends Controller
      */
     public function timeline(Request $request)
     {
-        $helplineslog = HelplinesLog::where('reference_id',$request->id)->get();
+        $helplineslog = HelplinesLog::where('reference_id', $request->id)->get();
+
+        $helpline = Helpline::find($request->id);
  
-        return view('logs.show')->with(['helplineslog' => $helplineslog, 'id' => $request->id]);
+        return view('logs.show')->with(['helplineslog' => $helplineslog, 'id' => $request->id, 'helpline' => $helpline]);
+    }
+
+
+    public function recover(Request $request){
+        Helpline::recover($request->id);
+
+        return redirect()->back();
+    }
+
+    public function archieve(Request $request){
+        Helpline::archieve($request->id);
+
+        return redirect()->back();
     }
 
     /**

@@ -106,7 +106,7 @@
                     </a>
                     
                     <ul class="dropdown-menu">
-                        <li><a href="{{ route('settingsController.index') }}">Automated Deletion</a></li>
+                        <li><a href="{{ route('settingsController.index') }}">Automated Archive</a></li>
                     </ul>
                 </li>
                 @endif
