@@ -9,7 +9,7 @@
     <!-------------->
     <div class="panel panel-default" >
         <div class="panel-body">
-            <form action="{{ route('statistics.store') }} " class="form-inline results-filters" method="post" id="submit-form">
+            <form action="{{ route('store.fakenews.stats') }} " class="form-inline results-filters" method="post" id="submit-form">
 
                 <i class="fa fa-filter" aria-hidden="true"> Filters: </i>
 

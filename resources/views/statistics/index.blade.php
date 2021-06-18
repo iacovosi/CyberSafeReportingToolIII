@@ -213,9 +213,6 @@
 
 @endsection
 
-
-
-
 {{--  <div class="row">
                     <div class="col-sm-2">
                         @if($referals)

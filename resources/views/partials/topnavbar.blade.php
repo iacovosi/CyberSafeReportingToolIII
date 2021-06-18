@@ -80,7 +80,7 @@
                         <li><a href="{{ route('statistics.index') }}">Helpline and Hotline</a></li>
                         <li><a href="{{ route('show.fakenews.stats') }}">Fakenews</a></li>
                         <li role="separator" class="divider"></li>
-                        <li><a href="{{ route('gen.charts') }}">Generate Graphs and Charts</a></li>
+                        <li><a href="{{ route('gen.charts.view') }}">Generate Graphs and Charts</a></li>
                     </ul>
                 </li>
                 @endif

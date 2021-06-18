@@ -215,20 +215,22 @@ class StatisticsController extends Controller
         $status = Status::all();
         
         $request->flash();
+        //dd($request->flash());
 
         // --------------- //
         // FORM VALIDATION //
         $validator = Validator::make($request->all(), [
             'fromDate' => 'nullable|date',
-            'toDate' => 'nullable|date',
+            'toDate' => 'nullable|date|after:fromDate',
         ])->validate(); 
 
         // --------------- //
         // APPLY FILTERING //
         $statusSelected = $request->filterStatus;
 
+
         if($request->fromDate == null){
-            $fromDate = "*";
+            $fromDate = Statistics::orderBy('created_at')->pluck('created_at')->first()->format('Y-m-d');
         } else {
             //Change the received date with carbon so we can search in our database with its structure
             $date = Carbon::parse($request->fromDate)->format('Y-m-d H:i:s');
@@ -260,18 +262,20 @@ class StatisticsController extends Controller
             //to show the helpline only statistics
             $statistics = Statistics::ofStatus($statusSelected)->get()->whereBetween('created_at', [$fromDate, $toDate])->where('is_it_hotline','false');
         }
+        //dd($statistics);
 
         // --------------- //
         // EXPORT RESULTS  //
         if($request->exportThis != null) {
 
             $date = new \DateTime();
-            $tbody ='';
+            $tbody ='*';
             
             foreach( $statistics as $index => $value ) {
                 $tbody .= '
                     <tr>
                         <td>'. $index . '</td>
+                        <td>'. ($value->is_it_hotline ==='true'?'Hotline':'Helpline'). '</td>
                         <td>'. $value->resource_type .'</td>
                         <td>'. $value->content_type .'</td>
                         <td>'. $value->age .'</td>
@@ -292,6 +296,7 @@ class StatisticsController extends Controller
                     <thead>
                         <tr>
                             <th>Entry </th>
+                            <th>Service </th>
                             <th>Resource Type</th>
                             <th>Content Type</th>
                             <th>Age</th>
@@ -319,7 +324,50 @@ class StatisticsController extends Controller
         // FILTER VIEW     //
         } else {
 
-            //$statistics = $statistics->paginate(10);
+            $earliest_date = Carbon::parse($fromDate)->format('Y-m-d H:i:s');
+            $up_to =  date('Y-m-d h:i:s', strtotime($earliest_date. '+7 day'));
+            $data_week_help_cntr = Array();
+            $data_week_hot_cntr = Array();
+            $data_date = Array();
+            while ($up_to  < Carbon::parse($toDate)){
+                $help_cnt = Statistics::ofStatus($statusSelected)->where('is_it_hotline','=','false')->whereBetween('created_at',[$earliest_date,$up_to])->count();
+                $hot_cnt = Statistics::ofStatus($statusSelected)->where('is_it_hotline','=','true')->whereBetween('created_at',[$earliest_date,$up_to])->count();
+    
+                array_push($data_week_help_cntr,$help_cnt);
+                array_push($data_week_hot_cntr,$hot_cnt);
+                array_push($data_date,date('Y-m-d',strtotime($earliest_date)) . ' to ' . date('Y-m-d', strtotime($up_to)));
+                $earliest_date = date('Y-m-d h:i:s', strtotime($earliest_date. '+7 day'));
+                $up_to = date('Y-m-d h:i:s', strtotime($up_to. '+7 day'));
+            };
+            if (Carbon::parse($toDate)->format('Y-m-d') >= Carbon::now()->endOfDay()->format('Y-m-d')){
+                array_push($data_week_help_cntr,Statistics::ofStatus($statusSelected)->where('is_it_hotline','=','false')->count()-array_sum($data_week_help_cntr));
+                array_push($data_week_hot_cntr,Statistics::ofStatus($statusSelected)->where('is_it_hotline','=','true')->count()-array_sum($data_week_hot_cntr));
+                array_push($data_date,date('Y-m-d',strtotime($earliest_date)) . ' to ' . 'today');
+            }else{
+                array_push($data_date,date('Y-m-d',strtotime($earliest_date)) . ' to ' . Carbon::parse($toDate)->format('Y-m-d'));
+            }
+            
+            $weekly_input = new FakenewsStatisticsChart;
+            $weekly_input->labels($data_date);
+            $weekly_input->dataset('Helpline Reports made','bar',$data_week_help_cntr)->backgroundColor('yellow');
+            $weekly_input->dataset('Hotline Reports made','bar',$data_week_hot_cntr)->backgroundColor('red');
+            $weekly_input-> title('Number of reports per week');
+
+            //dd($data_week_help_cntr,$data_week_hot_cntr);
+
+            $resource_pie_data = Array();
+            $resources = $resource_types->pluck('name')->values();
+            foreach($resources as $source){
+                //dd(Statistics::where('status','=',$statusSelected)->count());
+                $cntr = Statistics::ofStatus($statusSelected)->where('resource_type','=',$source)->whereBetween('created_at',[Carbon::parse($fromDate),Carbon::parse($toDate)])->pluck('id')->count();
+                array_push($resource_pie_data,$cntr);
+            }
+
+            $sourcetype_pie = new FakenewsStatisticsChart;
+            $sourcetype_pie -> labels($resources);
+            $sourcetype_pie -> dataset('Resource Type Pie Distribution','pie',$resource_pie_data)->backgroundColor(['green','red','purple','blue','yellow']);
+            $sourcetype_pie -> title('Resource Type Pie Distribution');
+            $sourcetype_pie -> displayAxes(false);
 
             return view('statistics.index',[
                 'report_roles'=>$report_roles,
@@ -331,7 +379,186 @@ class StatisticsController extends Controller
                 'reference_to' => $references_to, 
                 'users' => $users,
                 'status'=> $status, 
-                'actionstaken' => $actions
+                'actionstaken' => $actions,
+                'weekly_bar' => $weekly_input,
+                'Helpline_types'=> $sourcetype_pie 
+                ]);
+        }
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function fakenews_store(Request $request)
+    {
+        // $report_roles = ReportRole::all();
+        $fakenews_types = FakenewsType::all();
+        $fakenews_source_types = FakenewsSourceType::all();
+        $actions = ActionTaken::all();
+        $references_by = ReferenceTo::all();
+        $references_to = ReferenceBy::all();
+    
+        $submission_types = SubmissionType::all();
+        $report_roles = ReportRole::all();
+
+        $users = User::all();
+        $status = Status::all();
+        
+        $request->flash();
+
+        // --------------- //
+        // FORM VALIDATION //
+        $validator = Validator::make($request->all(), [
+            'fromDate' => 'nullable|date',
+            'toDate' => 'nullable|date|after:fromDate'
+        ])->validate(); 
+
+        // --------------- //
+        // APPLY FILTERING //
+        $statusSelected = $request->filterStatus;
+
+        if($request->fromDate == null){
+            $fromDate = FakenewsStatistics::orderBy('created_at')->pluck('created_at')->first()->format('Y-m-d');
+        } else {
+            //Change the received date with carbon so we can search in our database with its structure
+            $date = Carbon::parse($request->fromDate)->format('Y-m-d H:i:s');
+            $fromDate = new \DateTime($date);
+            $fromDate->setTime(1,0);
+        }
+
+        if($request->toDate == null){
+            $toDate = Carbon::now();
+        } else {
+            //Change the received date with carbon so we can search in our database with its structure
+            $date = Carbon::parse($request->toDate)->format('Y-m-d H:i:s');
+            $toDate = new \DateTime($date);
+            $toDate->setTime(23,0);
+        }
+
+        //check user permissions
+        $user = auth()->user();
+        $IsUserOnlyFakenews=$user->hasRole("fakenews") ;
+
+        if (!$IsUserOnlyFakenews) {
+            // ...set filters but dont get resuts yet, due to pagination and export conflict
+            $statistics = FakenewsStatistics::ofStatus($statusSelected)->get()->whereBetween('created_at', [$fromDate, $toDate]);
+        }
+        else {
+            // ...set filters but dont get resuts yet, due to pagination and export conflict and also check
+            //to show the helpline only statistics
+            $statistics = FakenewsStatistics::ofStatus($statusSelected)->get()->whereBetween('created_at', [$fromDate, $toDate])->where('is_it_hotline','false');
+        }
+
+        // --------------- //
+        // EXPORT RESULTS  //
+        if($request->exportThis != null) {
+
+            $date = new \DateTime();
+            $tbody ='';
+            
+            foreach( $statistics as $index => $value ) {
+                //dd($value);
+                $tbody .= '
+                    <tr>
+                        <td>'. $index . '</td>
+                        <td>'. $value->fakenews_type . '</td>
+                        <td>'. $value->fakenews_source_type .'</td>
+                        <td>'. $value->age .'</td>
+                        <td>'. $value->gender .'</td>
+                        <td>'. $value->reference_by .'</td>
+                        <td>'. $value->reference_to .'</td>
+                        <td>'. $value->actions .'</td>
+                        <td>'. $value->priority .'</td>
+                        <td>'. $value->submission_type .'</td>
+                        <td>'. $value->status .'</td>
+                        <td>'. $value->created_at .'</td>
+                        <td>'. $value->updated_at .'</td>
+                    </tr>';
+            }
+
+            $output = '
+                <table class="table" bordered="1">
+                    <thead>
+                        <tr>
+                            <th>Entry </th>
+                            <th>Fakenews Type</th>
+                            <th>Fakenews Source Type</th>
+                            <th>Age</th>
+                            <th>Gender</th>
+                            <th>Reference by</th>
+                            <th>Reference to</th>
+                            <th>Operator actions</th>
+                            <th>Priority</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Last Updated</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ' . $tbody .'
+                    </tbody>
+                </table>
+            ';
+            header("Content-Type: application/xls");
+            header("Content-Disposition:attachment; filename =". $date->format('d/m/Y') .".xls");
+            echo $output;
+
+        // --------------- //
+        // FILTER VIEW     //
+        } else {
+            //chart need to be redefined for every filter
+            $earliest_date = Carbon::parse($fromDate)->format('Y-m-d H:i:s');
+            $up_to =  date('Y-m-d h:i:s', strtotime($earliest_date. '+7 day'));
+            $data_week_cntr = Array();
+            $data_date = Array();
+            while ($up_to  < Carbon::parse($toDate)){
+                $cnt = FakenewsStatistics::ofstatus($statusSelected)->whereBetween('created_at',[$earliest_date,$up_to])->count();
+                array_push($data_week_cntr,$cnt);
+                array_push($data_date,date('Y-m-d',strtotime($earliest_date)) . ' to ' . date('Y-m-d', strtotime($up_to)));
+                $earliest_date = date('Y-m-d h:i:s', strtotime($earliest_date. '+7 day'));
+                $up_to = date('Y-m-d h:i:s', strtotime($up_to. '+7 day'));
+            }
+            if (Carbon::parse($toDate)->format('Y-m-d') >= Carbon::now()->endOfDay()->format('Y-m-d')){
+                array_push($data_week_cntr,FakenewsStatistics::ofstatus($statusSelected)->pluck('id')->count()-array_sum($data_week_cntr));
+                array_push($data_date,date('Y-m-d',strtotime($earliest_date)) . ' to ' . 'today');
+            }else{
+                array_push($data_date,date('Y-m-d',strtotime($earliest_date)) . ' to ' . Carbon::parse($toDate)->format('Y-m-d'));
+            }
+    
+            $weekly_input = new FakenewsStatisticsChart;
+            $weekly_input->labels($data_date);
+            $weekly_input->dataset('Reports made','bar',$data_week_cntr)->backgroundColor('purple');
+            $weekly_input-> title('Number of reports per week');
+            
+            $fakenews_source_pie_data = Array();
+            $fake_sources = $fakenews_source_types->pluck('typename_en')->values();
+            foreach($fake_sources as $source){
+                $cntr = FakenewsStatistics::ofstatus($statusSelected)->where('fakenews_source_type','=',$source)->whereBetween('created_at',[Carbon::parse($fromDate),Carbon::parse($toDate)])->pluck('id')->count();
+                array_push($fakenews_source_pie_data,$cntr);
+            }
+            $sourcetype_pie = new FakenewsStatisticsChart;
+            $sourcetype_pie -> labels($fake_sources);
+            $sourcetype_pie -> dataset('Fakenews Source Pie Distribution','pie',$fakenews_source_pie_data)->backgroundColor(['green','red','purple','blue','yellow','grey']);
+            $sourcetype_pie -> title('Fakenews Source Pie Distribution');
+            $sourcetype_pie -> displayAxes(false);
+
+            return view('statistics.index_fakenews',[
+                'report_roles'=>$report_roles,
+                'fakenews_types'=>$fakenews_types,
+                'fakenews_source_type'=>$fakenews_source_types,
+                'submission_types'=> $submission_types,                
+                'statistics' => $statistics ,
+                'reference_by' => $references_by, 
+                'reference_to' => $references_to, 
+                'users' => $users,
+                'status'=> $status, 
+                'actionstaken' => $actions,
+                'weekly_bar' => $weekly_input,
+                'fakenews_source_pie'=> $sourcetype_pie 
                 ]);
         }
     }
@@ -397,6 +624,23 @@ class StatisticsController extends Controller
             echo $output;
     }
 
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function gen_char_view(Request $request)
+    {
+        $report_chart_types = report_chart_type::all();
+        return view('statistics.gen_graphs',[
+            'report_chart_types' => $report_chart_types,
+            'charts' => Array(),
+            'service' => null,
+            'start_date'=>null,
+            'end_date' => null
+            ]);
+    }
+
 
     /**
      * Display a listing of the resource.
@@ -407,39 +651,54 @@ class StatisticsController extends Controller
     {
         $report_chart_types = report_chart_type::all();
         $charts = Array();
-
-        if(!empty($request->to_date))
+        //dd($request->all());
+        if(!empty($request->all()))
             {
-                //dd($request->all(); 
-                // Set validation rules for fields
                 $rules = [
-                    'from_date' => 'required|date',
-                    'to_date' => 'required|date|after:from_date|before:tomorrow',
+                    'cust_choice' => 'required',
+                    'from_date' => 'required_if:cust_choice,yes|nullable|date',
+                    'to_date' => 'required_if:cust_choice,yes|nullable|date|after:from_date|before:tomorrow',
                     'data_sellection' => 'required',
                     'chart_type' => 'required|array'
                 ];
+                //dd('here');
                 // Generate a new validator instance
                 $validator = Validator::make($request->all(), $rules, Lang::get('validation.custom.entry', array(), Session::get('lang')));
                 if ($validator->fails()) {
                     return redirect()->back()->with(['errors' => $validator->messages()])->withInput();
                 }
                 
-                
+
+                if ($request->cust_choice=='no'){
+                    $end_of_day_to_date = Carbon::now()->endOfDay()->format('Y-m-d H:m:s');
+                    if ($request->pre_range=='3_months'){
+                        $from_date = Carbon::now()->subMonth(3)->format('Y-m-d H:m:s');
+                    }else if ($request->pre_range=='6_months'){
+                        $from_date = Carbon::now()->subMonth(6)->format('Y-m-d H:m:s');
+                    }else if ($request->pre_range=='12_months'){
+                        $from_date = Carbon::now()->subMonth(12)->format('Y-m-d H:m:s');
+                    }
+                }else if($request->cust_choice=='yes'){
+                    $end_of_day_to_date = Carbon::parse($request->to_date)->endOfDay()->format('Y-m-d H:m:s');
+                    $from_date = Carbon::parse($request->from_date)->format('Y-m-d H:m:s');
+                }
+
                 $data = $request->all();
                 $all_check = false;
-                function querry_call($request){
-                    $data=$request->all();
-                    $end_of_day_to_date = Carbon::parse($request->to_date)->endOfDay()->format('Y-m-d H:m:s');
-                    if ($data['data_sellection'] == 'helpline'){
-                        $stats =  Statistics::whereBetween('created_at',[$data['from_date'], $end_of_day_to_date])->where('is_it_hotline','=','false');
-                    }else if ($data['data_sellection'] == 'hotline'){
-                        $stats =  Statistics::whereBetween('created_at',[$data['from_date'], $end_of_day_to_date])->where('is_it_hotline','=','true');
-                    }else if ($data['data_sellection'] == 'fakenews'){
-                        $stats =  FakenewsStatistics::whereBetween('created_at',[$data['from_date'], $end_of_day_to_date]);
+                $data_sel = $request->data_sellection;
+                //dd($end_of_day_to_date,$from_date);
+                function querry_call($from_date,$end_of_day_to_date,$data_sel){
+
+                    if ($data_sel == 'helpline'){
+                        $stats =  Statistics::whereBetween('created_at',[$from_date, $end_of_day_to_date])->where('is_it_hotline','=','false');
+                    }else if ($data_sel== 'hotline'){
+                        $stats =  Statistics::whereBetween('created_at',[$from_date, $end_of_day_to_date])->where('is_it_hotline','=','true');
+                    }else if ($data_sel == 'fakenews'){
+                        $stats =  FakenewsStatistics::whereBetween('created_at',[$from_date, $end_of_day_to_date]);
                     }
                     return($stats);
                 }
-
+                //dd(querry_call($from_date,$end_of_day_to_date,$data_sel));
 
                 //the all charts check
                 if (in_array('all',$data['chart_type'])){
@@ -447,7 +706,7 @@ class StatisticsController extends Controller
                 }
                 // generating the requested charts
                 if (in_array('Adult to Non-Adult Ratio',$data['chart_type']) | ($all_check == true)){
-                    $stats = querry_call($request);
+                    $stats = querry_call($from_date,$end_of_day_to_date,$data_sel);
 
                     $All_cases=$stats->count();
                     $adults_num = $stats->where('age','=','18+')->count();
@@ -460,21 +719,20 @@ class StatisticsController extends Controller
                     $age_chart -> title('Adults vs Non-adults');
                     array_push($charts,$age_chart);
                 }
-                //dd(Carbon::parse($request->to_date)->diffInMonths(Carbon::parse($request->from_date)->format('Y-m-d')));
-                // generating the requested charts
-                
-                if (in_array('Monthly Report Counts',$data['chart_type']) | ($all_check == true)){
-                    $stats = querry_call($request);
 
-                    $num_months = Carbon::parse($request->to_date)->diffInMonths(Carbon::parse($request->from_date)->format('Y-m-d')) +1  ;
-                    $init_date = $request->from_date;
+                // generating the requested charts
+                if (in_array('Monthly Report Counts',$data['chart_type']) | ($all_check == true)){
+                    $stats = querry_call($from_date,$end_of_day_to_date,$data_sel);
+
+                    $num_months = Carbon::parse($end_of_day_to_date)->diffInMonths(Carbon::parse($from_date)->format('Y-m-d')) +1  ;
+                    $init_date = $from_date;
                     $cases_dataset = Array();
                     $cases_labels = Array();
                     //dd($num_months);
                     for ($i = 0 ; $i < $num_months; $i++){
                         $end_of_month = Carbon::parse($init_date)->endOfMonth();
                         if ($i==$num_months-1){
-                            $end_of_month=Carbon::parse($request->to_date)->endOfDay()->format('Y-m-d H:m:s');
+                            $end_of_month=Carbon::parse($end_of_day_to_date)->endOfDay()->format('Y-m-d H:m:s');
                             //dd($end_of_month);
                         }
                         //dd(date('Y/m/d',strtotime($init_date)));
@@ -485,10 +743,9 @@ class StatisticsController extends Controller
                         if ($i!=$num_months-1){
                             $init_date = $end_of_month->addDay();
                         }
-                        $stats = querry_call($request);
+                        $stats = querry_call($from_date,$end_of_day_to_date,$data_sel);
 
                     }
-                    //dd([$cases_labels,$cases_dataset]);
                     $cases_chart = new FakenewsStatisticsChart;
                     $cases_chart -> labels($cases_labels);
                     $cases_chart -> dataset('Reported Cases Per Month','bar',$cases_dataset)->backgroundColor('blue');
@@ -497,7 +754,7 @@ class StatisticsController extends Controller
                 }
 
                 if (in_array('Description of Reporters',$data['chart_type']) | ($all_check == true)){
-                    $stats = querry_call($request);
+                    $stats = querry_call($from_date,$end_of_day_to_date,$data_sel);
 
                     $role_types = ReportRole::pluck('name')->values();
                     $role_dataset = Array();
@@ -507,7 +764,7 @@ class StatisticsController extends Controller
                         $cntr = $stats->where('report_role', '=', $role)->count();
                         array_push($role_dataset, $cntr);
                         array_push($role_labels,$role);
-                        $stats = querry_call($request);
+                        $stats = querry_call($from_date,$end_of_day_to_date,$data_sel);
                     }
                     //dd($role_dataset);
                     $cntr = $stats->where('report_role', '=', 'Not set')->count();
@@ -521,7 +778,7 @@ class StatisticsController extends Controller
                 }
 
                 if (in_array('Gender Ratio',$data['chart_type']) | ($all_check == true)){
-                    $stats = querry_call($request);
+                    $stats = querry_call($from_date,$end_of_day_to_date,$data_sel);
 
                     $genders = Gender::pluck('name')->values();
                     $gender_dataset = Array();
@@ -531,7 +788,7 @@ class StatisticsController extends Controller
                         $cntr = $stats->where('gender', '=', $gender)->count();
                         array_push($gender_dataset, $cntr);
                         array_push($gender_labels, $gender);
-                        $stats = querry_call($request);
+                        $stats = querry_call($from_date,$end_of_day_to_date,$data_sel);
                     }
                     $cntr = $stats->where('gender', '=','Not set')->count();
                     array_push($gender_dataset, $cntr);
@@ -545,7 +802,7 @@ class StatisticsController extends Controller
                 }
 
                 if (in_array('Report Methods',$data['chart_type']) | ($all_check == true)){
-                    $stats = querry_call($request);
+                    $stats = querry_call($from_date,$end_of_day_to_date,$data_sel);
 
                     $sub_types = SubmissionType::pluck('name')->values();
                     $sub_type_dataset = Array();
@@ -553,7 +810,7 @@ class StatisticsController extends Controller
                     foreach($sub_types as $type){
                         $cntr = $stats->where('submission_type', '=', $type)->count();
                         array_push($sub_type_dataset, $cntr);
-                        $stats = querry_call($request);
+                        $stats = querry_call($from_date,$end_of_day_to_date,$data_sel);
                     }
 
                     $sub_type_chart = new FakenewsStatisticsChart;
@@ -563,7 +820,7 @@ class StatisticsController extends Controller
                     array_push($charts,$sub_type_chart);
                 }
                 if (in_array('Report Types',$data['chart_type']) | ($all_check == true)){
-                    $stats = querry_call($request);
+                    $stats = querry_call($from_date,$end_of_day_to_date,$data_sel);
 
                     if ($data['data_sellection']=='helpline'){
                         $rep_types = ContentType::where('is_for','=','helpline')->pluck('name')->values();
@@ -581,7 +838,7 @@ class StatisticsController extends Controller
                             $cntr = $stats->where('fakenews_source_type', '=', $type)->count();
                         }
                         array_push($cont_type_dataset, $cntr);
-                        $stats = querry_call($request);
+                        $stats = querry_call($from_date,$end_of_day_to_date,$data_sel);
                     }
 
                     $cont_type_chart = new FakenewsStatisticsChart;
@@ -594,7 +851,10 @@ class StatisticsController extends Controller
 
         return view('statistics.gen_graphs',[
             'report_chart_types' => $report_chart_types,
-            'charts' => $charts
+            'charts' => $charts,
+            'service' => $data_sel,
+            'start_date'=> date('d/m/Y',strtotime($from_date)),
+            'end_date' => date('d/m/Y',strtotime($end_of_day_to_date))
             ]);
     }
 
