@@ -11,6 +11,7 @@
                         <div class="panel-heading clearfix">
                             <h4 class="pull-left">FAKENEWS - New Report</h4>
                             <div class="pull-right form-actions">
+                                @include('partials.errors')
                                 <a href="" class="btn btn-default" data-toggle="modal" data-target="#myModal"><i
                                             class="fa fa-times" aria-hidden="true"></i> Cancel</a>
                                 @if (GroupPermission::usercan('edit','fakenews'))
@@ -20,6 +21,7 @@
                                     </button>
                                 @endif
                             </div>
+                            
                         </div>
 
                         <!-- Modal -->

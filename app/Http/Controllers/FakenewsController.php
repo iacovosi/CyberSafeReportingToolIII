@@ -80,7 +80,7 @@ class FakenewsController extends Controller
         ];
 
         // validation rule if you want to provide personal
-        if ($request->personal_data == 'true') {
+        if ($request->personal_data === 'true') {
             $rules['email'] = 'required_without:phone';
             $rules['phone'] = 'required_without:email';
         }

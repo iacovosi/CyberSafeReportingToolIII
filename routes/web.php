@@ -216,7 +216,9 @@ Route::group(['middleware' => ['web','auth']], function () {
     */
     Route::group(['middleware' => ['permission:view_statistics']], function () {
         Route::get('statistics/fakenews','StatisticsController@index_fakenews')->name('show.fakenews.stats');
-        Route::get('statistics/gen_charts','StatisticsController@gen_charts')->name('gen.charts');
+        Route::post('statistics/fakenews_store','StatisticsController@fakenews_store')->name('store.fakenews.stats');
+        Route::get('statistics/gen_charts','StatisticsController@gen_char_view' )->name('gen.charts.view');
+        Route::get('statistics/gen_charts/gen','StatisticsController@gen_charts')->name('gen.charts');
         Route::resource('statistics','StatisticsController');
     });
 
