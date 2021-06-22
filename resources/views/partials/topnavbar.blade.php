@@ -94,6 +94,9 @@
                     
                     <ul class="dropdown-menu">
                         <li><a href="{{ route('helplinesLogController.index') }}">Helpline and Hotline</a></li>
+                        <li><a href="">Fakenews</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="">Users</a></li>
                     </ul>
                 </li>
                 @endif

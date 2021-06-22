@@ -71,8 +71,8 @@ class FakenewsController extends Controller
             'adv_town'=>'required_if:fakenews_source_type,Advertising/Pamphlets',
             //Other
             'specific_type'=>'required_if:fakenews_source_type,Other',
-            'other_country'=>'required_if:fakenews_source_type,Other',
-            'other_town'=>'required_if:fakenews_source_type,Other',
+            'country'=>'required_if:fakenews_source_type,Other',
+            'town'=>'required_if:fakenews_source_type,Other',
             //Personal details
             'name' => 'required_if:personal_data,true',
             'images*' => 'required_if:img_upload:yes',
@@ -225,8 +225,17 @@ class FakenewsController extends Controller
         if ($data['fakenews_source_type']=='Internet' & (!empty($data['source_document']))){
             $data['source_document'] = Crypt::encrypt($request->source_document);
         } 
+
+        // allow multiple actions
+        if (isset($data['actions']) && $request->submitted_by_operator){
+            $json = [Auth::id() => $data['actions']];
+            $data['actions'] = json_encode($json);
+        }else{
+            $data['actions'] = json_encode([]);
+        }
+        
         if (!$request->submitted_by_operator){
-            if ($data['fakenews_source_type']=='Internet'){
+            if ($data['fakenews_source_type'] =='Internet'){
                 unset($data['tv_channel']);
                 unset($data['tv_prog_title']);
                 unset($data['radio_station']);
@@ -239,7 +248,7 @@ class FakenewsController extends Controller
                 unset($data['area_district']);
                 unset($data['specific_address']);   
             }elseif($data['fakenews_source_type']=='TV'){
-                $data['publication_time']=$data['tv_publication_time'];
+                $data['publication_time'] = $data['tv_publication_time'];
                 unset($data['tv_publication_time']);
                 unset($data['source_url']);
                 unset($data['title']);
@@ -316,8 +325,21 @@ class FakenewsController extends Controller
                 unset($data['source_document']);
                 unset($data['newspaper_name']);
                 unset($data['page']);
-            };
-        };
+            }
+        }else{
+            //making times work with general validator function
+            if ($data['fakenews_source_type']=="Radio"){
+                $data['publication_time']=$data['radio_publication_time'];
+                unset($data['radio_publication_time']);
+            }else if($data['fakenews_source_type']=="TV"){
+                $data['publication_time']=$data['tv_publication_time'];
+                unset($data['tv_publication_time']);
+            }else{
+                unset($data['radio_publication_time']);
+                unset($data['tv_publication_time']);
+            }
+        }
+
         
         $id = Fakenews::create($data)->id;
 
@@ -360,6 +382,16 @@ class FakenewsController extends Controller
         if ( auth()->user()->hasRole("admin") || auth()->user()->hasRole("manager") || ($fakenews->user_assigned == Auth::id() || $fakenews->forwarded == 'true' || empty($fakenews->user_opened)) || (($fakenews->user_opened == Auth::id()) &&  (empty($fakenews->user_assigned)))) {
             if ($fakenews->status === 'Closed' &&  !auth()->user()->hasRole('manager') && !auth()->user()->hasRole("admin")){
                 return redirect()->route('home');
+            }
+
+            // allow multiple actions 
+            if (!is_null(json_decode($fakenews->actions))){ // this is a json formatted action
+                $array = json_decode($fakenews['actions'], true);
+            if(!isset($array[Auth::id()])){ // first time opening this request
+                $array[Auth::id()] = "Not provided";
+            }
+            
+            $fakenews['actions'] = json_encode($array);
             }
 
             $fakenews->log="";
@@ -427,7 +459,6 @@ class FakenewsController extends Controller
         }
         
         $data = $request->all();
-
         $data['comments'] = Crypt::encrypt($request->comments);
 
         if (!empty($data['source_document'])){
@@ -441,8 +472,26 @@ class FakenewsController extends Controller
         }
 
         $fakenews = Fakenews::find($fakenews->id);
+
+        if (!is_null(json_decode($fakenews->actions))){ // this is a json formatted action
+            $array = json_decode($fakenews['actions'], true);
+            $array[Auth::id()] = $data['actions'];
+            $data['actions'] = json_encode($array);
+        }
         $fakenews->insident_reference_id = (isset($data['insident_reference_id'])) ? $data['insident_reference_id'] : null;
         $fakenews->call_time = (isset($data['call_time'])) ? $data['call_time'] : null;
+        //making times work with general validator function
+        if ($data['fakenews_source_type']=="Radio"){
+            $data['publication_time']=$data['radio_publication_time'];
+            unset($data['radio_publication_time']);
+        }else if($data['fakenews_source_type']=="TV"){
+            $data['publication_time']=$data['tv_publication_time'];
+            unset($data['tv_publication_time']);
+        }else{
+            unset($data['radio_publication_time']);
+            unset($data['tv_publication_time']);
+        }
+        //dd($data);
         $fakenews->update($data);
  
         if ((!empty($request->images)) & ($request->img_upload == 1)){

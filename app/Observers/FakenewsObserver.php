@@ -4,7 +4,7 @@ namespace App\Observers;
 
 use App\Fakenews;
 use App\FakenewsStatistics;
-//use App\FakenewsLog;
+use App\FakenewsLog;
 
 use Auth;
 

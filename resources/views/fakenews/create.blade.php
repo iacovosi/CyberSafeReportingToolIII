@@ -5,17 +5,17 @@
 
         <div class="row">
             <div class="col-md-12">
-
+                <div class="form-group">
+                    @include('partials.errors')
+                </div>
                 <form method="post" action="{{ route('save-fakenews') }}" id="submit-form" class="form-horizontal" enctype = 'multipart/form-data'>
                     <div class="panel panel-default">
                         <div class="panel-heading clearfix">
                             <h4 class="pull-left">FAKENEWS - New Report</h4>
                             <div class="pull-right form-actions">
-                                @include('partials.errors')
                                 <a href="" class="btn btn-default" data-toggle="modal" data-target="#myModal"><i
                                             class="fa fa-times" aria-hidden="true"></i> Cancel</a>
                                 @if (GroupPermission::usercan('edit','fakenews'))
-                                    {{--  <input type="submit" name="submit" value="Save & Exit" form="submit-form" class="btn btn-primary">  --}}
                                     <button type="submit" class="btn btn-primary">
                                         <i class="fa fa-floppy-o" aria-hidden="true"></i> Save & Exit
                                     </button>
@@ -158,18 +158,6 @@
                                             name="publication_date" required>
                                     </div>
                                 </fieldset>
-                                <!-- Programme time -->
-                                <fieldset class="form-group">
-                                <label class="col-sm-2 control-label"></label>   
-                                    <div class="col-sm-4">
-                                    <imput hidden></input>
-                                    </div>
-                                <label for="publication_time" class="col-sm-2 control-label">Publication Time</label>   
-                                    <div class="col-sm-4">
-                                        <input type="time" class="form-control" value="" 
-                                        name="publication_time">
-                                    </div>
-                                </fieldset>
                                 <!-- Report User Comments -->
                                 <fieldset class="form-group">
                                     <label for="comments" class="col-sm-2 control-label">User comments</label>
@@ -204,20 +192,32 @@
                             </fieldset>
                             <fieldset>
                                 <legend><div id="tv_sellect" class="ping"> <h3>***RELEVANT INFORMATION HERE***</h3></div>TV source description</legend>
-                                    <fieldset class="form-group">
-                                        <!-- Channel title -->
-                                        <label for="tv_channel" class="col-sm-2 control-label">Channel Title</label>
-                                        <div class="col-sm-4">
-                                            <input type="text" class="form-control" value=""
-                                                    name="tv_channel" id ='tv_channel'>
-                                        </div>
-                                        <!-- Programme title -->
-                                        <label for="tv_prog_title" class="col-sm-2 control-label">Programme Title</label>   
-                                        <div class="col-sm-4">
-                                                <input type="text" class="form-control" value="" 
-                                                name="tv_prog_title" id ='tv_prog_title'>
-                                        </div>
-                                    </fieldset>
+                                <fieldset class="form-group">
+                                    <!-- Channel title -->
+                                    <label for="tv_channel" class="col-sm-2 control-label">Channel Title</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" class="form-control" value=""
+                                                name="tv_channel" id ='tv_channel'>
+                                    </div>
+                                    <!-- Programme title -->
+                                    <label for="tv_prog_title" class="col-sm-2 control-label">Programme Title</label>   
+                                    <div class="col-sm-4">
+                                            <input type="text" class="form-control" value="" 
+                                            name="tv_prog_title" id ='tv_prog_title'>
+                                    </div>
+                                </fieldset>
+                                <!-- TV Programme time -->
+                                <fieldset class="form-group">
+                                <label class="col-sm-2 control-label"></label>   
+                                    <div class="col-sm-4">
+                                    <imput hidden></input>
+                                    </div>
+                                <label for="tv_publication_time" class="col-sm-2 control-label">TVPublication Time</label>   
+                                    <div class="col-sm-4">
+                                        <input type="time" class="form-control" value="" 
+                                        name="tv_publication_time" id='tv_time'>
+                                    </div>
+                                </fieldset>
                             </fieldset>
                             <fieldset>
                                 <legend><div id="radio_sellect" class="ping"> <h3>***RELEVANT INFORMATION HERE***</h3></div>Radio source description</legend>
@@ -231,6 +231,18 @@
                                     <label for="radio_freq" class="col-sm-2 control-label">Radio Station Frequency [MHz]</label>   
                                     <div class="col-sm-4">
                                             <input type="text" class="form-control" value="" name="radio_freq" id = 'radio_freq'>
+                                    </div>
+                                </fieldset>
+                                <!-- Radio Programme time -->
+                                <fieldset class="form-group">
+                                <label class="col-sm-2 control-label"></label>   
+                                    <div class="col-sm-4">
+                                    <imput hidden></input>
+                                    </div>
+                                <label for="radio_publication_time" class="col-sm-2 control-label">Radio Publication Time</label>   
+                                    <div class="col-sm-4">
+                                        <input type="time" class="form-control" value="" 
+                                        name="radio_publication_time" id='radio_time'>
                                     </div>
                                 </fieldset>
                             </fieldset>
@@ -268,15 +280,15 @@
                                 </fieldset>
                             </fieldset>
                             <fieldset>
-                                <legend>General address information</legend>
+                                <legend>General address information of incident</legend>
                                 <fieldset class="form-group">
                                     <!-- Country -->
-                                    <label for="country" class="col-sm-2 control-label">Country</label>
+                                    <label for="country" class="col-sm-2 control-label">Country (required for OTHER source)</label>
                                     <div class="col-sm-4">
                                         <input type="text" class="form-control" value="" name="country">
                                     </div>
                                     <!-- Town -->
-                                    <label for="town" class="col-sm-2 control-label">Town</label>   
+                                    <label for="town" class="col-sm-2 control-label">Town (required for OTHER and RADIO source)</label>   
                                     <div class="col-sm-4">
                                             <input type="text" class="form-control" value="" name="town">
                                     </div>
@@ -506,6 +518,8 @@
                 $('#source_document').prop('disabled',false)
                 $('#tv_channel').prop('disabled',true)
                 $('#tv_prog_title').prop('disabled',true)
+                $('#tv_time').prop('disabled',true)
+                $('#radio_time').prop('disabled',true)
                 $('#radio_station').prop('disabled',true)
                 $('#radio_freq').prop('disabled',true)
                 $('#newspaper_name').prop('disabled',true)
@@ -524,6 +538,8 @@
                 $('#source_document').prop('disabled',true)
                 $('#tv_channel').prop('disabled',false)
                 $('#tv_prog_title').prop('disabled',false)
+                $('#tv_time').prop('disabled',false)
+                $('#radio_time').prop('disabled',true)
                 $('#radio_station').prop('disabled',true)
                 $('#radio_freq').prop('disabled',true)
                 $('#newspaper_name').prop('disabled',true)
@@ -542,6 +558,8 @@
                 $('#source_document').prop('disabled',true)
                 $('#tv_channel').prop('disabled',true)
                 $('#tv_prog_title').prop('disabled',true)
+                $('#tv_time').prop('disabled',true)
+                $('#radio_time').prop('disabled',false)
                 $('#radio_station').prop('disabled',false)
                 $('#radio_freq').prop('disabled',false)
                 $('#newspaper_name').prop('disabled',true)
@@ -560,6 +578,8 @@
                 $('#source_document').prop('disabled',true)
                 $('#tv_channel').prop('disabled',true)
                 $('#tv_prog_title').prop('disabled',true)
+                $('#tv_time').prop('disabled',true)
+                $('#radio_time').prop('disabled',true)
                 $('#radio_station').prop('disabled',true)
                 $('#radio_freq').prop('disabled',true)
                 $('#newspaper_name').prop('disabled',false)
@@ -578,6 +598,8 @@
                 $('#source_document').prop('disabled',true)
                 $('#tv_channel').prop('disabled',true)
                 $('#tv_prog_title').prop('disabled',true)
+                $('#tv_time').prop('disabled',true)
+                $('#radio_time').prop('disabled',true)
                 $('#radio_station').prop('disabled',true)
                 $('#radio_freq').prop('disabled',true)
                 $('#newspaper_name').prop('disabled',true)
@@ -596,6 +618,8 @@
                 $('#source_document').prop('disabled',true)
                 $('#tv_channel').prop('disabled',true)
                 $('#tv_prog_title').prop('disabled',true)
+                $('#tv_time').prop('disabled',true)
+                $('#radio_time').prop('disabled',true)
                 $('#radio_station').prop('disabled',true)
                 $('#radio_freq').prop('disabled',true)
                 $('#newspaper_name').prop('disabled',true)

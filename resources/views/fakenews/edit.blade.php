@@ -1,10 +1,12 @@
 @extends('layouts.app')
-
+@inject('User', 'App\User')
 @section('content')
     <div class="container report-details" id="fakenews-report-edit">
         <div class="row">
             <div class="col-md-12">
-
+                <div class="form-group">
+                    @include('partials.errors')
+                </div>
                 <form method="POST" action="{{route('edit-fakenews',['id' => $fakenews->id ])}}" id="submit-form"
                 class="form-horizontal" enctype = 'multipart/form-data'>
                     @csrf
@@ -193,18 +195,6 @@
                                             name="publication_date">
                                     </div>
                                 </fieldset>
-                                <!-- Programme time -->
-                                <fieldset class="form-group">
-                                <label class="col-sm-2 control-label"></label>   
-                                    <div class="col-sm-4">
-                                    <imput hidden></input>
-                                    </div>
-                                <label for="publication_time" class="col-sm-2 control-label">Publication Time</label>   
-                                    <div class="col-sm-4">
-                                        <input type="time" class="form-control" value="{{ $fakenews->publication_time }}" 
-                                        name="publication_time">
-                                    </div>
-                                </fieldset>
                                 <!-- Report User Comments -->
                                 <fieldset class="form-group">
                                     <label for="comments" class="col-sm-2 control-label">User comments</label>
@@ -249,20 +239,32 @@
                             </fieldset>
                             <fieldset>
                                 <legend><div id="tv_sellect" class="ping"> <h3>***RELEVANT INFORMATION HERE***</h3></div>TV source description</legend>
-                                    <fieldset class="form-group">
-                                        <!-- Channel title -->
-                                        <label for="tv_channel" class="col-sm-2 control-label">Channel Title</label>
-                                        <div class="col-sm-4">
-                                            <input type="text" class="form-control" value="{{ $fakenews->tv_channel }}"
-                                                    name="tv_channel" id='tv_channel'>
-                                        </div>
-                                        <!-- Programme title -->
-                                        <label for="tv_prog_title" class="col-sm-2 control-label">Programme Title</label>   
-                                        <div class="col-sm-4">
-                                                <input type="text" class="form-control" value="{{ $fakenews->tv_prog_title }}" 
-                                                name="tv_prog_title" id='tv_prog_title'>
-                                        </div>
-                                    </fieldset>
+                                <fieldset class="form-group">
+                                    <!-- Channel title -->
+                                    <label for="tv_channel" class="col-sm-2 control-label">Channel Title</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" class="form-control" value="{{ $fakenews->tv_channel }}"
+                                                name="tv_channel" id='tv_channel'>
+                                    </div>
+                                    <!-- Programme title -->
+                                    <label for="tv_prog_title" class="col-sm-2 control-label">Programme Title</label>   
+                                    <div class="col-sm-4">
+                                            <input type="text" class="form-control" value="{{ $fakenews->tv_prog_title }}" 
+                                            name="tv_prog_title" id='tv_prog_title'>
+                                    </div>
+                                </fieldset>
+                                <!-- TV Programme time -->
+                                <fieldset class="form-group">
+                                <label class="col-sm-2 control-label"></label>   
+                                    <div class="col-sm-4">
+                                    <imput hidden></input>
+                                    </div>
+                                <label for="tv_publication_time" class="col-sm-2 control-label">TV Publication Time</label>   
+                                    <div class="col-sm-4">
+                                        <input type="time" class="form-control" value="{{ $fakenews->publication_time }}" 
+                                        name="tv_publication_time" id='tv_time'>
+                                    </div>
+                                </fieldset>
                             </fieldset>
                             <fieldset>
                                 <legend><div id="radio_sellect" class="ping"> <h3>***RELEVANT INFORMATION HERE***</h3></div>Radio source description</legend>
@@ -278,6 +280,18 @@
                                     <div class="col-sm-4">
                                             <input type="text" class="form-control" value="{{ $fakenews->radio_freq }}" 
                                             name="radio_freq" id='radio_freq'>
+                                    </div>
+                                </fieldset>
+                                <!-- Radio Programme time -->
+                                <fieldset class="form-group">
+                                <label class="col-sm-2 control-label"></label>   
+                                    <div class="col-sm-4">
+                                    <imput hidden></input>
+                                    </div>
+                                <label for="radio_publication_time" class="col-sm-2 control-label">Radio Publication Time</label>   
+                                    <div class="col-sm-4">
+                                        <input type="time" class="form-control" value="{{ $fakenews->publication_time }}" 
+                                        name="radio_publication_time" id='radio_time'>
                                     </div>
                                 </fieldset>
                             </fieldset>
@@ -318,16 +332,16 @@
                                 </fieldset>
                             </fieldset>
                             <fieldset>
-                                <legend>General address information</legend>
+                                <legend>General address information of incident</legend>
                                 <fieldset class="form-group">
                                     <!-- Country -->
-                                    <label for="country" class="col-sm-2 control-label">Country</label>
+                                    <label for="country" class="col-sm-2 control-label">Country (required for OTHER source)</label>
                                     <div class="col-sm-4">
                                         <input type="text" class="form-control" value="{{ $fakenews->country }}"
                                                 name="country">
                                     </div>
                                     <!-- Town -->
-                                    <label for="town" class="col-sm-2 control-label">Town</label>   
+                                    <label for="town" class="col-sm-2 control-label">Town (required for OTHER and RADIO source)</label>   
                                     <div class="col-sm-4">
                                             <input type="text" class="form-control" value="{{ $fakenews->town }}" 
                                             name="town">
@@ -531,13 +545,28 @@
                                     </div>
                                 </fieldset>
                                 <!-- Report Actions -->
-                                <fieldset class="form-group">
-                                    <label for="actions" class="col-sm-2 control-label">Actions</label>
-                                    <div class="col-sm-10">
-                                        <textarea class="form-control" name="actions"
-                                                  rows="3"> {{ $fakenews->actions}}</textarea>
-                                    </div>
-                                </fieldset>
+                                    @if (is_null(json_decode($fakenews->actions)))
+                                        <fieldset class="form-group">
+                                        <label for="actions" class="col-sm-2 control-label">Actions</label>
+                                        <div class="col-sm-10">
+                                            <textarea class="form-control" name="actions" rows="3">{{$fakenews->actions}}</textarea>
+                                        </div>
+                                    </fieldset>
+                                    @else
+
+                                        @foreach (json_decode($fakenews->actions) as $user_id => $actions)
+                                            
+                                                @if (User::find($user_id))
+                                                <fieldset class="form-group">
+                                                    <label for="actions" class="col-sm-2 control-label">Actions <br> {{User::find($user_id)->name}} </label>
+                                                    <div class="col-sm-10">
+                                                        <textarea class="form-control" {!!Auth::id()==$user_id ? 'name="actions"' : 'disabled'!!} rows="3">{{$actions}}</textarea>
+                                                    </div>
+                                                </fieldset>
+                                                @endif
+                                                <br>
+                                        @endforeach
+                                    @endif
                                 <!-- Report Status -->
                                 <fieldset class="form-group">
                                     <label for="status" class="col-sm-2 control-label">Status</label>
@@ -620,6 +649,8 @@
                 $('#source_document').prop('disabled',false)
                 $('#tv_channel').prop('disabled',true)
                 $('#tv_prog_title').prop('disabled',true)
+                $('#tv_time').prop('disabled',true)
+                $('#radio_time').prop('disabled',true)
                 $('#radio_station').prop('disabled',true)
                 $('#radio_freq').prop('disabled',true)
                 $('#newspaper_name').prop('disabled',true)
@@ -638,6 +669,8 @@
                 $('#source_document').prop('disabled',true)
                 $('#tv_channel').prop('disabled',false)
                 $('#tv_prog_title').prop('disabled',false)
+                $('#tv_time').prop('disabled',false)
+                $('#radio_time').prop('disabled',true)
                 $('#radio_station').prop('disabled',true)
                 $('#radio_freq').prop('disabled',true)
                 $('#newspaper_name').prop('disabled',true)
@@ -656,6 +689,8 @@
                 $('#source_document').prop('disabled',true)
                 $('#tv_channel').prop('disabled',true)
                 $('#tv_prog_title').prop('disabled',true)
+                $('#tv_time').prop('disabled',true)
+                $('#radio_time').prop('disabled',false)
                 $('#radio_station').prop('disabled',false)
                 $('#radio_freq').prop('disabled',false)
                 $('#newspaper_name').prop('disabled',true)
@@ -674,6 +709,8 @@
                 $('#source_document').prop('disabled',true)
                 $('#tv_channel').prop('disabled',true)
                 $('#tv_prog_title').prop('disabled',true)
+                $('#tv_time').prop('disabled',true)
+                $('#radio_time').prop('disabled',true)
                 $('#radio_station').prop('disabled',true)
                 $('#radio_freq').prop('disabled',true)
                 $('#newspaper_name').prop('disabled',false)
@@ -692,6 +729,8 @@
                 $('#source_document').prop('disabled',true)
                 $('#tv_channel').prop('disabled',true)
                 $('#tv_prog_title').prop('disabled',true)
+                $('#tv_time').prop('disabled',true)
+                $('#radio_time').prop('disabled',true)
                 $('#radio_station').prop('disabled',true)
                 $('#radio_freq').prop('disabled',true)
                 $('#newspaper_name').prop('disabled',true)
@@ -710,6 +749,8 @@
                 $('#source_document').prop('disabled',true)
                 $('#tv_channel').prop('disabled',true)
                 $('#tv_prog_title').prop('disabled',true)
+                $('#tv_time').prop('disabled',true)
+                $('#radio_time').prop('disabled',true)
                 $('#radio_station').prop('disabled',true)
                 $('#radio_freq').prop('disabled',true)
                 $('#newspaper_name').prop('disabled',true)
