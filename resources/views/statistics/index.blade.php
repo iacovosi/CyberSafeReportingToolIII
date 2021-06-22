@@ -60,7 +60,7 @@
 
             <div class="panel panel-default">
                 <div class="panel-heading clearfix">
-                    <h4 class="pull-left"><i class="fa fa-file-text-o"></i>  Reports Statistics (Total of all Records {{ count($statistics)  }})</h4> <!-- $statistics->total() -->
+                    {{-- <h4 class="pull-left"><i class="fa fa-file-text-o"></i>  Reports Statistics (Total of all Records {{ count($statistics)  }})</h4> <!-- $statistics->total() --> --}}
                 </div>
 
                 <div class="panel-body">
@@ -78,7 +78,7 @@
                                     {{--  <th>Report role</th>  --}}
                                     {{--  <th>Reference by</th>  --}}
                                     {{--  <th>Reference to</th>  --}}
-                                    <th>Operator actions</th>
+                                    {{-- <th>Operator actions</th> --}}
                                     {{--  <th>Priority</th>  --}}
                                     <th>Contact method</th>
                                     <th>Status</th>
@@ -93,11 +93,7 @@
                                 <!-- possible bug $report->relatedToHelpLine->log, when you delete report the view breaks-->
                                 <!-- it is the relatedToHelpLine value -->
                                 <!-- Error: Trying to get property 'log' of non-object -->
-                                     @if(isset($report->relatedToHelpLine) && !empty($report->relatedToHelpLine))
-                                    <td><span class="top" title="{{$report->relatedToHelpLine->log}}"> {{ $report->tracking_id }}</span></td>
-                                    @else
-                                     <td><span class="top" title=""> {{ $report->tracking_id }}</span></td>
-                                     @endif 
+                                    <td><span class="top" title="{{$report->log}}"> {{ $report->tracking_id }}</span></td>
                                     <td>
                                         @if(isset($report->firstResponderStats)) 
                                             <?php  
@@ -142,7 +138,7 @@
                                     </td>  --}}
                                     {{--  <td>{{ $report->reference_by }}</td>  --}}
                                     {{--  <td>{{ $report->reference_to }}</td>  --}}
-                                    <td>{{ str_limit($report->actions, $limit = 40, $end = '...') }}</td>
+                                    {{-- <td>{{ str_limit($report->actions, $limit = 40, $end = '...') }}</td> --}}
                                     {{--  <td>{{ $report->priority }}</td>  --}}
                                     <td>
                                         {{--  {{ $report->submission_type }}  --}}
@@ -165,7 +161,7 @@
 
                 <div class="panel-footer">
                     {{--  {{ $statistics->appends(Request::only('filterStatus'))->render() }}  --}}
-                    {{--   {{ $statistics->appends(Request::only('page'))->render() }} --}}
+                    {{--  {{ $statistics->appends(Request::only('page'))->render() }} --}}
                 </div> <!-- END .panel-footer -->
 
             </div> <!-- END .panel -->
@@ -173,6 +169,24 @@
     </div> <!-- END STATISTICS -->
 
     @endif
+</div>
+
+<div class="container">
+    <div class="panel panel-default" >
+    <div class="panel-heading clearfix">
+        <h4 class="pull-left"><i class="fa fa-bar-chart" aria-hidden="true"></i> General Graphs and Charts</h4>
+    </div>
+        <div class="panel-body">
+            <div class="col-sm-6">
+            {!! $Helpline_types->container() !!}
+            </div>                           
+            <div class="col-sm-6">
+            {!! $weekly_bar->container() !!}
+            </div>
+            {!! $weekly_bar->script() !!}
+            {!! $Helpline_types->script() !!}    
+        </div>
+    </div>
 </div>
 
 
@@ -198,9 +212,6 @@
 </script>
 
 @endsection
-
-
-
 
 {{--  <div class="row">
                     <div class="col-sm-2">

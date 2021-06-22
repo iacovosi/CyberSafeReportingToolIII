@@ -6,6 +6,10 @@
     <div class="row">
         <div class="col-md-12">
 
+            <div class="form-group">
+                @include('partials.errors')
+            </div>
+            
             <form method="post" action="{{ route('save-helpline') }}" id="submit-form" class="form-horizontal">
 
                 <div class="panel panel-default">
@@ -35,8 +39,8 @@
                                     <p>Are you sure you want to leave this page? Any changes will be lost.</p>
                                 </div>
                                 <div class="modal-footer">
-                                    <a class="btn btn-primary" href="{{ URL::previous() }}">Yes</a>
                                     <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                                    <a class="btn btn-primary" href="{{ URL::previous() }}">Yes</a>
                                 </div>
                             </div>
                         </div>
@@ -146,7 +150,7 @@
                             <fieldset class="form-group">
                                 <label for="content_type" class="col-sm-2 control-label">Content Type *</label>
                                 <div class="col-sm-4">
-                                    <select class="form-control" name="content_type" required>
+                                    <select class="form-control" name="content_type" >
                                         <option value="" selected disabled>Select an option...</option>
                                         @foreach($content_types->sortBy('display_name_en') as $content_type)
                                             @if ($content_type->is_for == 'helpline')
@@ -184,9 +188,9 @@
                                         <option value="0" selected disabled>Select an option...</option>
                                         <option value="">No one</option> 
                                         @foreach($users as $user)
-                                            @if($user->hasRole(['operator']))
+                                            {{-- @if($user->hasRole(['operator']))
                                                 <option value="{{ $user->id }}"> {{ $user->name }}</option>
-                                            @endif
+                                            @endif --}}
                                         @endforeach
                                     </select>
                                 </div>
@@ -252,7 +256,7 @@
                                 <label for="status" class="col-sm-2 control-label">Reported Date</label>
                                 <div class="col-sm-4">
                                     <label for="call_time">Call Date </label>
-                                    <input name="call_time" type='text' id="call_time" class="form-control form-inline" value="{{date('d/m/Y H:i')}}"   />
+                                    <input name="call_time" type='text' id="call_time" class="form-control form-inline" value="{{date('d/m/Y H:i')}}"/>
                                 </div>
                             </fieldset>
 

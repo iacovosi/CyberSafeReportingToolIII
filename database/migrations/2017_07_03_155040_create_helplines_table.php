@@ -19,16 +19,16 @@ class CreateHelplinesTable extends Migration
             $table->string('forwarded')->default('false');
             $table->string('submission_type');
             // user profile
-            $table->string('name')->nullable();
-            $table->string('surname')->nullable();
-            $table->string('email')->nullable();
-            $table->integer('phone')->nullable();
+            $table->text('name')->nullable();
+            $table->text('surname')->nullable();
+            $table->text('email')->nullable();
+            $table->text('phone')->nullable();
             $table->string('age')->nullable();
             $table->string('gender')->nullable();
             $table->string('report_role')->nullable();
             // report description
             $table->string('resource_type');
-            $table->string('resource_url')->nullable();
+            $table->text('resource_url')->nullable();
             $table->string('content_type');
             $table->text('comments')->nullable();
             // operator actions
@@ -50,11 +50,13 @@ class CreateHelplinesTable extends Migration
             $table->text('manager_comments')->nullable();
             //field to connect insident with another  
             $table->unsignedInteger('insident_reference_id')->nullable();            // insident_id
-            $table->foreign('insident_reference_id')->references('id')->on('helplines'); // insident_id            
+            $table->foreign('insident_reference_id')->references('id')->on('helplines')->onDelete('cascade'); // insident_id            
             //the call time
             $table->dateTime('call_time')->default(DB::raw('CURRENT_TIMESTAMP'));
 
             $table->timestamps();
+
+            $table->softDeletes();
         });
     }
 

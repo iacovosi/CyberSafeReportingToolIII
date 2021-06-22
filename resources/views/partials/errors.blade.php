@@ -1,14 +1,8 @@
 @if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
+    <div class="alert alert-danger">{{ $errors->first()}}
     </div>
 @endif
 
-<div class="alert alert-danger error-panel" style="display:none;">
-    <ul>
-    </ul>
-</div>
+<div id="success-panel" class="alert alert-success" style="display:none;"></div>
+
+<div id="error-panel" class="alert alert-danger" style="display:none;"></div>

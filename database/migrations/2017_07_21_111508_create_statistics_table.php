@@ -15,7 +15,9 @@ class CreateStatisticsTable extends Migration
     {
         Schema::create('statistics', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('tracking_id');
+
+            $table->unsignedInteger('tracking_id')->nullable();
+            $table->foreign('tracking_id')->references('id')->on('helplines')->onDelete('cascade');;
             $table->string('is_it_hotline')->nullable();
             $table->string('forwarded')->nullable();
             $table->string('submission_type')->nullable();
@@ -31,21 +33,22 @@ class CreateStatisticsTable extends Migration
             $table->foreign('user_opened')->references('id')->on('users');
             $table->unsignedInteger('user_assigned')->nullable();
             $table->foreign('user_assigned')->references('id')->on('users');
-            //            
+            //
             $table->string('priority')->nullable();
             $table->string('reference_by')->nullable();
             $table->string('reference_to')->nullable();
+            
             $table->longtext('actions')->nullable();
             $table->string('status');
             //
             $table->string('job')->nullable();
             $table->string('form_type')->nullable();
-
+            $table->text('log')->nullable();
             //manager comments
             $table->text('manager_comments')->nullable();
             //field to connect insident with another
-            $table->unsignedInteger('insident_reference_id')->nullable();            // insident_id
-            $table->foreign('insident_reference_id')->references('id')->on('helplines'); // insident_id
+            $table->unsignedInteger('insident_reference_id')->nullable(); // insident_id
+            $table->foreign('insident_reference_id')->references('id')->on('helplines')->onDelete('cascade'); // insident_id
             //the call time
             $table->dateTime('call_time')->nullable();
 

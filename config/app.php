@@ -178,9 +178,9 @@ return [
         App\Providers\RouteServiceProvider::class,
 
         /*
-         *  Zizaco
-         */
-         Zizaco\Entrust\EntrustServiceProvider::class,
+        * Role Based System
+        */
+        Spatie\Permission\PermissionServiceProvider::class,
 
          /*
             Recaptcha
@@ -235,10 +235,9 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-        'Entrust'   => Zizaco\Entrust\EntrustFacade::class,
         'GroupPermission' => App\GroupPermission::class,
+        'User' => App\User::class,
         'Recaptcha' => Greggilbert\Recaptcha\Facades\Recaptcha::class,
-
     ],
 
 ];

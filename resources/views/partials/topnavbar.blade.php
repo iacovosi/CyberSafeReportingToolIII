@@ -47,9 +47,6 @@
                         <li><a href="{{ url('/roles')}}">Roles</a></li>
                         @endif
 
-                        @if(GroupPermission::usercan('view','permissions'))
-                        <li><a href="{{ url('/permissions')}}">Permissions</a></li>
-                        @endif
                     </ul>
                 </li>
                 @endif
@@ -73,12 +70,50 @@
                 @endif
 
                 @if(GroupPermission::usercan('view','statistics'))
-                <li>
-                    <a href="{{ route('statistics.index') }}">
-                        <i class="fa fa-bar-chart" aria-hidden="true"></i> Statistics
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown">
+                        <i class="fa fa-bar-chart" aria-hidden="true"></i> Statistics and Graphs 
+                        <span class="caret"></span>
                     </a>
+                    
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ route('statistics.index') }}">Helpline and Hotline</a></li>
+                        <li><a href="{{ route('show.fakenews.stats') }}">Fakenews</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="{{ route('gen.charts.view') }}">Generate Graphs and Charts</a></li>
+                    </ul>
                 </li>
                 @endif
+
+                @if(GroupPermission::usercan('view','logs'))
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown">
+                        <i class="fa fa-history" aria-hidden="true"></i> Logs 
+                        <span class="caret"></span>
+                    </a>
+                    
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ route('helplinesLogController.index') }}">Helpline and Hotline</a></li>
+                        <li><a href="">Fakenews</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="">Users</a></li>
+                    </ul>
+                </li>
+                @endif
+                
+                @if(GroupPermission::usercan('view','settings'))
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown">
+                        <i class="fa fa-cog" aria-hidden="true"></i> Settings 
+                        <span class="caret"></span>
+                    </a>
+                    
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ route('settingsController.index') }}">Automated Archive</a></li>
+                    </ul>
+                </li>
+                @endif
+
             </ul>
 
             @endif
@@ -94,7 +129,7 @@
                         </a>
                         <ul class="dropdown-menu" role="menu">
                             <li>
-                                <a href="{{route('users.edit', Auth::user()->id)}}">
+                                <a href="{{route('profile.edit')}}">
                                     <i class="fa fa-user" aria-hidden="true"></i> User profile
                                 </a>
                             </li>

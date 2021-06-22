@@ -5,7 +5,10 @@
 
     <div class="row">
         <div class="col-md-12">
-
+            <div class="form-group">
+                @include('partials.errors')
+            </div>
+            
             <form method="post" action="{{ route('save-helpline') }}" id="submit-form" class="form-horizontal">
 
                 <div class="panel panel-default">
@@ -35,8 +38,8 @@
                                     <p>Are you sure you want to leave this page? Any changes will be lost.</p>
                                 </div>
                                 <div class="modal-footer">
-                                    <a class="btn btn-primary" href="{{ URL::previous() }}">Yes</a>
                                     <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                                    <a class="btn btn-primary" href="{{ URL::previous() }}">Yes</a>
                                 </div>
                             </div>
                         </div>
@@ -184,9 +187,9 @@
                                         <option value="0" selected disabled>Select an option...</option>
                                         <option value="">No one</option>
                                         @foreach($users as $user)
-                                            @if($user->hasRole(['operator']))
+                                            {{-- @if($user->hasRole(['operator']))
                                                 <option value="{{ $user->id }}"> {{ $user->name }}</option>
-                                            @endif
+                                            @endif --}}
                                         @endforeach
 
 

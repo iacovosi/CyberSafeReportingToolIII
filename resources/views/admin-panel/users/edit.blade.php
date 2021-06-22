@@ -13,13 +13,13 @@
         </div>
 
         <div class="panel-body">
-
-            {{--  
-            To call the update() method, you must make a PUT request. 
-            But HTML forms can't make PUT requests. 
-            So, Laravel provids a way to mimick a PUT request with forms  
-            --}}
-            <form id="form-change-password" class="form-horizontal" role="form" method="POST" action="/users/{{$user->id}}">
+            @if (GroupPermission::usercan('edit','users'))
+                <div class="alert alert-info" role="alert">
+                    To select more than one role hold down the Ctrl key while choosing with your mouse.
+                </div>
+            @endif
+            <form id="form-change-password" class="form-horizontal" role="form" method="POST" 
+                action="@if (!\Request::is('profile/edit')){{ route('users.update', $user->id) }} @else {{ route('profile.update') }}  @endif">
 
                 <input type="hidden" name="_method" value="PUT" />
 
@@ -62,35 +62,17 @@
                 </div>
 
                 @if (GroupPermission::usercan('edit','users'))
+
                     <div class="form-group">
-                        <label for="role" class="col-sm-2 control-label">Role</label>
+                        <label for="role" class="col-sm-2 control-label">Roles</label>
                         <div class="col-sm-10">
-                            <select class="form-control" name="role_id">
+                            <select multiple class="form-control" multiple="multiple" name="role_names[]">
                                 @foreach($roles as $role)
-                                    <option value="{{ $role->id }}"  @if (!empty($role_id) && ($role_id ==$role->id)) selected @endif>{{ $role->name }}</option>
+                                    <option  value="{{ $role->name }}"  @if ($user->hasRole($role->name)) selected="selected" @endif>{{ $role->name }}</option>
                                 @endforeach
                             </select>
                         </div>
                     </div>
-
-                <legend>Permissions</legend>
-
-                @foreach($groups as $group)
-                    <div class="form-check">
-                        <label class="form-check-label col-sm-2 control-label">
-                            {{ $group->name }}
-                        </label>
-                
-                        <div class="col-sm-10" name="{{ $group->name }}">
-                            @foreach($permissions as $permission)
-                                <label class="checkbox-inline"><input type="checkbox" value="{{ $permission->id }}" name="{{ $group->name }}[]" @if(GroupPermission::canuser($user->id,$permission->name,$group->name)) checked @endif>
-                                    {{ $permission->name }}
-                                </label>
-                            @endforeach
-                        </div>
-                    </div>
-                @endforeach
-                <div class="form-group"></div>
 
                 @endif
 
@@ -101,18 +83,20 @@
                         <button type="submit" class="btn btn-primary update-user">
                             <i class="fa fa-floppy-o" aria-hidden="true"></i> Save
                         </button>
-                        <a href="{{route('users.index')}}" class="btn btn-default">
+                        <a href="@if (\Request::is('profile/edit')){{ route('home') }} @else {{ route('users.index') }}  @endif"
+                             class="btn btn-default">
                             <i class="fa fa-arrow-circle-left" aria-hidden="true"></i> Cancel
                         </a>
                     </div>
                 </div>
+                
 
                 <div class="form-group">
                     <div class="col-sm-offset-0 col-sm-12">
                         @include('partials.errors')
                     </div>
                 </div>
-
+                
                 <!-- will be used to show any messages -->
                 @if (Session::has('message'))
                     <div class="alert alert-info">{{ Session::get('message') }}</div>

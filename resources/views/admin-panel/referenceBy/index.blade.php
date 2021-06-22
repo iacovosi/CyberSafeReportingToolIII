@@ -9,7 +9,7 @@
             <h4 class="pull-left"><i class="fa fa-cogs" aria-hidden="true"></i> Reference by</h4>
             <div class="pull-right form-actions">
                 @if(GroupPermission::usercan('create','content'))
-                    <a href="/referenceBy/create" class="btn btn-primary">
+                    <a href="{{ route('referenceBy.create') }}" class="btn btn-primary">
                         <i class="fa fa-plus" aria-hidden="true"></i> New
                     </a>
                 @endif

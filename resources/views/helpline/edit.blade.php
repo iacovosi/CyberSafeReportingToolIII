@@ -1,14 +1,16 @@
 @extends('layouts.app')
-
+@inject('User', 'App\User')
 @section('content')
     <div class="container report-details" id="helpline-report-edit">
 
         <div class="row">
             <div class="col-md-12">
-
-                <form method="PUT" action="{{route('edit-helpline',['id' => $helpline->id ])}}" id="submit-form"
-                      class="form-horizontal">
-
+                <div class="form-group">
+                    @include('partials.errors')
+                </div>
+                <form method="POST" action="{{route('edit-helpline',['id' => $helpline->id ])}}" id="submit-form" class="form-horizontal">
+                      @csrf
+                      @method('PATCH')
                     <div class="panel panel-default">
                         <div class="panel-heading clearfix">
                             <h4 class="pull-left">HELPLINE - Report ID : # {{ $helpline->id }}</h4>
@@ -40,8 +42,8 @@
                                         <p>Are you sure you want to leave this page? Any changes will be lost.</p>
                                     </div>
                                     <div class="modal-footer">
-                                        <a class="btn btn-primary" href="{{ URL::previous() }}">Yes</a>
                                         <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                                        <a class="btn btn-primary" href="{{ URL::previous() }}">Yes</a>
                                     </div>
                                 </div>
                             </div>
@@ -218,13 +220,12 @@
                                 <fieldset class="form-group">
                                     <label for="comments" class="col-sm-2 control-label">User comments</label>
                                     <div class="col-sm-10">
-                                    <textarea class="form-control" name="comments" rows="3">
                                         @if($helpline->comments == null)
-                                            Not Provided.
+                                            <?php $comments = "Not provided."; ?>
                                         @else
-                                            <?php $comments = Crypt::decrypt($helpline->comments); ?>{{ $comments  }}
+                                            <?php $comments = Crypt::decrypt($helpline->comments); ?>
                                         @endif
-                                    </textarea>
+                                    <textarea class="form-control" name="comments" rows="3">{{ $comments  }}</textarea>
                                     </div>
                                 </fieldset>
                             </fieldset>
@@ -238,23 +239,26 @@
                                     <!-- Report Opened by operator -->
                                     <label for="user_opened" class="col-sm-2 control-label">Opened by operator</label>
                                     <div class="col-sm-4">
-                                        <input type="text" class="form-control"
-                                               value="{{$helpline->firstResponder->name}}" readonly>
-                                        <input type="hidden" name="user_opened"
-                                               value="{{$helpline->firstResponder->id}}">
+                                        @if($helpline->firstResponder == null)
+                                            <input type="text" class="form-control" value="" placeholder="No one"
+                                                   disabled>
+                                        @else
+                                            <input type="text" class="form-control"
+                                                value="{{$helpline->firstResponder->name}}" disabled>
+                                                <input type="hidden" name="user_opened"
+                                                    value="{{$helpline->firstResponder->id}}">
+                                        @endif
                                     </div>
                                     <!-- Report Forward to operator -->
-                                    <label for="user_assigned" class="col-sm-2 control-label">Forward to
-                                        operator</label>
+                                    <label for="user_assigned" class="col-sm-2 control-label">Forward to operator</label>
                                     <div class="col-sm-4">
                                         <select class="form-control" name="user_assigned">
                                             @if($helpline->user_assigned == null)
                                                 <option value selected>No one</option>
                                             @endif
                                             @foreach($users as $user)
-                                                @if($user->hasRole(['operator']))
-                                                    <option value="{{ $user->id }}"
-                                                            @if ($helpline->user_assigned == $user->id) selected @endif>{{ $user->name }}</option>
+                                                @if(GroupPermission::canuser($user->id, 'edit', 'helpline'))
+                                                    <option value="{{ $user->id }}" {{$helpline->user_assigned == $user->id ? 'selected':''}} >{{ $user->name }}</option>
                                                 @endif
                                             @endforeach
                                         </select>
@@ -306,13 +310,31 @@
                                     </div>
                                 </fieldset>
                                 <!-- Report Actions -->
-                                <fieldset class="form-group">
-                                    <label for="actions" class="col-sm-2 control-label">Actions</label>
-                                    <div class="col-sm-10">
-                                        <textarea class="form-control" name="actions"
-                                                  rows="3"> {{ $helpline->actions}}</textarea>
-                                    </div>
-                                </fieldset>
+                                
+                                        @if (is_null(json_decode($helpline->actions)))
+                                            <fieldset class="form-group">
+                                            <label for="actions" class="col-sm-2 control-label">Actions</label>
+                                            <div class="col-sm-10">
+                                                <textarea class="form-control" name="actions" rows="3">{{$helpline->actions}}</textarea>
+                                            </div>
+                                        </fieldset>
+                                        @else
+
+                                            @foreach (json_decode($helpline->actions) as $user_id => $actions)
+                                                
+                                                    @if (User::find($user_id))
+                                                    <fieldset class="form-group">
+                                                        <label for="actions" class="col-sm-2 control-label">Actions <br> {{User::find($user_id)->name}} </label>
+                                                        <div class="col-sm-10">
+                                                            <textarea class="form-control" {!!Auth::id()==$user_id ? 'name="actions"' : 'disabled'!!} rows="3">{{$actions}}</textarea>
+                                                        </div>
+                                                    </fieldset>
+                                                    @endif
+                                                    <br>
+                                            @endforeach
+                                        @endif
+                                    
+                                
                                 <!-- Report Status -->
                                 <fieldset class="form-group">
                                     <label for="status" class="col-sm-2 control-label">Status</label>
